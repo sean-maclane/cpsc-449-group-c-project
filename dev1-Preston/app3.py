@@ -1,10 +1,11 @@
 from flask import *
 from flask_sqlalchemy import SQLAlchemy
-
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, exists
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
+
 import os
 
 
@@ -12,10 +13,13 @@ Base = declarative_base()
 
 app = Flask(__name__)
 
+app.config['SQLALCHEMY_TRACK_MODIFCATIONS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+
 db = SQLAlchemy(app)
 
 
-class Users(Base):
+class Users(db.Model):
     __tablename__ = "users"
 
     id = Column('id', db.Integer, primary_key=True)
@@ -44,9 +48,11 @@ def signup():
         _password = request.form['password']
 
         try:
+            # connects to sqlite.db file in current folder
             engine = create_engine('sqlite:///users.db', echo=True)
-            Base.metadata.create_all(bind=engine)  # creates the table
+            db.metadata.create_all(bind=engine)  # creates the Users schema
 
+            # creates a object to store info into the database
             Session = sessionmaker(bind=engine)
             session = Session()
 
@@ -64,9 +70,59 @@ def signup():
     return render_template('home.html')
 
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def loginpage():
+    if request.method == 'POST':
+        _username = request.form['username']
+        _password = request.form['password']
+
+        try:
+            engine = create_engine('sqlite:///users.db', echo=True)
+            Base.metadata.create_all(bind=engine)  # creates the table
+
+            # creates a object to store info into the database
+            Session = sessionmaker(bind=engine)
+            s = Session()
+
+            exists = db.session.Users.query.get(_username)
+            usethis = Session.query(Users).get(_username)
+
+            test = db.session.query(Users.query.filter(
+                Users.userName == _username).exists()).scalar()
+
+            yes = db.session.query(Users).filter(
+                Users.c.userName == _username).first()
+
+            compareThis = Users.query.filter_by(_username).first()
+
+            flash("please check login")
+
+            """ query = s.query(Users).filter(
+                Users.userName == _username, Users.password == _password) """
+
+        except:
+            print('ERROR ERRROR')
+            return(500)
+
     return render_template('loginpage.html')
+
+
+@app.route('/deleteAccount', methods=['GET', 'POST', 'DELETE'])
+def deleteAcc():
+    if request.method == 'POST':
+        _username = request.form['username']
+        _password = request.form['password']
+        try:
+            delete_this = Users.query.filter_by(userName=_username).first()
+            db.session.delete(delete_this)
+            db.session.commit()
+            return render_template('home.html')
+
+        except:
+            print(
+                'Error in deleting your account please use a valid username and password')
+
+    return render_template('deleteAcc.html')
 
 
 if __name__ == "__main__":
