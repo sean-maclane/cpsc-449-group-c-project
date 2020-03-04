@@ -107,6 +107,26 @@ def loginpage():
     return render_template('loginpage.html')
 
 
+@app.route('/updateEmail', methods=['GET', 'POST'])
+def updateEmail():
+    if request.method == 'POST':
+        _username = request.form['username']
+        _password = request.form['password']
+        new_email = request.form['email']
+
+        try:
+            entry = Users.query.filter_by(
+                userName=_username).first()  # search for the correct entry
+            entry.email = new_email
+
+            db.session.commit()
+            return render_template('home.html')
+
+        except:
+            print("Username and password not found please check credentials")
+    return render_template('updateEmail.html')
+
+
 @app.route('/deleteAccount', methods=['GET', 'POST', 'DELETE'])
 def deleteAcc():
     if request.method == 'POST':
