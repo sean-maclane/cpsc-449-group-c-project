@@ -1,10 +1,9 @@
 from flask import *
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, exists
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, exists, and_
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
+
 
 import os
 
@@ -18,9 +17,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_BINDS'] = {'posts': 'sqlite:///posts.db'}
 
 db = SQLAlchemy(app)
-
-query = s.query(Users).filter(Users.email == POST_USERNAME,
-                              Users.password == POST_PASSWORD)
 
 
 class Users(db.Model):
@@ -39,7 +35,7 @@ class Posts(db.Model):
 
     id = Column('id', db.Integer, primary_key=True)
     title = Column('title', db.String(100))
-    community = Column('community', db.String(100), unique=True)
+    community = Column('community', db.String(100))
     text = Column('text', db.String(100))
     Username = Column('Username', db.String(100))
     url = Column('url', db.String(100),  nullable=True)
@@ -95,22 +91,49 @@ def deletePost():
         _password = request.form['password']  # validate info
 
         # retrieves all posts relative to the user
-        entry = Posts.query.filter_by(Username=_username, posts=_title).first()
-        
+        entry = Posts.query.filter_by(Username=_username, title=_title).first()
 
         userExists = Users.query.filter_by(userName=_username).first()
-        if userExists.userName == _username and userExists.password == _password:
-            
 
-        if accinfo is not None:
-            db.session.delete(entry)
-            db.session.commit()
-            print("Post deleted")
-
+        if userExists is not None:  # checks if user exists helps redirect 404 error
+            if userExists.userName == _username and userExists.password == _password:  # validate
+                db.session.delete(entry)
+                db.session.commit()
+                print("POST HAS BEEN DELETED")
+                return render_template('home.html')
+            else:
+                print("NO SUCCESFUL DELETE CHECK FIELDS")
+                return render_template('deletepost.html')
         else:
-            print("Post hasnt been deleted")
-            return render_template('deletepost.html')
+            print("User does not exist")
+            return render_template('signup.html')
+
     return render_template('deletepost.html')
+
+
+@app.route('/retrievePost', methods=['GET', 'POST'])
+def retrievePost():
+    if request.method == 'POST':
+        _title = request.form['title']
+        _community = request.form['community']
+
+        entry = Posts.query.filter_by(title=_title).all()
+        entryCommunity = Posts.query.filter_by(community=_community).all()
+        sortedCategory = Posts.query.filter(
+            and_(Posts.title == _title, Posts.community == _community)).all()
+
+        if _title == "":
+            print(entryCommunity)
+            return render_template('home.html')
+
+        if _community == "":
+            print(entry)
+            return render_template('home.html')
+        else:
+            print(sortedCategory)
+            return render_template('signup.html')
+
+    return render_template('retrievePost.html')
 
 
 @app.route('/signup', methods=['GET', 'POST'])
