@@ -3,8 +3,11 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, exists
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm.query import Query
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from sqlalchemy import and_
+
 
 import os
 
@@ -36,7 +39,7 @@ class Posts(db.Model):
 
     id = Column('id', db.Integer, primary_key=True)
     title = Column('title', db.String(100))
-    community = Column('community', db.String(100), unique=True)
+    community = Column('community', db.String(100))
     text = Column('text', db.String(100))
     Username = Column('Username', db.String(100))
     url = Column('url', db.String(100),  nullable=True)
@@ -96,8 +99,8 @@ def deletePost():
 
         userExists = Users.query.filter_by(userName=_username).first()
 
-        if userExists is not None:  #checks if user exists helps redirect 404 error
-            if userExists.userName == _username and userExists.password == _password: #validate
+        if userExists is not None:  # checks if user exists helps redirect 404 error
+            if userExists.userName == _username and userExists.password == _password:  # validate
                 db.session.delete(entry)
                 db.session.commit()
                 print("POST HAS BEEN DELETED")
@@ -110,6 +113,31 @@ def deletePost():
             return render_template('signup.html')
 
     return render_template('deletepost.html')
+
+
+@app.route('/retrievePost', methods=['GET', 'POST'])
+def retrievePost():
+    if request.method == 'POST':
+        _title = request.form['title']
+        _community = request.form['community']
+
+        entry = Posts.query.filter_by(title=_title).all()
+        entryCommunity = Posts.query.filter_by(community=_community).all()
+        sortedCategory = Posts.query.filter(
+            and_(Posts.title == _title, Posts.community == _community)).all()
+
+        if _title == "":
+            print(entryCommunity)
+            return render_template('home.html')
+
+        if _community == "":
+            print(entry)
+            return render_template('home.html')
+        else:
+            print(sortedCategory)
+            return render_template('signup.html')
+
+    return render_template('retrievePost.html')
 
 
 @app.route('/signup', methods=['GET', 'POST'])
