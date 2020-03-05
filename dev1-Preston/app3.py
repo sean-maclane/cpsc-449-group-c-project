@@ -74,10 +74,14 @@ def createPost():
         new_post = Posts(title=_title, community=_community,
                          text=_text, Username=_username, url=_url)
         Account = Users.query.filter_by(userName=_username).first()
-        if Account.userName == _username:
+        if Account is not None:
             db.session.add(new_post)
             db.session.commit()
             print("SUCCESXS")
+        else:
+            print("ERROR")
+            return render_template('signup.html')
+
         return render_template('home.html')
 
     return render_template('createPost.html')
