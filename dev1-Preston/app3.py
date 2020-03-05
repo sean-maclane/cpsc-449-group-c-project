@@ -20,9 +20,6 @@ app.config['SQLALCHEMY_BINDS'] = {'posts': 'sqlite:///posts.db'}
 db = SQLAlchemy(app)
 
 
-# current issues, can only make one post per account
-
-
 class Users(db.Model):
     __tablename__ = "users"
 
@@ -85,6 +82,34 @@ def createPost():
         return render_template('home.html')
 
     return render_template('createPost.html')
+
+
+@app.route('/deletePost', methods=['GET', 'POST', 'DELETE'])
+def deletePost():
+    if request.method == 'POST':
+        _title = request.form['title']  # title to be deleted
+        _username = request.form['username']  # validate info
+        _password = request.form['password']  # validate info
+
+        # retrieves all posts relative to the user
+        entry = Posts.query.filter_by(Username=_username, title=_title).first()
+
+        userExists = Users.query.filter_by(userName=_username).first()
+
+        if userExists is not None:  #checks if user exists helps redirect 404 error
+            if userExists.userName == _username and userExists.password == _password: #validate
+                db.session.delete(entry)
+                db.session.commit()
+                print("POST HAS BEEN DELETED")
+                return render_template('home.html')
+            else:
+                print("NO SUCCESFUL DELETE CHECK FIELDS")
+                return render_template('deletepost.html')
+        else:
+            print("User does not exist")
+            return render_template('signup.html')
+
+    return render_template('deletepost.html')
 
 
 @app.route('/signup', methods=['GET', 'POST'])
