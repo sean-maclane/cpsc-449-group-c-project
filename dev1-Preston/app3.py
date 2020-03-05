@@ -15,11 +15,10 @@ app = Flask(__name__)
 
 app.config['SQLALCHEMY_TRACK_MODIFCATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db' #if added breaks program users arent registered
 app.config['SQLALCHEMY_BINDS'] = {'posts': 'sqlite:///posts.db'}
+
 db = SQLAlchemy(app)
 
-db.create_all('__all__')
 
 # current issues, can only make one post per account
 
@@ -39,14 +38,17 @@ class Posts(db.Model):
     __tablename__ = 'posts'
 
     id = Column('id', db.Integer, primary_key=True)
-    title = Column('title', db.String(100), unique=True)
+    title = Column('title', db.String(100))
     community = Column('community', db.String(100), unique=True)
     text = Column('text', db.String(100))
-    username = Column('username', db.String(100), unique=True)
+    Username = Column('Username', db.String(100))
     url = Column('url', db.String(100),  nullable=True)
 
     # date = Column(datetime.time()(timezone=True), default=func.now())
     # time_created = Column(datetime(timezone=True), server_default=func.now())
+
+
+db.create_all()
 
 
 @app.route('/')
@@ -61,6 +63,7 @@ def account():
 
 @app.route('/createPost', methods=['GET', 'POST'])
 def createPost():
+    postform = Posts()
     if request.method == 'POST':
         _title = request.form['title']
         _community = request.form['community']
@@ -68,21 +71,14 @@ def createPost():
         _username = request.form['username']
         _url = request.form['url']
 
-        validUser = Users.query.filter_by(userName=_username).first()
-        if validUser.userName == _username:
-            #postEngine = create_engine('sqlite:///posts.db', echo=True)
-
-            new_post = Posts(title=_title, community=_community,
-                             text=_text, username=_username, url=_url)
-
+        new_post = Posts(title=_title, community=_community,
+                         text=_text, Username=_username, url=_url)
+        Account = Users.query.filter_by(userName=_username).first()
+        if Account.userName == _username:
             db.session.add(new_post)
             db.session.commit()
-            db.session.close()
-            print("SUCCESSSSS")
-            return render_template('home.html')
-        else:
-            print("User does not exist please make an account")
-            return render_template(url_for('createPost'))
+            print("SUCCESXS")
+        return render_template('home.html')
 
     return render_template('createPost.html')
 
@@ -129,6 +125,7 @@ def loginpage():
 
             if userExists.userName == _username and userExists.password == _password:
                 print("Login validated")
+
                 return render_template('home.html')
 
             else:
