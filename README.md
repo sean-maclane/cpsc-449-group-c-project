@@ -1,2 +1,7 @@
-# cpsc-449-group-c-project-1
-Group project 1 for CPSC 449 Spring 2020 at CSU Fullerton, group C
+# Group C - Project 1 | Spring 2020
+
+**Member       : Role**
+Preston Phan   : Developer
+Sean Mac Lane  : SDET
+Saurabh Mishra : Operations
+
