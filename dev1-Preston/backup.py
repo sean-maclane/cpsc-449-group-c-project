@@ -45,12 +45,8 @@ class Posts(db.Model):
     text = Column('text', db.String(100))
     Username = Column('Username', db.String(100))
     url = Column('url', db.String(100),  nullable=True)
-    dt = Column('dateTime', db.DATETIME(storage_format="%(year)04d/%(month)02d/%(day)02d "
-                                        "%(hour)02d:%(minute)02d:%(second)02d"
-                                        ))
+    dt = Column('dateTime', db.String(100))
 
-    # date = Column(datetime.time()(timezone=True), default=func.now())
-    # time_created = Column(datetime(timezone=True), server_default=func.now())
 
 
 db.create_all()
@@ -75,11 +71,8 @@ def createPost():
         _text = request.form['text']
         _username = request.form['username']
         _url = request.form['url']
-        # timeCreated = datetime.strftime(
-        # "%A %d. %B %Y").now()
         holder = datetime.now()
-        timeCreated = datetime.strftime(holder, '%Y/%m/%d %H/%M/%S')
-        validOne=timeCreated.
+        timeCreated = datetime.strftime(holder, '%Y/%m/%d %H.%M%p')
 
         new_post = Posts(title=_title, community=_community,
                          text=_text, Username=_username, url=_url, dt=timeCreated)
@@ -87,7 +80,7 @@ def createPost():
         if Account is not None:
             db.session.add(new_post)
             db.session.commit()
-            print("SUCCESXS")
+            print("SUCCESS")
         else:
             print("ERROR")
             return render_template('signup.html')
