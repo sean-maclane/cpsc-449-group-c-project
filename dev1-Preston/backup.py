@@ -45,9 +45,9 @@ class Posts(db.Model):
     text = Column('text', db.String(100))
     Username = Column('Username', db.String(100))
     url = Column('url', db.String(100),  nullable=True)
-    dt = Column('dateTime', DATETIME(storage_format="%(year)04d/%(month)02d/%(day)02d "
-                                     "%(hour)02d:%(minute)02d:%(second)02d"
-                                     ))
+    dt = Column('dateTime', db.DATETIME(storage_format="%(year)04d/%(month)02d/%(day)02d "
+                                        "%(hour)02d:%(minute)02d:%(second)02d"
+                                        ))
 
     # date = Column(datetime.time()(timezone=True), default=func.now())
     # time_created = Column(datetime(timezone=True), server_default=func.now())
@@ -75,7 +75,11 @@ def createPost():
         _text = request.form['text']
         _username = request.form['username']
         _url = request.form['url']
-        timeCreated = datetime.now()
+        # timeCreated = datetime.strftime(
+        # "%A %d. %B %Y").now()
+        holder = datetime.now()
+        timeCreated = datetime.strftime(holder, '%Y/%m/%d %H/%M/%S')
+        validOne=timeCreated.
 
         new_post = Posts(title=_title, community=_community,
                          text=_text, Username=_username, url=_url, dt=timeCreated)
@@ -139,9 +143,12 @@ def retrievePost():
         if _community == "":
             print(entry)
             return render_template('home.html')
-        else:
+        if _title == entry and _community == entryCommunity:
             print(sortedCategory)
-            return render_template('signup.html')
+            return render_template('home.html')
+        else:
+            print("ERROR ONE OF THE FIELDS DONT EXIST")
+            return render_template('createPost.html')
 
     return render_template('retrievePost.html')
 
