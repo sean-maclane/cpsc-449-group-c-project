@@ -1,13 +1,15 @@
 from flask import *
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, exists
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, exists, and_
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy.orm.query import Query
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
-from sqlalchemy import and_
-
+from datetime import datetime
+from sqlalchemy.sql import func
+from sqlalchemy.dialects.sqlite import DATETIME
+from sqlalchemy.dialects.sqlite import \
+    BLOB, BOOLEAN, CHAR, DATE, DATETIME, DECIMAL, FLOAT, \
+    INTEGER, NUMERIC, JSON, SMALLINT, TEXT, TIME, TIMESTAMP, \
+    VARCHAR
 
 import os
 
@@ -43,6 +45,9 @@ class Posts(db.Model):
     text = Column('text', db.String(100))
     Username = Column('Username', db.String(100))
     url = Column('url', db.String(100),  nullable=True)
+    dt = Column('dateTime', DATETIME(storage_format="%(year)04d/%(month)02d/%(day)02d "
+                                     "%(hour)02d:%(minute)02d:%(second)02d"
+                                     ))
 
     # date = Column(datetime.time()(timezone=True), default=func.now())
     # time_created = Column(datetime(timezone=True), server_default=func.now())
@@ -70,9 +75,10 @@ def createPost():
         _text = request.form['text']
         _username = request.form['username']
         _url = request.form['url']
+        timeCreated = datetime.now()
 
         new_post = Posts(title=_title, community=_community,
-                         text=_text, Username=_username, url=_url)
+                         text=_text, Username=_username, url=_url, dt=timeCreated)
         Account = Users.query.filter_by(userName=_username).first()
         if Account is not None:
             db.session.add(new_post)
