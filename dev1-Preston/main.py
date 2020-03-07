@@ -5,11 +5,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from datetime import datetime
 from sqlalchemy.sql import func
-from sqlalchemy.dialects.sqlite import DATETIME
-from sqlalchemy.dialects.sqlite import \
-    BLOB, BOOLEAN, CHAR, DATE, DATETIME, DECIMAL, FLOAT, \
-    INTEGER, NUMERIC, JSON, SMALLINT, TEXT, TIME, TIMESTAMP, \
-    VARCHAR
+
+from sqlalchemy import inspect
 
 import os
 
@@ -45,12 +42,7 @@ class Posts(db.Model):
     text = Column('text', db.String(100))
     Username = Column('Username', db.String(100))
     url = Column('url', db.String(100),  nullable=True)
-    dt = Column('dateTime', DATETIME(storage_format="%(year)04d/%(month)02d/%(day)02d "
-                                     "%(hour)02d:%(minute)02d:%(second)02d"
-                                     ))
-
-    # date = Column(datetime.time()(timezone=True), default=func.now())
-    # time_created = Column(datetime(timezone=True), server_default=func.now())
+    dt = Column('dateTime', db.String(100))
 
 
 db.create_all()
@@ -75,7 +67,9 @@ def createPost():
         _text = request.form['text']
         _username = request.form['username']
         _url = request.form['url']
-        timeCreated = datetime.now()
+        holder = datetime.now()
+        timeCreated = datetime.strftime(
+            holder, '%Y/%m/%d %H.%M%p')  # creates time as string
 
         new_post = Posts(title=_title, community=_community,
                          text=_text, Username=_username, url=_url, dt=timeCreated)
@@ -83,7 +77,7 @@ def createPost():
         if Account is not None:
             db.session.add(new_post)
             db.session.commit()
-            print("SUCCESXS")
+            print("SUCCESS")
         else:
             print("ERROR")
             return render_template('signup.html')
@@ -129,19 +123,24 @@ def retrievePost():
 
         entry = Posts.query.filter_by(title=_title).all()
         entryCommunity = Posts.query.filter_by(community=_community).all()
+        allpost = Posts.query.all()
+
         sortedCategory = Posts.query.filter(
             and_(Posts.title == _title, Posts.community == _community)).all()
 
-        if _title == "":
+        if _title == "" and _community == "":  # retrieve all posts
+            print(allpost)
+
+        if _title == "":  # if title entry is blank look at community and output those
             print(entryCommunity)
             return render_template('home.html')
 
-        if _community == "":
+        if _community == "":  # if community is blank output title entries
             print(entry)
             return render_template('home.html')
         else:
-            print(sortedCategory)
-            return render_template('signup.html')
+            print(sortedCategory)  # else both fields are filled in
+            return render_template('home.html')
 
     return render_template('retrievePost.html')
 
