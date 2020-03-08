@@ -1,27 +1,19 @@
 from flask import *
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, exists, and_
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm import sessionmaker, relationship, load_only
 from datetime import datetime
 from sqlalchemy.sql import func
-from sqlalchemy.dialects.sqlite import DATETIME
-from sqlalchemy.dialects.sqlite import \
-    BLOB, BOOLEAN, CHAR, DATE, DATETIME, DECIMAL, FLOAT, \
-    INTEGER, NUMERIC, JSON, SMALLINT, TEXT, TIME, TIMESTAMP, \
-    VARCHAR
-
+from sqlalchemy import inspect
+from marshmallow import Schema, fields, pprint
 import os
 
-
-Base = declarative_base()
 
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_TRACK_MODIFCATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_BINDS'] = {'posts': 'sqlite:///posts.db'}
-
 db = SQLAlchemy(app)
 
 
@@ -33,6 +25,28 @@ class Users(db.Model):
     email = Column('email', db.String(100), unique=True)
     password = Column('password', db.String(100), unique=True)
     karma = Column('Karma', db.Integer)
+
+    def __init__(self, userName, email, password, karma):
+        self.userName = userName
+        self.email = email
+        self.password = password
+        self.karma = karma
+
+
+class UserSchema(Schema):
+    id = fields.Int(dump_only=True)
+    userName = fields.Str()
+    email = fields.Str()
+    formatted_name = fields.Method("format_name", dump_only=True)
+
+    def format_name(self, Users):
+        return "{},{}".format(Users.userName, Users.email)
+
+
+schema = UserSchema(many=True)
+result = schema.dump(Users.query.all())
+
+pprint(result)
 
 
 class Posts(db.Model):
@@ -48,13 +62,12 @@ class Posts(db.Model):
     dt = Column('dateTime', db.String(100))
 
 
-
 db.create_all()
 
 
 @app.route('/')
 def home():
-    return render_template('home.html')
+    return jsonify(result)
 
 
 @app.route('/account')
@@ -72,7 +85,8 @@ def createPost():
         _username = request.form['username']
         _url = request.form['url']
         holder = datetime.now()
-        timeCreated = datetime.strftime(holder, '%Y/%m/%d %H.%M%p')
+        timeCreated = datetime.strftime(
+            holder, '%Y/%m/%d %H.%M%p')  # creates time as string
 
         new_post = Posts(title=_title, community=_community,
                          text=_text, Username=_username, url=_url, dt=timeCreated)
@@ -126,22 +140,28 @@ def retrievePost():
 
         entry = Posts.query.filter_by(title=_title).all()
         entryCommunity = Posts.query.filter_by(community=_community).all()
+
+        yes = Posts.query.filter(Posts.title)
+
         sortedCategory = Posts.query.filter(
             and_(Posts.title == _title, Posts.community == _community)).all()
 
-        if _title == "":
+        fields = ['title', 'community', 'Username']
+        yes = Posts.query.options(load_only(*fields)).all()
+
+        if _title == "" and _community == "":  # retrieve all posts
+            print(yes)
+
+        if _title == "":  # if title entry is blank look at community and output those
             print(entryCommunity)
             return render_template('home.html')
 
-        if _community == "":
+        if _community == "":  # if community is blank output title entries
             print(entry)
             return render_template('home.html')
-        if _title == entry and _community == entryCommunity:
-            print(sortedCategory)
-            return render_template('home.html')
         else:
-            print("ERROR ONE OF THE FIELDS DONT EXIST")
-            return render_template('createPost.html')
+            print(sortedCategory)  # else both fields are filled in
+            return render_template('home.html')
 
     return render_template('retrievePost.html')
 
