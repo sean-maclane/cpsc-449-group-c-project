@@ -117,8 +117,9 @@ def createPost():
             db.session.add(new_post)
             db.session.commit()
             postResult = Postschema.dump(Posts.query.all())
-            return jsonify(postResult)
             print("SUCCESS")
+            return jsonify(postResult)
+
         else:
             print("ERROR")
             return render_template('signup.html')
@@ -145,7 +146,8 @@ def deletePost():
                 db.session.delete(entry)
                 db.session.commit()
                 print("POST HAS BEEN DELETED")
-                postResult = Postschema.dump(Posts.query.all())
+                postResult = Postschema.dump(
+                    Posts.query.order_by(Posts.title).all())
                 return jsonify(postResult)
             else:
                 print("NO SUCCESFUL DELETE CHECK FIELDS")
@@ -226,7 +228,7 @@ def signup():
 
         except:
             print("Error in creating your acount, please try again")
-            return redirect(url_for('signup'))
+            return render_template('signup.html')
 
     return render_template('home.html')
 
