@@ -37,16 +37,15 @@ class UserSchema(Schema):
     id = fields.Int(dump_only=True)
     userName = fields.Str()
     email = fields.Str()
-    formatted_name = fields.Method("format_name", dump_only=True)
+    karma = fields.Int()
+    # formatted_name = fields.Method("format_name", dump_only=True)
 
     def format_name(self, Users):
-        return "{},{}".format(Users.userName, Users.email)
+        return "{},{},{}".format(Users.userName, Users.email, Users.karma)
 
 
 schema = UserSchema(many=True)
-result = schema.dump(Users.query.all())
-
-pprint(result)
+userResult = schema.dump(Users.query.all())
 
 
 class Posts(db.Model):
@@ -62,17 +61,40 @@ class Posts(db.Model):
     dt = Column('dateTime', db.String(100))
 
 
+class PostSchema(Schema):
+    id = fields.Int(dump_only=True)
+    title = fields.Str()
+    community = fields.Str()
+    Username = fields.Str()
+
+    def format_name(self, Posts):
+        return "{},{},{}".format(Posts.title, Posts.community, Posts.Username)
+
+
+Postschema = PostSchema(many=True)
+postResult = Postschema.dump(Posts.query.all())
+
 db.create_all()
 
 
 @app.route('/')
 def home():
-    return jsonify(result)
+    return render_template('home.html')
 
 
 @app.route('/account')
 def account():
     return render_template('signup.html')
+
+
+@app.route('/json/posts')
+def jsonPosts():
+    return jsonify(postResult)
+
+
+@app.route('/json/users')
+def jsonUsers():
+    return jsonify(userResult)
 
 
 @app.route('/createPost', methods=['GET', 'POST'])
@@ -94,6 +116,8 @@ def createPost():
         if Account is not None:
             db.session.add(new_post)
             db.session.commit()
+            postResult = Postschema.dump(Posts.query.all())
+            return jsonify(postResult)
             print("SUCCESS")
         else:
             print("ERROR")
@@ -121,7 +145,8 @@ def deletePost():
                 db.session.delete(entry)
                 db.session.commit()
                 print("POST HAS BEEN DELETED")
-                return render_template('home.html')
+                postResult = Postschema.dump(Posts.query.all())
+                return jsonify(postResult)
             else:
                 print("NO SUCCESFUL DELETE CHECK FIELDS")
                 return render_template('deletepost.html')
@@ -151,17 +176,23 @@ def retrievePost():
 
         if _title == "" and _community == "":  # retrieve all posts
             print(yes)
+            postResult = Postschema.dump(yes)
+            return jsonify(postResult)
 
         if _title == "":  # if title entry is blank look at community and output those
             print(entryCommunity)
-            return render_template('home.html')
+            postResult = Postschema.dump(entryCommunity)
+            return jsonify(postResult)
 
         if _community == "":  # if community is blank output title entries
             print(entry)
-            return render_template('home.html')
+            postResult = Postschema.dump(entry)
+            return jsonify(postResult)
+
         else:
             print(sortedCategory)  # else both fields are filled in
-            return render_template('home.html')
+            postResult = Postschema.dump(sortedCategory)
+            return jsonify(postResult)
 
     return render_template('retrievePost.html')
 
@@ -188,6 +219,10 @@ def signup():
             session.add(new_user)
             session.commit()
             session.close()
+            schema = UserSchema()
+            result = schema.dump(Users.query.filter_by(
+                userName=_username).first())
+            return jsonify(result)
 
         except:
             print("Error in creating your acount, please try again")
@@ -227,15 +262,17 @@ def updateEmail():
         _password = request.form['password']
         new_email = request.form['email']
 
-        try:
-            userExists = Users.query.filter_by(userName=_username).first()
-            if userExists.userName == _username and userExists.password == _password:
-                userExists.email = new_email
-                db.session.commit()
-                print('Email has been updated')
-                return render_template('home.html')
+        userExists = Users.query.filter_by(userName=_username).first()
+        if userExists.userName == _username and userExists.password == _password:
+            userExists.email = new_email
+            db.session.commit()
+            print('Email has been updated')
+            schema = UserSchema()
+            result = schema.dump(Users.query.filter_by(
+                userName=_username).first())
+            return jsonify(result)
 
-        except:
+        else:
             print(
                 "Username and password not found or do not match please check credentials")
     return render_template('updateEmail.html')
@@ -252,7 +289,10 @@ def deleteAcc():
                 db.session.delete(userExists)
                 db.session.commit()
                 print('Account has been deleted')
-                return render_template('home.html')
+                schema = UserSchema()
+                result = schema.dump(Users.query.filter_by(
+                    userName=_username).first())
+                return jsonify(result)
 
         except:
             print(
