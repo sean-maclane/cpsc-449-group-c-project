@@ -8,7 +8,6 @@ from sqlalchemy import inspect
 from marshmallow import Schema, fields, pprint
 import os
 
-
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_TRACK_MODIFCATIONS'] = False
