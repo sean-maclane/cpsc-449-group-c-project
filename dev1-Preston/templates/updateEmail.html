@@ -8,7 +8,7 @@
       href="https://fonts.googleapis.com/css?family=Roboto:400,700"
       rel="stylesheet"
     />
-    <title>Login</title>
+    <title>Update Email</title>
     <link
       rel="stylesheet"
       href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
@@ -110,8 +110,8 @@
   </head>
   <body>
     <div class="signup-form">
-      <form action="/login" method="POST">
-        <h2>Login Page</h2>
+      <form action="/updateEmail" method="POST">
+        <h2>Update Email</h2>
         <p class="lead">For project 1: CPSC 449</p>
         <div class="form-group">
           <div class="input-group">
@@ -138,10 +138,24 @@
             />
           </div>
         </div>
+        <div class="form-group">
+          <div class="input-group">
+            <span class="input-group-addon"
+              ><i class="fa fa-paper-plane"></i
+            ></span>
+            <input
+              type="email"
+              class="form-control"
+              name="email"
+              placeholder="New Email"
+              required="required"
+            />
+          </div>
+        </div>
 
         <div class="form-group">
           <button type="submit" class="btn btn-primary btn-block btn-lg">
-            Log in
+            Update Email
           </button>
         </div>
       </form>

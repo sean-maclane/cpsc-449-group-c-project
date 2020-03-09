@@ -8,7 +8,7 @@
       href="https://fonts.googleapis.com/css?family=Roboto:400,700"
       rel="stylesheet"
     />
-    <title>Login</title>
+    <title>Delete Post</title>
     <link
       rel="stylesheet"
       href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
@@ -110,9 +110,24 @@
   </head>
   <body>
     <div class="signup-form">
-      <form action="/login" method="POST">
-        <h2>Login Page</h2>
+      <form action="/deletePost" method="POST">
+        <h2>Delete Post</h2>
         <p class="lead">For project 1: CPSC 449</p>
+        <div class="form-group">
+          <div class="input-group">
+            <span class="input-group-addon"
+              ><i class="fa fa-paper-plane"></i
+            ></span>
+            <input
+              type="text"
+              class="form-control"
+              name="title"
+              placeholder="Title to be deleted"
+              required="required"
+            />
+          </div>
+        </div>
+
         <div class="form-group">
           <div class="input-group">
             <span class="input-group-addon"><i class="fa fa-user"></i></span>
@@ -120,12 +135,11 @@
               type="text"
               class="form-control"
               name="username"
-              placeholder="Username"
+              placeholder="username"
               required="required"
             />
           </div>
         </div>
-
         <div class="form-group">
           <div class="input-group">
             <span class="input-group-addon"><i class="fa fa-lock"></i></span>
@@ -133,7 +147,7 @@
               type="text"
               class="form-control"
               name="password"
-              placeholder="Password"
+              placeholder="password"
               required="required"
             />
           </div>
@@ -141,7 +155,7 @@
 
         <div class="form-group">
           <button type="submit" class="btn btn-primary btn-block btn-lg">
-            Log in
+            Delete Post
           </button>
         </div>
       </form>
