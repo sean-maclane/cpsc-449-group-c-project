@@ -198,7 +198,7 @@ def retrievePost():
     return render_template('retrievePost.html')
 
 
-# GET - recieves nothing, returns the signup page
+# GET - recieves nothing, returns signup page
 # POST - recieves new userdata, returns sucess/failure details
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -231,33 +231,34 @@ def signup():
             return {}, 201
         except:
             return {'error': 'There was an error processing your data'}, 409
-
     else: # it's a GET request
         return render_template('signup.html'), 200
 
-
+# GET - recieves nothing, returns login page
+# POST - recieves login data, returns sucess/failure details
 @app.route('/login', methods=['GET', 'POST'])
 def loginpage():
     if request.method == 'POST':
-        _username = request.form['username']
-        _password = request.form['password']
+        try: # read data & check for key errors, formatting, etc
+            login_data = request.get_json()
+            _username = login_data['username']
+            _password = login_data['password']
+        except:
+            return {'error': 'There was an error reading your data'}, 409
 
-        try:
+        try: # check login data against the database
             # retrieves row of info to look at
             userExists = Users.query.filter_by(userName=_username).first()
-
             if userExists.userName == _username and userExists.password == _password:
-                print("Login validated")
-
-                return render_template('home.html')
-
+                # Login validated
+                return {}, 201 # we need to adjust this in the future to keep the user logged in
             else:
-                print("User not valid")
-
+                return {'error': 'Login details invalid'}, 409
         except:
-            print('ERROR ERRROR')
+            return {'error': 'There was an error processing your data'}, 409
 
-    return render_template('loginpage.html')
+    else: # It's a GET request
+        return render_template('loginpage.html'), 200
 
 
 @app.route('/updateEmail', methods=['GET', 'POST'])
