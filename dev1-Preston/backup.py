@@ -7,6 +7,7 @@ from sqlalchemy.sql import func
 from sqlalchemy import inspect
 from marshmallow import Schema, fields, pprint
 import os
+import sys
 
 app = Flask(__name__)
 
@@ -260,28 +261,32 @@ def loginpage():
     else: # It's a GET request
         return render_template('loginpage.html'), 200
 
-
+# GET - recieves nothing, returns update email page
+# POST - recieves update request, returns sucess/failure details
 @app.route('/updateEmail', methods=['GET', 'POST'])
 def updateEmail():
     if request.method == 'POST':
-        _username = request.form['username']
-        _password = request.form['password']
-        new_email = request.form['email']
+        try: # read data & check for key errors, formatting, etc
+            update_email_data = request.get_json()
+            _username = update_email_data['username']
+            _password = update_email_data['password']
+            new_email = update_email_data['email']
+        except:
+            return {'error': 'There was an error reading your data'}, 409
 
+        # Validate login first
         userExists = Users.query.filter_by(userName=_username).first()
         if userExists.userName == _username and userExists.password == _password:
+            # Update the email
             userExists.email = new_email
             db.session.commit()
-            print('Email has been updated')
-            schema = UserSchema()
-            result = schema.dump(Users.query.filter_by(
-                userName=_username).first())
-            return jsonify(result)
+            # Email has been updated
+            return {}, 201
+        else: # login was invalid
+            return {'error': 'Login failed'}, 409
 
-        else:
-            print(
-                "Username and password not found or do not match please check credentials")
-    return render_template('updateEmail.html')
+    else: # It's a GET request
+        return render_template('updateEmail.html'), 200
 
 
 @app.route('/deleteAccount', methods=['GET', 'POST', 'DELETE'])

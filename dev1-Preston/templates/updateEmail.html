@@ -31,22 +31,22 @@
         border-color: #e1e1e1;
         border-radius: 0;
       }
-      .signup-form {
+      .update_email-form {
         width: 390px;
         margin: 0 auto;
         padding: 30px 0;
       }
-      .signup-form h2 {
+      .update_email-form h2 {
         color: #636363;
         margin: 0 0 15px;
         text-align: center;
       }
-      .signup-form .lead {
+      .update_email-form .lead {
         font-size: 14px;
         margin-bottom: 30px;
         text-align: center;
       }
-      .signup-form form {
+      .update_email-form form {
         border-radius: 1px;
         margin-bottom: 15px;
         background: #fff;
@@ -54,26 +54,26 @@
         box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
         padding: 30px;
       }
-      .signup-form .form-group {
+      .update_email-form .form-group {
         margin-bottom: 20px;
       }
-      .signup-form label {
+      .update_email-form label {
         font-weight: normal;
         font-size: 13px;
       }
-      .signup-form .form-control {
+      .update_email-form .form-control {
         min-height: 38px;
         box-shadow: none !important;
         border-width: 0 0 1px 0;
       }
-      .signup-form .input-group-addon {
+      .update_email-form .input-group-addon {
         max-width: 42px;
         text-align: center;
         background: none;
         border-width: 0 0 1px 0;
         padding-left: 5px;
       }
-      .signup-form .btn {
+      .update_email-form .btn {
         font-size: 16px;
         font-weight: bold;
         background: #19aa8d;
@@ -82,24 +82,24 @@
         min-width: 140px;
         outline: none !important;
       }
-      .signup-form .btn:hover,
-      .signup-form .btn:focus {
+      .update_email-form .btn:hover,
+      .update_email-form .btn:focus {
         background: #179b81;
       }
-      .signup-form a {
+      .update_email-form a {
         color: #19aa8d;
         text-decoration: none;
       }
-      .signup-form a:hover {
+      .update_email-form a:hover {
         text-decoration: underline;
       }
-      .signup-form .fa {
+      .update_email-form .fa {
         font-size: 21px;
       }
-      .signup-form .fa-paper-plane {
+      .update_email-form .fa-paper-plane {
         font-size: 17px;
       }
-      .signup-form .fa-check {
+      .update_email-form .fa-check {
         color: #fff;
         left: 9px;
         top: 18px;
@@ -109,8 +109,8 @@
     </style>
   </head>
   <body>
-    <div class="signup-form">
-      <form action="/updateEmail" method="POST">
+    <div class="update_email-form">
+      <form id="update_email_form">
         <h2>Update Email</h2>
         <p class="lead">For project 1: CPSC 449</p>
         <div class="form-group">
@@ -120,6 +120,7 @@
               type="text"
               class="form-control"
               name="username"
+              id="username"
               placeholder="Username"
               required="required"
             />
@@ -133,6 +134,7 @@
               type="text"
               class="form-control"
               name="password"
+              id="password"
               placeholder="Password"
               required="required"
             />
@@ -147,6 +149,7 @@
               type="email"
               class="form-control"
               name="email"
+              id="email"
               placeholder="New Email"
               required="required"
             />
@@ -160,5 +163,45 @@
         </div>
       </form>
     </div>
+
+    <script>
+      /*
+        The following script handles sending the form data in JSON format.
+        In writing this script, I made use of the Fetch API documentation at
+        developer.mozilla.org, as well as a tutorial video from dcode on YouTube.
+      */
+
+      const update_email_form = document.getElementById('update_email_form');
+      
+      // This code is triggered when the submit button is clicked
+      update_email_form.addEventListener('submit', function(e) {
+        e.preventDefault(); // prevent normal form submission
+
+        const update_email_data = new FormData(update_email_form);
+        
+        // The POST request to the server
+        fetch('/updateEmail', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(Object.fromEntries(update_email_data)),
+        })
+        .then((response) => response.json()) // recieve the response, translate from JSON to JS objects
+        .then((data) => {
+          // This means the POST request itself worked, not that the response was a success
+          console.log('Success:', data[0]);
+          if('error' in data) {
+            window.alert(data['error']); // Display the error sent from the server
+          } else {
+            window.location.replace('/'); // Redirect to the homepage on success
+          }
+        })
+        .catch((error) => {
+          // This means the POST request itself failed, not that the response was an error
+          console.error('Error:', error);
+        });
+      });
+    </script>
   </body>
 </html>
