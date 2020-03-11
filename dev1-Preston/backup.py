@@ -288,28 +288,31 @@ def updateEmail():
     else: # It's a GET request
         return render_template('updateEmail.html'), 200
 
-
+# GET - recieves nothing, returns delete account page
+# POST - recieves delete request, returns sucess/failure details
 @app.route('/deleteAccount', methods=['GET', 'POST', 'DELETE'])
 def deleteAcc():
     if request.method == 'POST':
-        _username = request.form['username']
-        _password = request.form['password']
-        try:
-            userExists = Users.query.filter_by(userName=_username).first()
-            if userExists.userName == _username and userExists.password == _password:
-                db.session.delete(userExists)
-                db.session.commit()
-                print('Account has been deleted')
-                schema = UserSchema()
-                result = schema.dump(Users.query.filter_by(
-                    userName=_username).first())
-                return jsonify(result)
-
+        try: # read data & check for key errors, formatting, etc
+            delete_account_data = request.get_json()
+            _username = delete_account_data['username']
+            _password = delete_account_data['password']
         except:
-            print(
-                'Error in deleting your account please use a valid username and password')
+            return {'error': 'There was an error reading your data'}, 409
 
-    return render_template('deleteAcc.html')
+        # Validate login first
+        userExists = Users.query.filter_by(userName=_username).first()
+        if userExists.userName == _username and userExists.password == _password:
+            # Delete the account
+            db.session.delete(userExists)
+            db.session.commit()
+            # Account has been deleted
+            return {}, 201
+        else:
+            return {'error': 'Login failed'}, 409
+
+    else: # It's a GET request
+        return render_template('deleteAcc.html'), 200
 
 
 if __name__ == "__main__":
