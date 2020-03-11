@@ -187,13 +187,21 @@
     </div>
 
     <script>
+      /*
+        The following script handles sending the form data in JSON format.
+        In writing this script, I made use of the Fetch API documentation at
+        developer.mozilla.org, as well as a tutorial video from dcode on YouTube.
+      */
+
       const signup_form = document.getElementById('signup_form');
       
+      // This code is triggered when the submit button is clicked
       signup_form.addEventListener('submit', function(e) {
-        e.preventDefault();
+        e.preventDefault(); // prevent normal form submission
 
         const signup_data = new FormData(signup_form);
         
+        // The POST request to the server
         fetch('/signup', {
           method: 'POST',
           headers: {
@@ -201,16 +209,18 @@
           },
           body: JSON.stringify(Object.fromEntries(signup_data)),
         })
-        .then((response) => {
-          if(response.ok) {
-            window.location.replace('/');
+        .then((response) => response.json()) // recieve the response, translate from JSON to JS objects
+        .then((data) => {
+          // This means the POST request itself worked, not that the response was a success
+          console.log('Success:', data[0]);
+          if('error' in data) {
+            window.alert(data['error']); // Display the error sent from the server
+          } else {
+            window.location.replace('/'); // Redirect to the homepage on success
           }
         })
-        .then((data) => {
-          console.log('Success:', data);
-          window.location.replace("/");
-        })
         .catch((error) => {
+          // This means the POST request itself failed, not that the response was an error
           console.error('Error:', error);
         });
       });

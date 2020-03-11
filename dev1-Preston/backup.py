@@ -198,16 +198,21 @@ def retrievePost():
     return render_template('retrievePost.html')
 
 
+# GET - recieves nothing, returns the signup page
+# POST - recieves new userdata, returns sucess/failure details
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
         signup_data = request.get_json()
 
-        _username = signup_data['username']
-        _email = signup_data['email']
-        _password = signup_data['password']
+        try: # read data & check for key errors, unreadable data, etc
+            _username = signup_data['username']
+            _email = signup_data['email']
+            _password = signup_data['password']
+        except:
+            return {'error': 'There was an error reading your data'}, 409
 
-        try:
+        try: # using the data, insert it into the SQL database
             # connects to sqlite.db file in current folder
             engine = create_engine('sqlite:///users.db', echo=True)
             db.metadata.create_all(bind=engine)  # creates the Users schema
@@ -223,15 +228,12 @@ def signup():
             session.commit()
             session.close()
             schema = UserSchema()
-            result = schema.dump(Users.query.filter_by(
-                userName=_username).first())
             return {}, 201
-
         except:
-            print("Error in creating your acount, please try again")
-            return render_template('signup.html'), 409
+            return {'error': 'There was an error processing your data'}, 409
 
-    return render_template('home.html'), 200
+    else: # it's a GET request
+        return render_template('signup.html'), 200
 
 
 @app.route('/login', methods=['GET', 'POST'])
