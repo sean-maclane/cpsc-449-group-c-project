@@ -201,9 +201,11 @@ def retrievePost():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
-        _username = request.form['username']
-        _email = request.form['email']
-        _password = request.form['password']
+        signup_data = request.get_json()
+
+        _username = signup_data['username']
+        _email = signup_data['email']
+        _password = signup_data['password']
 
         try:
             # connects to sqlite.db file in current folder
@@ -215,7 +217,7 @@ def signup():
             session = Session()
 
             new_user = Users(userName=_username,
-                             email=_email, password=_password, karma=0)
+                                email=_email, password=_password, karma=0)
 
             session.add(new_user)
             session.commit()
@@ -223,13 +225,13 @@ def signup():
             schema = UserSchema()
             result = schema.dump(Users.query.filter_by(
                 userName=_username).first())
-            return jsonify(result)
+            return {}, 201
 
         except:
             print("Error in creating your acount, please try again")
-            return render_template('signup.html')
+            return render_template('signup.html'), 409
 
-    return render_template('home.html')
+    return render_template('home.html'), 200
 
 
 @app.route('/login', methods=['GET', 'POST'])
