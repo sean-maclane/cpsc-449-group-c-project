@@ -67,8 +67,10 @@ process1_nickname: shell_command_to_run_process1
 process2_nickname: shell_command_to_run_process2
 
 Actual contents of the PROCFILE:
-main_test: gunicorn3 -w 4 -b 127.0.0.1:8000 main:app
-backup_test: gunicorn3 -w 4 -b 127.0.0.1:8000 backup:app
+main_test: gunicorn3 -w 4 -b 127.0.0.1:8000 --access-logfile gunicorn3_main main:app
+
+Start 3 instances of each microservice (Procfile has to be present):
+foreman start -c
 
 
 --------------
@@ -100,7 +102,32 @@ All reqests coming to the application's votes page will be redirected to a proxi
 The policy of those redirects would be to the server which has the least number of connections. Host information from the original request will be passed, similar to backend app.
 
 Once the CADDYFILE (with the above content) is in the $APPHOME directory, it can be started with the following command:
-ulimit -n 8192 && caddy
+$ ulimit -n 8192 && caddy
+
+
+Modifying ulimit (in case the above command gives an error on Linux):
+
+    Check current soft limit
+    $ ulimit -n
+    
+    Check current hard limit
+    $ ulimit -Hn
+    
+    Add the below lines in /etc/security/limits.conf at the end:
+    your_username hard nofile 16384
+    your_username soft nofile 16384
+    
+    Set (or uncomment and set) DefaultLimitNOFILE=16384 in files:
+    /etc/systemd/user.conf
+    /etc/systemd/system.conf
+    
+    Add the line:
+    session required pam_limits.so
+    to files:
+    /etc/pam.d/common-session
+    /etc/pam.d/common-session-noninteractive
+    
+    Restart PC
 
 
 -------------
@@ -112,10 +139,8 @@ Orchestration will be carries out with foreman.
 Before carrying out orchestration, the PROCFILE has to be updated with the caddy command.
 
 Contents of the PROCFILE:
-
-main_test: gunicorn3 -w 4 -b 127.0.0.1:8000 main:app
-backup_test: gunicorn3 -w 4 -b 127.0.0.1:8000 backup:app
+main_test: gunicorn3 -w 4 -b 127.0.0.1:8000 --access-logfile gunicorn3_main main:app
 caddy: ulimit -n 8192 && caddy
 
-Orchestration can now be run like:
-foreman start -m main_test=3, backup_test=3, caddy=1
+Orchestration can now be run like, which starts all processes
+foreman start -m all=1
