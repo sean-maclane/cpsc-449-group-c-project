@@ -2,11 +2,11 @@ localhost:8000/votes {
     proxy / localhost:8100 localhost:8200 localhost:8300 {
         policy least_conn
         transparent
-    }        
+    }
 }
 
 localhost:8000/posts {
-    proxy / localhost:8101 localhost:8201 localhost:8301 {
+	proxy / localhost:8101 localhost:8201 localhost:8301 {
         policy least_conn
         transparent
     }
