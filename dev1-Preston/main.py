@@ -57,6 +57,15 @@ def home():
 def account():
     return render_template('signup.html')
 
+@app.route('/posts')
+def posts():
+    return "<h1>Welcome to the POSTS homepage !!</h1>"
+
+
+@app.route('/votes')
+def votes():
+    return "<h1>Welcome to the VOTES homepage !!</h1>"
+
 
 @app.route('/createPost', methods=['GET', 'POST'])
 def createPost():
