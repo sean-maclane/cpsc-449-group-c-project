@@ -2,36 +2,36 @@
 GitHub Operations
 -----------------
 
-git --version
-git config --global user.name "Saurabh Mishra"
-git config --global user.email "m.saura8h@gmail.com"
-git config --global core.autocrlf
-git config --list
+$ git --version                         # Check current git version
+$ git config --global user.name "Firstname Lastname"
+$ git config --global user.email "username@domain.com"
+$ git config --global core.autocrlf     # Unix line endings
+$ git config --list                     # Verify all configurations
 
-cd project_directory
-git init
-git remote add origin https://github.com/sean-maclane/cpsc-449-group-c-project-1
-git pull origin master
+$ cd project_directory
+$ git init
+$ git remote add origin https://github.com/sean-maclane/cpsc-449-group-c-project-1
+$ git pull origin master
 <<Enter github username and password>>
 
 
 -----------------------------------
 Python and Application Dependencies
 -----------------------------------
-sudo apt install python3-pip
-pip3 install flask
-pip3 install marshmallow
-python3 -m flask --version
+$ sudo apt install python3-pip
+$ pip3 install flask
+$ pip3 install marshmallow
+$ python3 -m flask --version
 
 
 -------------------
 Running the Project
 -------------------
 
-cd project_directory/reddit-like/dev1-Preston/
-export FLASK_ENV=development
-export FLASK_APP=app3.py
-flask run
+$ cd project_directory/reddit-like/dev1-Preston/
+$ export FLASK_ENV=development
+$ export FLASK_APP=app3.py
+$ flask run
 
 <<Open the web browser and go to URL>>
 http://localhost:5000/
@@ -41,23 +41,20 @@ http://localhost:5000/
 Operational Dependencies
 ------------------------
 
-sudo apt install gunicorn3
-curl https://getcaddy.com | bash -s personal
-sudo apt install ruby-foreman
+$ sudo apt install gunicorn3
+$ curl https://getcaddy.com | bash -s personal
+$ sudo apt install ruby-foreman
 
 
 ----------------------
 WSGI Server Deployment
 ----------------------
 
-# Test gunicorn3 - (gunicorn3 py3_filename:app) :
-gunicorn3 main:app
-gunicorn3 backup:app
+Test gunicorn3 - (gunicorn3 py3_filename:app) :
+$ gunicorn3 main:app
 
-
-# Run a Flask application with 4 worker processes binding to localhost port 8000 (-b 127.0.0.1:8000)
-gunicorn3 -w 4 -b 127.0.0.1:8000 main:app
-gunicorn3 -w 4 -b 127.0.0.1:8000 backup:app
+Run a Flask application with 4 worker processes binding to localhost port 8000 (-b 127.0.0.1:8000)
+$ gunicorn3 -w 4 -b 127.0.0.1:8000 main:app
 
 <<Open the web browser and go to URL>>
 127.0.0.1:8000
@@ -70,7 +67,7 @@ Actual contents of the PROCFILE:
 main_test: gunicorn3 -w 4 -b 127.0.0.1:8000 --access-logfile gunicorn3_main main:app
 
 Start 3 instances of each microservice (Procfile has to be present):
-foreman start -c
+$ foreman start -c
 
 
 --------------
@@ -143,4 +140,4 @@ main_test: gunicorn3 -w 4 -b 127.0.0.1:8000 --access-logfile gunicorn3_main main
 caddy: ulimit -n 8192 && caddy
 
 Orchestration can now be run like, which starts all processes
-foreman start -m all=1
+$ foreman start -m all=1
