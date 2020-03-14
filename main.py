@@ -97,6 +97,58 @@ def jsonUsers():
     return jsonify(userResult)
 
 
+@app.route('/incrementKarma', methods=['GET', 'POST', 'PUT'])
+def incrementKarma():
+    if request.method == 'POST':
+        _username = request.form['username']
+        _password = request.form['password']
+        userExists = Users.query.filter_by(userName=_username).first()
+
+        if userExists is not None:
+            if userExists.userName == _username and userExists.password == _password:
+                userExists.karma += 1
+                db.session.commit()
+                print("SUCCESS")
+                print(userExists.karma)
+
+                schema = UserSchema()
+                result = schema.dump(Users.query.filter_by(
+                    userName=_username).first())
+
+                return jsonify(result)
+        else:
+            print("USER doesnt exists")
+            return render_template('signup.html')
+
+    return render_template('incrementKarma.html')
+
+
+@app.route('/decrementKarma', methods=['GET', 'POST', 'PUT'])
+def decrementKarma():
+    if request.method == 'POST':
+        _username = request.form['username']
+        _password = request.form['password']
+        userExists = Users.query.filter_by(userName=_username).first()
+
+        if userExists is not None:
+            if userExists.userName == _username and userExists.password == _password:
+                userExists.karma -= 1
+                db.session.commit()
+                print("SUCCESS")
+                print(userExists.karma)
+
+                schema = UserSchema()
+                result = schema.dump(Users.query.filter_by(
+                    userName=_username).first())
+
+                return jsonify(result)
+        else:
+            print("USER doesnt exists")
+            return render_template('signup.html')
+
+    return render_template('decrementKarma.html')
+
+
 @app.route('/createPost', methods=['GET', 'POST'])
 def createPost():
     postform = Posts()
@@ -257,7 +309,7 @@ def loginpage():
     return render_template('loginpage.html')
 
 
-@app.route('/updateEmail', methods=['GET', 'POST'])
+@app.route('/updateEmail', methods=['GET', 'POST', 'PUT'])
 def updateEmail():
     if request.method == 'POST':
         _username = request.form['username']
