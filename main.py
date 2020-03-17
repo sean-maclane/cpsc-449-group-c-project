@@ -100,73 +100,94 @@ def jsonUsers():
 
 ''' Posting Apps '''
 
+# GET - recieves nothing, returns create post page
+# POST - recieves new post data, returns sucess/failure details
 @app.route('/createPost', methods=['GET', 'POST'])
 def createPost():
-    postform = Posts()
     if request.method == 'POST':
-        _title = request.form['title']
-        _community = request.form['community']
-        _text = request.form['text']
-        _username = request.form['username']
-        _url = request.form['url']
+        create_post_data = request.get_json()
+
+        try: # read data & check for key errors, unreadable data, etc
+            _title = create_post_data['title']
+            _community = create_post_data['community']
+            _text = create_post_data['text']
+            _username = create_post_data['username']
+            _url = create_post_data['url']
+        except:
+            return {'error': 'There was an error reading your data'}, 409
+
         holder = datetime.now()
         timeCreated = datetime.strftime(
             holder, '%Y/%m/%d %H.%M%p')  # creates time as string
 
+        # Setup post and check username
         new_post = Posts(title=_title, community=_community,
                          text=_text, Username=_username, url=_url, dt=timeCreated)
         Account = Users.query.filter_by(userName=_username).first()
         if Account is not None:
+            # add the post to the db
             db.session.add(new_post)
             db.session.commit()
-            postResult = Postschema.dump(Posts.query.all())
-            print("SUCCESS")
-            return jsonify(postResult)
+            # post added
+            
+            #postResult = Postschema.dump(Posts.query.all())
+            #print("SUCCESS")
+            return {}, 201
+        else: # Username or post was invalid
+            return  {'error': 'There was a problem with your post or username'}, 409
 
-        else:
-            print("ERROR")
-            return render_template('signup.html')
+    else: # it's a GET request
+        return render_template('createPost.html'), 200
 
-        return render_template('home.html')
-
-    return render_template('createPost.html')
-
-
+# GET - recieves nothing, returns delete post page
+# POST - recieves delete request, returns sucess/failure details
+# DELETE - ?
 @app.route('/deletePost', methods=['GET', 'POST', 'DELETE'])
 def deletePost():
     if request.method == 'POST':
-        _title = request.form['title']  # title to be deleted
-        _username = request.form['username']  # validate info
-        _password = request.form['password']  # validate info
+        try: # read data & check for key errors, formatting, etc
+            delete_post_data = request.get_json()
+            _title = delete_post_data['title']  # title to be deleted
+            _username = delete_post_data['username']  # validate info
+            _password = delete_post_data['password']  # validate info
+        except:
+            return {'error': 'There was an error reading your data'}, 409
 
         # retrieves all posts relative to the user
         entry = Posts.query.filter_by(Username=_username, title=_title).first()
-
         userExists = Users.query.filter_by(userName=_username).first()
 
         if userExists is not None:  # checks if user exists helps redirect 404 error
             if userExists.userName == _username and userExists.password == _password:  # validate
+                # Delete the post
                 db.session.delete(entry)
                 db.session.commit()
-                print("POST HAS BEEN DELETED")
-                postResult = Postschema.dump(
-                    Posts.query.order_by(Posts.title).all())
-                return jsonify(postResult)
+                #print("POST HAS BEEN DELETED")
+                #postResult = Postschema.dump(
+                #    Posts.query.order_by(Posts.title).all())
+                return {}, 201
             else:
-                print("NO SUCCESFUL DELETE CHECK FIELDS")
-                return render_template('deletepost.html')
+                #print("NO SUCCESFUL DELETE CHECK FIELDS")
+                return {'error': 'Post deletion failed'}, 409
         else:
-            print("User does not exist")
-            return render_template('signup.html')
+            #print("User does not exist")
+            return {'error': 'User does not exist'}, 409
 
-    return render_template('deletepost.html')
+    else: # it's a GET or DELETE request
+        return render_template('deletepost.html'), 200
 
-
+# GET - recieves nothing, returns retrieve post page
+# POST - recieves retrieve post request, returns post data
 @app.route('/retrievePost', methods=['GET', 'POST'])
 def retrievePost():
     if request.method == 'POST':
-        _title = request.form['title']
-        _community = request.form['community']
+        try: # read data & check for key errors, formatting, etc
+            retrieve_post_data = request.get_json()
+
+            _title = retrieve_post_data['title']
+            _community = retrieve_post_data['community']
+        except:
+            return {'error': 'There was an error reading your data'}, 409
 
         entry = Posts.query.filter_by(title=_title).all()
         entryCommunity = Posts.query.filter_by(community=_community).all()
@@ -180,26 +201,27 @@ def retrievePost():
         yes = Posts.query.options(load_only(*fields)).all()
 
         if _title == "" and _community == "":  # retrieve all posts
-            print(yes)
+            #print(yes)
             postResult = Postschema.dump(yes)
-            return jsonify(postResult)
+            return jsonify(postResult), 201
 
         if _title == "":  # if title entry is blank look at community and output those
-            print(entryCommunity)
+            #print(entryCommunity)
             postResult = Postschema.dump(entryCommunity)
-            return jsonify(postResult)
+            return jsonify(postResult), 201
 
         if _community == "":  # if community is blank output title entries
-            print(entry)
+            #print(entry)
             postResult = Postschema.dump(entry)
-            return jsonify(postResult)
+            return jsonify(postResult), 201
 
-        else:
-            print(sortedCategory)  # else both fields are filled in
-            postResult = Postschema.dump(sortedCategory)
-            return jsonify(postResult)
+        # Both fields are filled in
+        #print(sortedCategory)  
+        postResult = Postschema.dump(sortedCategory)
+        return jsonify(postResult), 201
 
-    return render_template('retrievePost.html')
+    else: # it's a GET request
+        return render_template('retrievePost.html'), 200
 
 ''' User Account Aps '''
 

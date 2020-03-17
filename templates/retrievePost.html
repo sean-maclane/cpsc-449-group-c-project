@@ -110,7 +110,7 @@
   </head>
   <body>
     <div class="signup-form">
-      <form action="/retrievePost" method="POST">
+      <form id="retrieve_post_form">
         <h2>Retrieve Post</h2>
         <p class="lead">For project 1: CPSC 449</p>
         <div class="form-group">
@@ -122,6 +122,7 @@
               type="text"
               class="form-control"
               name="title"
+              id="title"
               placeholder="title"
             />
           </div>
@@ -134,17 +135,59 @@
               type="text"
               class="form-control"
               name="community"
+              id="community"
               placeholder="community"
             />
           </div>
         </div>
 
         <div class="form-group">
-          <button type="submit" class="btn btn-primary btn-block btn-lg">
+          <button type="submit" id="submit" class="btn btn-primary btn-block btn-lg">
             Retrieve Post
           </button>
         </div>
       </form>
     </div>
+
+    <script>
+      /*
+        The following script handles sending the form data in JSON format.
+        In writing this script, I made use of the Fetch API documentation at
+        developer.mozilla.org, as well as a tutorial video from dcode on YouTube.
+      */
+
+      const retrieve_post_form = document.getElementById('retrieve_post_form');
+      
+      // This code is triggered when the submit button is clicked
+      retrieve_post_form.addEventListener('submit', function(e) {
+        e.preventDefault(); // prevent normal form submission
+
+        const retrieve_post_data = new FormData(retrieve_post_form);
+        
+        // The POST request to the server
+        fetch('/retrievePost', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(Object.fromEntries(retrieve_post_data)),
+        })
+        .then((response) => response.json()) // recieve the response, translate from JSON to JS objects
+        .then((data) => {
+          // This means the POST request itself worked, not that the response was a success
+          console.log('Success:', data[0]);
+          if('error' in data) {
+            window.alert(data['error']); // Display the error sent from the server
+          } else {
+            window.alert(data); // Display result
+            window.location.replace('/'); // Redirect to the homepage on success
+          }
+        })
+        .catch((error) => {
+          // This means the POST request itself failed, not that the response was an error
+          console.error('Error:', error);
+        });
+      });
+    </script>
   </body>
 </html>
