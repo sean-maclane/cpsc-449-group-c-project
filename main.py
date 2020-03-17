@@ -230,9 +230,10 @@ def retrievePost():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
-        signup_data = request.get_json()
+        # read data & check for key errors, unreadable data, etc
+        try:
+            signup_data = request.get_json()
 
-        try: # read data & check for key errors, unreadable data, etc
             _username = signup_data['username']
             _email = signup_data['email']
             _password = signup_data['password']
@@ -244,12 +245,11 @@ def signup():
             engine = create_engine('sqlite:///users.db', echo=True)
             db.metadata.create_all(bind=engine)  # creates the Users schema
 
-            # creates a object to store info into the database
+            # creates an object to store info into the database
             Session = sessionmaker(bind=engine)
             session = Session()
 
-            new_user = Users(userName=_username,
-                                email=_email, password=_password, karma=0)
+            new_user = Users(userName=_username, email=_email, password=_password, karma=0)
 
             session.add(new_user)
             session.commit()
@@ -348,10 +348,10 @@ def deleteAcc():
 @app.route('/incrementKarma', methods=['GET', 'POST', 'PUT'])
 def incrementKarma():
     if request.method == 'POST':
-        increment_karma_data = request.get_json()
-
         try: # Read input & check for key errors, unreadable data, etc
-            _username = increment_karma_datam['username']
+            increment_karma_data = request.get_json()
+
+            _username = increment_karma_data['username']
             _password = increment_karma_data['password']
         except:
             return {'error': 'There was an error reading your data'}, 409
@@ -382,7 +382,7 @@ def decrementKarma():
         decrement_karma_data = request.get_json()
 
         try: # Read input & check for key errors, unreadable data, etc
-            _username = decrement_karma_datam['username']
+            _username = decrement_karma_data['username']
             _password = decrement_karma_data['password']
         except:
             return {'error': 'There was an error reading your data'}, 409
