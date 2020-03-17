@@ -110,7 +110,7 @@
   </head>
   <body>
     <div class="signup-form">
-      <form action="/decrementKarma" method="POST">
+      <form id="decrement_karma">
         <h2>Decrement karma</h2>
         <p class="lead">For project 1: CPSC 449</p>
         <div class="form-group">
@@ -120,6 +120,7 @@
               type="text"
               class="form-control"
               name="username"
+              id="username"
               placeholder="Username"
               required="required"
             />
@@ -133,6 +134,7 @@
               type="text"
               class="form-control"
               name="password"
+              id="password"
               placeholder="Password"
               required="required"
             />
@@ -146,5 +148,45 @@
         </div>
       </form>
     </div>
+
+    <script>
+      /*
+        The following script handles sending the form data in JSON format.
+        In writing this script, I made use of the Fetch API documentation at
+        developer.mozilla.org, as well as a tutorial video from dcode on YouTube.
+      */
+
+      const decrement_karma_form = document.getElementById('decrement_karma_form');
+      
+      // This code is triggered when the submit button is clicked
+      decrement_karma_form.addEventListener('submit', function(e) {
+        e.preventDefault(); // prevent normal form submission
+
+        const decrement_karma_data = new FormData(decrement_karma_form);
+        
+        // The POST request to the server
+        fetch('/decrementKarma', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(Object.fromEntries(decrement_karma_data)),
+        })
+        .then((response) => response.json()) // recieve the response, translate from JSON to JS objects
+        .then((data) => {
+          // This means the POST request itself worked, not that the response was a success
+          console.log('Success:', data[0]);
+          if('error' in data) {
+            window.alert(data['error']); // Display the error sent from the server
+          } else {
+            window.location.replace('/'); // Redirect to the homepage on success
+          }
+        })
+        .catch((error) => {
+          // This means the POST request itself failed, not that the response was an error
+          console.error('Error:', error);
+        });
+      });
+    </script>
   </body>
 </html>

@@ -86,7 +86,6 @@ def home():
 def account():
     return render_template('signup.html')
 
-
 @app.route('/json/posts')
 def jsonPosts():
     return jsonify(postResult)
@@ -96,57 +95,66 @@ def jsonPosts():
 def jsonUsers():
     return jsonify(userResult)
 
-
+# GET - recieves nothing, returns increment karma page
+# POST - recieves request to increment karma, returns sucess/failure details
+# PUT - ?
 @app.route('/incrementKarma', methods=['GET', 'POST', 'PUT'])
 def incrementKarma():
     if request.method == 'POST':
-        _username = request.form['username']
-        _password = request.form['password']
-        userExists = Users.query.filter_by(userName=_username).first()
+        increment_karma_data = request.get_json()
 
+        try: # Read input & check for key errors, unreadable data, etc
+            _username = increment_karma_datam['username']
+            _password = increment_karma_data['password']
+        except:
+            return {'error': 'There was an error reading your data'}, 409
+        
+        # Validate login first
+        userExists = Users.query.filter_by(userName=_username).first()
         if userExists is not None:
             if userExists.userName == _username and userExists.password == _password:
+                # Update the karma
                 userExists.karma += 1
                 db.session.commit()
-                print("SUCCESS")
+                # Karma has been updated
                 print(userExists.karma)
-
-                schema = UserSchema()
-                result = schema.dump(Users.query.filter_by(
-                    userName=_username).first())
-
-                return jsonify(result)
+                return {}, 201
         else:
-            print("USER doesnt exists")
-            return render_template('signup.html')
+            return {'error': 'Login failed'}, 409
 
-    return render_template('incrementKarma.html')
+    else: # it's a GET or PUT request
+        return render_template('incrementKarma.html'), 200
 
 
+# GET - recieves nothing, returns decrement karma page
+# POST - recieves request to decrement karma, returns sucess/failure details
+# PUT - ?
 @app.route('/decrementKarma', methods=['GET', 'POST', 'PUT'])
 def decrementKarma():
     if request.method == 'POST':
-        _username = request.form['username']
-        _password = request.form['password']
-        userExists = Users.query.filter_by(userName=_username).first()
+        decrement_karma_data = request.get_json()
 
+        try: # Read input & check for key errors, unreadable data, etc
+            _username = decrement_karma_datam['username']
+            _password = decrement_karma_data['password']
+        except:
+            return {'error': 'There was an error reading your data'}, 409
+        
+        # Validate login first
+        userExists = Users.query.filter_by(userName=_username).first()
         if userExists is not None:
             if userExists.userName == _username and userExists.password == _password:
+                # Update the karma
                 userExists.karma -= 1
                 db.session.commit()
-                print("SUCCESS")
+                # Karma has been updated
                 print(userExists.karma)
-
-                schema = UserSchema()
-                result = schema.dump(Users.query.filter_by(
-                    userName=_username).first())
-
-                return jsonify(result)
+                return {}, 201
         else:
-            print("USER doesnt exists")
-            return render_template('signup.html')
+            return {'error': 'Login failed'}, 409
 
-    return render_template('decrementKarma.html')
+    else: # it's a GET or PUT request
+        return render_template('decrementKarma.html'), 200
 
 
 @app.route('/createPost', methods=['GET', 'POST'])
@@ -250,6 +258,7 @@ def retrievePost():
 
     return render_template('retrievePost.html')
 
+''' User Account Aps '''
 
 # GET - recieves nothing, returns signup page
 # POST - recieves new userdata, returns sucess/failure details
