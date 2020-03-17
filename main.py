@@ -11,11 +11,12 @@ import os
 
 app = Flask(__name__)
 
+''' Database setup '''
+
 app.config['SQLALCHEMY_TRACK_MODIFCATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_BINDS'] = {'posts': 'sqlite:///posts.db'}
 db = SQLAlchemy(app)
-
 
 class Users(db.Model):
     __tablename__ = "users"
@@ -77,6 +78,8 @@ db.create_all()
 postResult = Postschema.dump(Posts.query.all())
 userResult = schema.dump(Users.query.all())
 
+''' Set up simple redirects '''
+
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -94,6 +97,8 @@ def jsonPosts():
 @app.route('/json/users')
 def jsonUsers():
     return jsonify(userResult)
+
+''' Posting Apps '''
 
 @app.route('/createPost', methods=['GET', 'POST'])
 def createPost():
