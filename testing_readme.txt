@@ -1,6 +1,7 @@
 It is assumed for this guide that you have all the correct dependencies installed (python, etc)  
 
-To avoid problems, delete users.db and posts.db before each test
+To avoid problems, delete users.db and posts.db before each test.
+Also, run the posts test after the user accounts test.
 
 To run the tests, first start up the server (instructions for windows at this time):
     1. in powershell, run:
@@ -9,4 +10,4 @@ To run the tests, first start up the server (instructions for windows at this ti
         flask run
     2. in powershell, run:
         tavern-ci test_user_account.tavern.yaml
-        tavern-ci test_posting.tavern.yaml
+        tavern-ci test_posts.tavern.yaml

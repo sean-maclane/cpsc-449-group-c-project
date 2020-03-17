@@ -56,7 +56,7 @@ class Posts(db.Model):
     title = Column('title', db.String(100))
     community = Column('community', db.String(100))
     text = Column('text', db.String(100))
-    Username = Column('Username', db.String(100))
+    username = Column('username', db.String(100))
     url = Column('url', db.String(100),  nullable=True)
     dt = Column('dateTime', db.String(100))
 
@@ -65,10 +65,11 @@ class PostSchema(Schema):
     id = fields.Int(dump_only=True)
     title = fields.Str()
     community = fields.Str()
-    Username = fields.Str()
+    text = fields.Str()
+    username = fields.Str()
 
     def format_name(self, Posts):
-        return "{},{},{}".format(Posts.title, Posts.community, Posts.Username)
+        return "{},{},{},{}".format(Posts.title, Posts.community, Posts.username, Posts.text)
 
 
 Postschema = PostSchema(many=True)
@@ -122,7 +123,7 @@ def createPost():
 
         # Setup post and check username
         new_post = Posts(title=_title, community=_community,
-                         text=_text, Username=_username, url=_url, dt=timeCreated)
+                         text=_text, username=_username, url=_url, dt=timeCreated)
         Account = Users.query.filter_by(userName=_username).first()
         if Account is not None:
             # add the post to the db
@@ -154,7 +155,7 @@ def deletePost():
             return {'error': 'There was an error reading your data'}, 409
 
         # retrieves all posts relative to the user
-        entry = Posts.query.filter_by(Username=_username, title=_title).first()
+        entry = Posts.query.filter_by(username=_username, title=_title).first()
         userExists = Users.query.filter_by(userName=_username).first()
 
         if userExists is not None:  # checks if user exists helps redirect 404 error
@@ -175,6 +176,7 @@ def deletePost():
 
     else: # it's a GET or DELETE request
         return render_template('deletepost.html'), 200
+
 
 # GET - recieves nothing, returns retrieve post page
 # POST - recieves retrieve post request, returns post data
@@ -197,7 +199,7 @@ def retrievePost():
         sortedCategory = Posts.query.filter(
             and_(Posts.title == _title, Posts.community == _community)).all()
 
-        fields = ['title', 'community', 'Username']
+        fields = ['title', 'community', 'text', 'username']
         yes = Posts.query.options(load_only(*fields)).all()
 
         if _title == "" and _community == "":  # retrieve all posts
@@ -218,12 +220,12 @@ def retrievePost():
         # Both fields are filled in
         #print(sortedCategory)  
         postResult = Postschema.dump(sortedCategory)
-        return jsonify(postResult), 201
+        return jsonify(postResult[0]), 201
 
     else: # it's a GET request
         return render_template('retrievePost.html'), 200
 
-''' User Account Aps '''
+''' User Account Apps '''
 
 # GET - recieves nothing, returns signup page
 # POST - recieves new userdata, returns sucess/failure details

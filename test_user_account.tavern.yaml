@@ -117,7 +117,7 @@ stages:
 
 ---
   
-test_name: Check invalid inputs TODO - add login, delete account, update email, increment karma, and decrement karma
+test_name: Check invalid inputs, needs changes in dev before this works TODO - add login, delete account, update email, increment karma, and decrement karma
 stages:
   - name: Signup duplicate username
     request:
