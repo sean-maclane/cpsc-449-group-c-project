@@ -95,68 +95,6 @@ def jsonPosts():
 def jsonUsers():
     return jsonify(userResult)
 
-# GET - recieves nothing, returns increment karma page
-# POST - recieves request to increment karma, returns sucess/failure details
-# PUT - ?
-@app.route('/incrementKarma', methods=['GET', 'POST', 'PUT'])
-def incrementKarma():
-    if request.method == 'POST':
-        increment_karma_data = request.get_json()
-
-        try: # Read input & check for key errors, unreadable data, etc
-            _username = increment_karma_datam['username']
-            _password = increment_karma_data['password']
-        except:
-            return {'error': 'There was an error reading your data'}, 409
-        
-        # Validate login first
-        userExists = Users.query.filter_by(userName=_username).first()
-        if userExists is not None:
-            if userExists.userName == _username and userExists.password == _password:
-                # Update the karma
-                userExists.karma += 1
-                db.session.commit()
-                # Karma has been updated
-                print(userExists.karma)
-                return {}, 201
-        else:
-            return {'error': 'Login failed'}, 409
-
-    else: # it's a GET or PUT request
-        return render_template('incrementKarma.html'), 200
-
-
-# GET - recieves nothing, returns decrement karma page
-# POST - recieves request to decrement karma, returns sucess/failure details
-# PUT - ?
-@app.route('/decrementKarma', methods=['GET', 'POST', 'PUT'])
-def decrementKarma():
-    if request.method == 'POST':
-        decrement_karma_data = request.get_json()
-
-        try: # Read input & check for key errors, unreadable data, etc
-            _username = decrement_karma_datam['username']
-            _password = decrement_karma_data['password']
-        except:
-            return {'error': 'There was an error reading your data'}, 409
-        
-        # Validate login first
-        userExists = Users.query.filter_by(userName=_username).first()
-        if userExists is not None:
-            if userExists.userName == _username and userExists.password == _password:
-                # Update the karma
-                userExists.karma -= 1
-                db.session.commit()
-                # Karma has been updated
-                print(userExists.karma)
-                return {}, 201
-        else:
-            return {'error': 'Login failed'}, 409
-
-    else: # it's a GET or PUT request
-        return render_template('decrementKarma.html'), 200
-
-
 @app.route('/createPost', methods=['GET', 'POST'])
 def createPost():
     postform = Posts()
@@ -376,6 +314,67 @@ def deleteAcc():
 
     else: # It's a GET request
         return render_template('deleteAcc.html'), 200
+
+# GET - recieves nothing, returns increment karma page
+# POST - recieves request to increment karma, returns sucess/failure details
+# PUT - ?
+@app.route('/incrementKarma', methods=['GET', 'POST', 'PUT'])
+def incrementKarma():
+    if request.method == 'POST':
+        increment_karma_data = request.get_json()
+
+        try: # Read input & check for key errors, unreadable data, etc
+            _username = increment_karma_datam['username']
+            _password = increment_karma_data['password']
+        except:
+            return {'error': 'There was an error reading your data'}, 409
+        
+        # Validate login first
+        userExists = Users.query.filter_by(userName=_username).first()
+        if userExists is not None:
+            if userExists.userName == _username and userExists.password == _password:
+                # Update the karma
+                userExists.karma += 1
+                db.session.commit()
+                # Karma has been updated
+                print(userExists.karma)
+                return {}, 201
+        else:
+            return {'error': 'Login failed'}, 409
+
+    else: # it's a GET or PUT request
+        return render_template('incrementKarma.html'), 200
+
+
+# GET - recieves nothing, returns decrement karma page
+# POST - recieves request to decrement karma, returns sucess/failure details
+# PUT - ?
+@app.route('/decrementKarma', methods=['GET', 'POST', 'PUT'])
+def decrementKarma():
+    if request.method == 'POST':
+        decrement_karma_data = request.get_json()
+
+        try: # Read input & check for key errors, unreadable data, etc
+            _username = decrement_karma_datam['username']
+            _password = decrement_karma_data['password']
+        except:
+            return {'error': 'There was an error reading your data'}, 409
+        
+        # Validate login first
+        userExists = Users.query.filter_by(userName=_username).first()
+        if userExists is not None:
+            if userExists.userName == _username and userExists.password == _password:
+                # Update the karma
+                userExists.karma -= 1
+                db.session.commit()
+                # Karma has been updated
+                print(userExists.karma)
+                return {}, 201
+        else:
+            return {'error': 'Login failed'}, 409
+
+    else: # it's a GET or PUT request
+        return render_template('decrementKarma.html'), 200
 
 
 if __name__ == "__main__":
