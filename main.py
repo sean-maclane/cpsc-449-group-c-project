@@ -251,14 +251,21 @@ def retrievePost():
     return render_template('retrievePost.html')
 
 
+# GET - recieves nothing, returns signup page
+# POST - recieves new userdata, returns sucess/failure details
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
-        _username = request.form['username']
-        _email = request.form['email']
-        _password = request.form['password']
+        signup_data = request.get_json()
 
-        try:
+        try: # read data & check for key errors, unreadable data, etc
+            _username = signup_data['username']
+            _email = signup_data['email']
+            _password = signup_data['password']
+        except:
+            return {'error': 'There was an error reading your data'}, 409
+
+        try: # using the data, insert it into the SQL database
             # connects to sqlite.db file in current folder
             engine = create_engine('sqlite:///users.db', echo=True)
             db.metadata.create_all(bind=engine)  # creates the Users schema
@@ -268,91 +275,98 @@ def signup():
             session = Session()
 
             new_user = Users(userName=_username,
-                             email=_email, password=_password, karma=0)
+                                email=_email, password=_password, karma=0)
 
             session.add(new_user)
             session.commit()
             session.close()
             schema = UserSchema()
-            result = schema.dump(Users.query.filter_by(
-                userName=_username).first())
-            return jsonify(result)
-
+            return {}, 201
         except:
-            print("Error in creating your acount, please try again")
-            return render_template('signup.html')
+            return {'error': 'There was an error processing your data'}, 409
+    else: # it's a GET request
+        return render_template('signup.html'), 200
 
-    return render_template('home.html')
 
-
+# GET - recieves nothing, returns login page
+# POST - recieves login data, returns sucess/failure details
 @app.route('/login', methods=['GET', 'POST'])
 def loginpage():
     if request.method == 'POST':
-        _username = request.form['username']
-        _password = request.form['password']
+        try: # read data & check for key errors, formatting, etc
+            login_data = request.get_json()
+            _username = login_data['username']
+            _password = login_data['password']
+        except:
+            return {'error': 'There was an error reading your data'}, 409
 
-        try:
+        try: # check login data against the database
             # retrieves row of info to look at
             userExists = Users.query.filter_by(userName=_username).first()
-
             if userExists.userName == _username and userExists.password == _password:
-                print("Login validated")
-
-                return render_template('home.html')
-
+                # Login validated
+                return {}, 201 # we need to adjust this in the future to keep the user logged in
             else:
-                print("User not valid")
-
+                return {'error': 'Login details invalid'}, 409
         except:
-            print('ERROR ERRROR')
+            return {'error': 'There was an error processing your data'}, 409
 
-    return render_template('loginpage.html')
+    else: # It's a GET request
+        return render_template('loginpage.html'), 200
 
 
-@app.route('/updateEmail', methods=['GET', 'POST', 'PUT'])
+# GET - recieves nothing, returns update email page
+# POST - recieves update request, returns sucess/failure details
+@app.route('/updateEmail', methods=['GET', 'POST'])
 def updateEmail():
     if request.method == 'POST':
-        _username = request.form['username']
-        _password = request.form['password']
-        new_email = request.form['email']
+        try: # read data & check for key errors, formatting, etc
+            update_email_data = request.get_json()
+            _username = update_email_data['username']
+            _password = update_email_data['password']
+            new_email = update_email_data['email']
+        except:
+            return {'error': 'There was an error reading your data'}, 409
 
+        # Validate login first
         userExists = Users.query.filter_by(userName=_username).first()
         if userExists.userName == _username and userExists.password == _password:
+            # Update the email
             userExists.email = new_email
             db.session.commit()
-            print('Email has been updated')
-            schema = UserSchema()
-            result = schema.dump(Users.query.filter_by(
-                userName=_username).first())
-            return jsonify(result)
+            # Email has been updated
+            return {}, 201
+        else: # login was invalid
+            return {'error': 'Login failed'}, 409
 
-        else:
-            print(
-                "Username and password not found or do not match please check credentials")
-    return render_template('updateEmail.html')
+    else: # It's a GET request
+        return render_template('updateEmail.html'), 200
 
-
+# GET - recieves nothing, returns delete account page
+# POST - recieves delete request, returns sucess/failure details
 @app.route('/deleteAccount', methods=['GET', 'POST', 'DELETE'])
 def deleteAcc():
     if request.method == 'POST':
-        _username = request.form['username']
-        _password = request.form['password']
-        try:
-            userExists = Users.query.filter_by(userName=_username).first()
-            if userExists.userName == _username and userExists.password == _password:
-                db.session.delete(userExists)
-                db.session.commit()
-                print('Account has been deleted')
-                schema = UserSchema()
-                result = schema.dump(Users.query.filter_by(
-                    userName=_username).first())
-                return jsonify(result)
-
+        try: # read data & check for key errors, formatting, etc
+            delete_account_data = request.get_json()
+            _username = delete_account_data['username']
+            _password = delete_account_data['password']
         except:
-            print(
-                'Error in deleting your account please use a valid username and password')
+            return {'error': 'There was an error reading your data'}, 409
 
-    return render_template('deleteAcc.html')
+        # Validate login first
+        userExists = Users.query.filter_by(userName=_username).first()
+        if userExists.userName == _username and userExists.password == _password:
+            # Delete the account
+            db.session.delete(userExists)
+            db.session.commit()
+            # Account has been deleted
+            return {}, 201
+        else:
+            return {'error': 'Login failed'}, 409
+
+    else: # It's a GET request
+        return render_template('deleteAcc.html'), 200
 
 
 if __name__ == "__main__":
