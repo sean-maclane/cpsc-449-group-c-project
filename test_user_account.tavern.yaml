@@ -1,6 +1,6 @@
-test_name: Make sure valid inputs are handled correctly
+test_name: Check valid inputs
 stages:
-  - name: Valid signup request (change number if running test more than once or delete the db)
+  - name: Valid signup request
     request:
       url: http://localhost:5000/signup
       json:
@@ -16,17 +16,115 @@ stages:
         {}
       headers:
         content-type: application/json
-  
+
+  - name: Valid login request
+    request:
+      url: http://localhost:5000/login
+      json:
+        username: 'tavern_username_1'
+        password: 'tavern_password_1'
+      method: POST
+      headers:
+        content-type: application/json
+    response:
+      status_code: 201
+      body:
+        {}
+      headers:
+        content-type: application/json
+
+  - name: Valid update email request
+    request:
+      url: http://localhost:5000/updateEmail
+      json:
+        username: 'tavern_username_1'
+        password: 'tavern_password_1'
+        email: 'updated_email_1@tavern.com'
+      method: POST
+      headers:
+        content-type: application/json
+    response:
+      status_code: 201
+      body:
+        {}
+      headers:
+        content-type: application/json
+
+  - name: Make to-be deleted account
+    request:
+      url: http://localhost:5000/signup
+      json:
+        username: 'tavern_username_temp'
+        password: 'tavern_password_temp'
+        email: 'email_temp@tavern.com'
+      method: POST
+      headers:
+        content-type: application/json
+    response:
+      status_code: 201
+      body:
+        {}
+      headers:
+        content-type: application/json
+
+  - name: Valid account delete request
+    request:
+      url: http://localhost:5000/deleteAccount
+      json:
+        username: 'tavern_username_temp'
+        password: 'tavern_password_temp'
+      method: POST
+      headers:
+        content-type: application/json
+    response:
+      status_code: 201
+      body:
+        {}
+      headers:
+        content-type: application/json
+
+  - name: Valid increment karma request
+    request:
+      url: http://localhost:5000/incrementKarma
+      json:
+        username: 'tavern_username_1'
+        password: 'tavern_password_1'
+      method: POST
+      headers:
+        content-type: application/json
+    response:
+      status_code: 201
+      body:
+        {}
+      headers:
+        content-type: application/json
+
+  - name: Valid decrement karma request
+    request:
+      url: http://localhost:5000/decrementKarma
+      json:
+        username: 'tavern_username_1'
+        password: 'tavern_password_1'
+      method: POST
+      headers:
+        content-type: application/json
+    response:
+      status_code: 201
+      body:
+        {}
+      headers:
+        content-type: application/json
+
 ---
   
-test_name: Make sure invalid inputs are handled correctly
+test_name: Check invalid inputs TODO - add login, delete account, update email, increment karma, and decrement karma
 stages:
-  - name: Send a duplicate username
+  - name: Signup duplicate username
     request:
       url: http://localhost:5000/signup
       json:
         username: 'tavern_username_1'
-        password: 'tavern_password_1'
+        password: 'tavern_password_2'
         email: 'email_2@tavern.com'
       method: POST
       headers:
@@ -38,7 +136,7 @@ stages:
       headers:
         content-type: application/json
 
-  - name: Send a duplicate email
+  - name: Signup duplicate email
     request:
       url: http://localhost:5000/signup
       json:
@@ -55,7 +153,7 @@ stages:
       headers:
         content-type: application/json
 
-  - name: Use a wrong key (missing data)
+  - name: Signup wrong key (missing data)
     request:
       url: http://localhost:5000/signup
       json:
