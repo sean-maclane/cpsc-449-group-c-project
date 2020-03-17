@@ -24,7 +24,7 @@ class Users(db.Model):
     userName = Column('username', db.String(100), unique=True)
     email = Column('email', db.String(100), unique=True)
     password = Column('password', db.String(100), unique=True)
-    karma = Column('Karma', db.Integer)
+    karma = Column('karma', db.Integer)
 
     def __init__(self, userName, email, password, karma):
         self.userName = userName
@@ -45,7 +45,6 @@ class UserSchema(Schema):
 
 
 schema = UserSchema(many=True)
-userResult = schema.dump(Users.query.all())
 
 
 class Posts(db.Model):
@@ -72,10 +71,11 @@ class PostSchema(Schema):
 
 
 Postschema = PostSchema(many=True)
-postResult = Postschema.dump(Posts.query.all())
 
 db.create_all()
 
+postResult = Postschema.dump(Posts.query.all())
+userResult = schema.dump(Users.query.all())
 
 @app.route('/')
 def home():
