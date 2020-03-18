@@ -13,7 +13,7 @@ app = Flask(__name__)
 
 ''' Database setup '''
 
-app.config['SQLALCHEMY_TRACK_MODIFCATIONS'] = False
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_BINDS'] = {'posts': 'sqlite:///posts.db'}
 db = SQLAlchemy(app)
