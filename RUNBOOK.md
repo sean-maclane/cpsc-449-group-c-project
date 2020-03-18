@@ -1,7 +1,9 @@
+
 -----------------
 GitHub Operations
 -----------------
 
+```
 $ git --version                         # Check current git version
 $ git config --global user.name "Firstname Lastname"
 $ git config --global user.email "username@domain.com"
@@ -13,68 +15,87 @@ $ git init
 $ git remote add origin https://github.com/sean-maclane/cpsc-449-group-c-project-1
 $ git pull origin master
 <<Enter github username and password>>
-
+```
 
 -----------------------------------
 Python and Application Dependencies
 -----------------------------------
+
+```
 $ sudo apt install python3-pip
 $ pip3 install flask
 $ pip3 install marshmallow
 $ python3 -m flask --version
-
-
--------------------
-Running the Project
--------------------
-
-$ cd project_directory/reddit-like/dev1-Preston/
-$ export FLASK_ENV=development
-$ export FLASK_APP=app3.py
-$ flask run
-
-<<Open the web browser and go to URL>>
-http://localhost:5000/
-
+```
 
 ------------------------
 Operational Dependencies
 ------------------------
 
+```
 $ sudo apt install gunicorn3
 $ curl https://getcaddy.com | bash -s personal
 $ sudo apt install ruby-foreman
+```
+
+-------------------
+Running the Project
+-------------------
+
+```
+$ cd project_directory/reddit-like/dev1-Preston/
+$ export FLASK_ENV=development
+$ export FLASK_APP=main.py
+$ flask run
+```
+
+Open the web browser and go to URL:
+
+http://localhost:5000/
 
 
 ----------------------
 WSGI Server Deployment
 ----------------------
 
+Create WSGI python entrypoint of the application for gunicorn, on port `2015`:
+
+	from python_file import flask_variable
+	
+	if __name__ == '__main__':
+		flask_variable.run(host='127.0.0.1', port=2015)
+
 Test gunicorn3 - (gunicorn3 py3_filename:app) :
-$ gunicorn3 main:app
+
+    $ gunicorn3 main:app
 
 Run a Flask application with 4 worker processes binding to localhost port 8000 (-b 127.0.0.1:8000)
-$ gunicorn3 -w 4 -b 127.0.0.1:8000 main:app
 
-<<Open the web browser and go to URL>>
-127.0.0.1:8000
+    $ gunicorn3 -w 4 -b 127.0.0.1:8000 main:app
+
+Open the web browser and go to URL:
+
+http://127.0.0.1:8000
 
 These instructions can be put in a PROCFILE, which has the following format:
-process1_nickname: shell_command_to_run_process1
-process2_nickname: shell_command_to_run_process2
 
-Actual contents of the PROCFILE:
-main_test: gunicorn3 -w 4 -b 127.0.0.1:8000 --access-logfile gunicorn3_main main:app
+    process1_nickname: shell_command_for_process1
+    process2_nickname: shell_command_for_process2
 
-Start 3 instances of each microservice (Procfile has to be present):
-$ foreman start -c
+Contents of the PROCFILE:
 
+    main_test: gunicorn3 --bind 127.0.0.1:$PORT --access-logfile - --error-logfile - --log-level debug wsgi:app
+
+**NOTE**: As per the [foreman documentation][1] if multiple instances of the same process are assigned `$PORT`, then each of them increments by 1, and the variable increments by 100 for each new process line in the `Procfile`
+  
+  [1]: https://ddollar.github.io/foreman/
 
 --------------
 Load Balancing
 --------------
 
 To perform the below operations:
+
     Requests for http://localhost:2015/posts to be redirected to the Posting microservice, and 
     Requests for http://localhost:2015/votes to be redirected to the Voting microservice
 
@@ -94,11 +115,11 @@ A CADDYFILE would have to be created and the content would look like:
         }
     }
 
-Explanation:
+**Explanation**:
 All reqests coming to the application's votes page will be redirected to a proxies localhost:8100 localhost:8200 localhost:8300
 The policy of those redirects would be to the server which has the least number of connections. Host information from the original request will be passed, similar to backend app.
 
-Once the CADDYFILE (with the above content) is in the $APPHOME directory, it can be started with the following command:
+Once the `caddyfile` (with the above content) is in the $APPHOME directory, it can be started with the following command:
 $ ulimit -n 8192 && caddy
 
 
@@ -124,20 +145,20 @@ Modifying ulimit (in case the above command gives an error on Linux):
     /etc/pam.d/common-session
     /etc/pam.d/common-session-noninteractive
     
-    Restart PC
+Restart PC
 
 
 -------------
 Orchestration
 -------------
 
-Orchestration will be carries out with foreman.
-
-Before carrying out orchestration, the PROCFILE has to be updated with the caddy command.
+Orchestration will be carried out with foreman. Before carrying out orchestration, the `Procfile` has to be updated with the caddy command.
 
 Contents of the PROCFILE:
-main_test: gunicorn3 -w 4 -b 127.0.0.1:8000 --access-logfile gunicorn3_main main:app
-caddy: ulimit -n 8192 && caddy
 
-Orchestration can now be run like, which starts all processes
-$ foreman start -m all=1
+    main_test: gunicorn3 -w 4 -b 127.0.0.1:8000 --access-logfile gunicorn3_main main:app
+    caddy_lbt: ulimit -n 8192 && caddy
+
+Orchestration can now be run like, which starts all processes:
+
+    $ foreman start -m main_test=3,caddy_lbt=1
