@@ -1,2 +1,2 @@
-main_test: gunicorn3 -w 4 -b 127.0.0.1:8000 --access-logfile gunicorn3_file main:app
+main_test: gunicorn3 --bind 127.0.0.1:$PORT --access-logfile - --error-logfile - --log-level debug wsgi:app
 caddy_lbt: ulimit -n 8192 && caddy
