@@ -161,4 +161,7 @@ Contents of the PROCFILE:
 
 Orchestration can now be run like, which starts all processes:
 
-    $ foreman start -m main_test=3,caddy_lbt=1
+    $ foreman start -m main_test=3,caddy_lbt=1 --port 3000
+
+**NOTE**: Worker processes will start with 3000, so if `main_test` has three worker processes, they will be bound to `3000`, `3001`, and `3002`.
+The process (votes) will run on `3100`, `3101`, and `3102`, if it has 3 worker processes.
