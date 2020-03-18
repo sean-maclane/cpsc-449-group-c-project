@@ -1,12 +1,5 @@
-localhost:8000/votes {
-    proxy / localhost:8100 localhost:8200 localhost:8300 {
-        policy least_conn
-        transparent
-    }
-}
-
-localhost:8000/posts {
-	proxy / localhost:8101 localhost:8201 localhost:8301 {
+localhost:2015/posts, 127.0.0.1:2015/posts {
+    proxy / 127.0.0.1:2016 127.0.0.1:2017 127.0.0.1:2018 {
         policy least_conn
         transparent
     }
