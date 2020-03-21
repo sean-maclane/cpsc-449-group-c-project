@@ -17,5 +17,5 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=["flask", "marshmallow"],
-    extras_require={"test": ["pytest", "coverage"]},
+    extras_require={"test": ["pytest", "coverage", "tavern"]},
 )

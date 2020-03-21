@@ -2,7 +2,7 @@ test_name: Check valid inputs
 stages:
   - name: Valid create post request
     request:
-      url: http://localhost:5000/createPost
+      url: http://localhost:5000/posts/create
       json:
         title: 'tavern_post_1'
         community: 'tavern_community_1'
@@ -21,7 +21,7 @@ stages:
 
   - name: Valid retrieve post request
     request:
-      url: http://localhost:5000/retrievePost
+      url: http://localhost:5000/posts/retrieve
       json:
         title: 'tavern_post_1'
         community: 'tavern_community_1'
@@ -40,7 +40,7 @@ stages:
 
   - name: Valid delete post request
     request:
-      url: http://localhost:5000/deletePost
+      url: http://localhost:5000/posts/delete
       json:
         title: 'tavern_post_1'
         username: 'tavern_username_1'
