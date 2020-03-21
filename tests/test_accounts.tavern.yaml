@@ -2,7 +2,7 @@ test_name: Check valid inputs
 stages:
   - name: Valid signup request
     request:
-      url: http://localhost:5000/accounts/create
+      url: /accounts/create
       json:
         username: 'tavern_username_1'
         password: 'tavern_password_1'
@@ -19,7 +19,7 @@ stages:
 
   - name: Valid login request
     request:
-      url: http://localhost:5000/accounts/login
+      url: /accounts/login
       json:
         username: 'tavern_username_1'
         password: 'tavern_password_1'
@@ -35,7 +35,7 @@ stages:
 
   - name: Valid update email request
     request:
-      url: http://localhost:5000/accounts/updateEmail
+      url: /accounts/updateEmail
       json:
         username: 'tavern_username_1'
         password: 'tavern_password_1'
@@ -52,7 +52,7 @@ stages:
 
   - name: Make to-be deleted account
     request:
-      url: http://localhost:5000/accounts/create
+      url: /accounts/create
       json:
         username: 'tavern_username_temp'
         password: 'tavern_password_temp'
@@ -69,7 +69,7 @@ stages:
 
   - name: Valid account delete request
     request:
-      url: http://localhost:5000/accounts/delete
+      url: /accounts/delete
       json:
         username: 'tavern_username_temp'
         password: 'tavern_password_temp'
@@ -85,7 +85,7 @@ stages:
 
   - name: Valid increment karma request
     request:
-      url: http://localhost:5000/votes/upvote
+      url: /votes/upvote
       json:
         username: 'tavern_username_1'
         password: 'tavern_password_1'
@@ -101,7 +101,7 @@ stages:
 
   - name: Valid decrement karma request
     request:
-      url: http://localhost:5000/upvotes/downvote
+      url: /upvotes/downvote
       json:
         username: 'tavern_username_1'
         password: 'tavern_password_1'
@@ -121,7 +121,7 @@ test_name: Check invalid inputs, needs changes in dev before this works TODO - a
 stages:
   - name: Signup duplicate username
     request:
-      url: http://localhost:5000/signup
+      url: /signup
       json:
         username: 'tavern_username_1'
         password: 'tavern_password_2'
@@ -138,7 +138,7 @@ stages:
 
   - name: Signup duplicate email
     request:
-      url: http://localhost:5000/signup
+      url: /signup
       json:
         username: 'tavern_username_2'
         password: 'tavern_password_2'
@@ -155,7 +155,7 @@ stages:
 
   - name: Signup wrong key (missing data)
     request:
-      url: http://localhost:5000/signup
+      url: /signup
       json:
         username_wrong_key: 'tavern_username_1'
         password: 'tavern_password_1'
