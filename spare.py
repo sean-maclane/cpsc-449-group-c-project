@@ -88,7 +88,7 @@ def account():
 
 
 @app.route('/json/posts')
-def jsonPosts():
+def jsonf():
     return jsonify(postResult)
 
 
@@ -97,7 +97,7 @@ def jsonUsers():
     return jsonify(userResult)
 
 
-@app.route('/incrementKarma', methods=['GET', 'POST', 'PUT'])
+@app.route('/votes/upvote', methods=['GET', 'POST', 'PUT'])
 def incrementKarma():
     if request.method == 'POST':
         _username = request.form['username']
@@ -125,7 +125,7 @@ def incrementKarma():
     return render_template('incrementKarma.html')
 
 
-@app.route('/decrementKarma', methods=['GET', 'POST', 'PUT'])
+@app.route('/votes/downvote', methods=['GET', 'POST', 'PUT'])
 def decrementKarma():
     if request.method == 'POST':
         _username = request.form['username']
@@ -153,7 +153,7 @@ def decrementKarma():
     return render_template('decrementKarma.html')
 
 
-@app.route('/createPost', methods=['GET', 'POST'])
+@app.route('/posts/create', methods=['GET', 'POST'])
 def createPost():
     postform = Posts()
     if request.method == 'POST':
@@ -191,7 +191,7 @@ def createPost():
     return render_template('createPost.html')
 
 
-@app.route('/deletePost', methods=['GET', 'POST', 'DELETE'])
+@app.route('/posts/delete', methods=['GET', 'POST', 'DELETE'])
 def deletePost():
     if request.method == 'POST':
         _title = request.form['title']  # title to be deleted
@@ -224,7 +224,7 @@ def deletePost():
     return render_template('deletepost.html')
 
 
-@app.route('/retrievePost', methods=['GET', 'POST'])
+@app.route('/posts/retrieve', methods=['GET', 'POST'])
 def retrievePost():
     if request.method == 'POST':
         _title = request.form['title']
@@ -272,7 +272,7 @@ def retrievePost():
     return render_template('retrievePost.html')
 
 
-@app.route('/signup', methods=['GET', 'POST'])
+@app.route('/accounts/create', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
         _username = request.form['username']
@@ -308,7 +308,7 @@ def signup():
     return render_template('home.html')
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/accounts/login', methods=['GET', 'POST'])
 def loginpage():
     if request.method == 'POST':
         _username = request.form['username']
@@ -336,7 +336,7 @@ def loginpage():
     return render_template('loginpage.html')
 
 
-@app.route('/updateEmail', methods=['GET', 'POST', 'PUT'])
+@app.route('/accounts/updateEmail', methods=['GET', 'POST', 'PUT'])
 def updateEmail():
     if request.method == 'POST':
         _username = request.form['username']
@@ -364,7 +364,7 @@ def updateEmail():
     return render_template('updateEmail.html')
 
 
-@app.route('/deleteAccount', methods=['GET', 'POST', 'DELETE'])
+@app.route('/accounts/delete', methods=['GET', 'POST', 'DELETE'])
 def deleteAcc():
     if request.method == 'POST':
         _username = request.form['username']
@@ -391,4 +391,4 @@ def deleteAcc():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=2015)
