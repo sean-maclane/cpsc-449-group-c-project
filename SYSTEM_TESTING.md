@@ -7,11 +7,13 @@ Dependencies
 $ pip3 install locustio
 ```
 
------------------------
-Test File (locust file)
------------------------
+---------------------------
+Test / Locust file Template
+---------------------------
 
+```
 
+```
 
 ------------
 Load Testing
@@ -41,5 +43,3 @@ Consolidate stuff from:
 + https://blog.realkinetic.com/load-testing-with-locust-part-1-174040afdf23?gi=7c21be14aa79
 + https://buttercms.com/blog/load-testing-round-up-8-tools-you-can-use-to-strengthen-your-stack
 + https://www.tothenew.com/blog/performing-heavy-load-testing-on-your-website-using-python-based-tool-locust/
-
-Create file `locustfile.py`
