@@ -24,6 +24,8 @@ Python and Application Dependencies
 ```
 $ sudo apt install python3-pip
 $ pip3 install flask
+$ pip3 install sqlalchemy
+$ pip3 install flask-sqlalchemy
 $ pip3 install marshmallow
 $ python3 -m flask --version
 ```
@@ -42,16 +44,20 @@ $ sudo apt install ruby-foreman
 Running the Project
 -------------------
 
+Setup environment variables:
+
 ```
-$ cd project_directory/reddit-like/dev1-Preston/
+$ cd project_root/
 $ export FLASK_ENV=development
-$ export FLASK_APP=main.py
+$ export FLASK_APP=spare.py
+$ export FLASK_RUN_HOST=127.0.0.1
+$ export FLASK_RUN_PORT=2015
 $ flask run
 ```
 
 Open the web browser and go to URL:
 
-http://localhost:5000/
+http://localhost:2015/
 
 
 ----------------------
@@ -61,7 +67,7 @@ WSGI Server Deployment
 Create WSGI python entrypoint of the application for gunicorn, on port `2015`:
 
 	from python_file import flask_variable
-	
+
 	if __name__ == '__main__':
 		flask_variable.run(host='127.0.0.1', port=2015)
 
@@ -87,7 +93,7 @@ Contents of the PROCFILE:
     main_test: gunicorn3 --bind 127.0.0.1:$PORT --access-logfile - --error-logfile - --log-level debug wsgi:app
 
 **NOTE**: As per the [foreman documentation][1] if multiple instances of the same process are assigned `$PORT`, then each of them increments by 1, and the variable increments by 100 for each new process line in the `Procfile`
-  
+
   [1]: https://ddollar.github.io/foreman/
 
 --------------
@@ -96,18 +102,18 @@ Load Balancing
 
 To perform the below operations:
 
-    Requests for http://localhost:2015/posts to be redirected to the Posting microservice, and 
+    Requests for http://localhost:2015/posts to be redirected to the Posting microservice, and
     Requests for http://localhost:2015/votes to be redirected to the Voting microservice
 
 A CADDYFILE would have to be created and the content would look like:
-    
+
     localhost:8000/votes {
         proxy / localhost:8100 localhost:8200 localhost:8300 {
             policy least_conn
             transparent
-        }        
+        }
     }
-    
+
     localhost:8000/posts {
         proxy / localhost:8101 localhost:8201 localhost:8301 {
             policy least_conn
@@ -127,24 +133,24 @@ Modifying ulimit (in case the above command gives an error on Linux):
 
     Check current soft limit
     $ ulimit -n
-    
+
     Check current hard limit
     $ ulimit -Hn
-    
+
     Add the below lines in /etc/security/limits.conf at the end:
     your_username hard nofile 16384
     your_username soft nofile 16384
-    
+
     Set (or uncomment and set) DefaultLimitNOFILE=16384 in files:
     /etc/systemd/user.conf
     /etc/systemd/system.conf
-    
+
     Add the line:
     session required pam_limits.so
     to files:
     /etc/pam.d/common-session
     /etc/pam.d/common-session-noninteractive
-    
+
 Restart PC
 
 
