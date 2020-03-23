@@ -391,4 +391,4 @@ def deleteAcc():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=2015)
+    app.run(host='127.0.0.1', port=2015, debug=True)
