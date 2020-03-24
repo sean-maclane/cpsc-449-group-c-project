@@ -23,7 +23,6 @@ DROP TABLE IF EXISTS posts """
     password TEXT NOT NULL,
     karma INTEGER NOT NULL
 )
-
 CREATE TABLE posts(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
