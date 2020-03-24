@@ -1,36 +1,50 @@
 from flask import *
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, exists, and_
-from sqlalchemy.orm import sessionmaker, relationship, load_only
 from datetime import datetime
-from sqlalchemy.sql import func
-from sqlalchemy import inspect
 from marshmallow import Schema, fields, pprint
+import sqlite3
 import os
 
+from project1.db import get_db
 
-app = Flask(__name__)
+bp = Blueprint("spare", __name__)
 
-app.config['SQLALCHEMY_TRACK_MODIFCATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-app.config['SQLALCHEMY_BINDS'] = {'posts': 'sqlite:///posts.db'}
-db = SQLAlchemy(app)
+db = sqlite3.connect('users.db')
+c = db.cursor()
 
 
-class Users(db.Model):
-    __tablename__ = "users"
 
-    id = Column('id', db.Integer, primary_key=True)
-    userName = Column('username', db.String(100), unique=True)
-    email = Column('email', db.String(100), unique=True)
-    password = Column('password', db.String(100), unique=True)
-    karma = Column('Karma', db.Integer)
+""" DROP TABLE IF EXISTS users
+DROP TABLE IF EXISTS posts """
 
-    def __init__(self, userName, email, password, karma):
-        self.userName = userName
-        self.email = email
-        self.password = password
-        self.karma = karma
+""" CREATE TABLE users(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    userName TEXT UNIQUE NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    karma INTEGER NOT NULL
+)
+
+CREATE TABLE posts(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    community TEXT NOT NULL,
+    text TEXT NOT NULL,
+    Username TEXT NOT NULL,
+    url TEXT,
+    dt DATETIME NOT NULL
+)
+ """
+
+c.execute('DROP TABLE IF EXISTS users')
+c.execute('DROP TABLE IF EXISTS posts')
+
+
+def createTable():
+    c.execute('CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, userName TEXT NOT NULL, email TEXT UNIQUE NOT NULL, password TEXT NOT NULL,karma INTEGER NOT NULL)')
+    c.execute('CREATE TABLE posts(id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT NOT NULL,community TEXT NOT NULL,text TEXT NOT NULL,Username TEXT NOT NULL,url TEXT,dt DATETIME NOT NULL)')
+
+
+createTable()
 
 
 class UserSchema(Schema):
@@ -44,22 +58,10 @@ class UserSchema(Schema):
         return "{},{},{}".format(Users.userName, Users.email, Users.karma)
 
 
-schema = UserSchema(many=True)
-userResult = schema.dump(Users.query.all())
-
-
-class Posts(db.Model):
-    __bind_key__ = 'posts'
-    __tablename__ = 'posts'
-
-    id = Column('id', db.Integer, primary_key=True)
-    title = Column('title', db.String(100))
-    community = Column('community', db.String(100))
-    text = Column('text', db.String(100))
-    Username = Column('Username', db.String(100))
-    url = Column('url', db.String(100),  nullable=True)
-    dt = Column('dateTime', db.String(100))
-
+# These lines need to move inside the functions that call them
+# This way they can be portable in the instances
+#schema = UserSchema(many=True)
+#userResult = schema.dump(Users.query.all())
 
 class PostSchema(Schema):
     id = fields.Int(dump_only=True)
@@ -70,34 +72,33 @@ class PostSchema(Schema):
     def format_name(self, Posts):
         return "{},{},{}".format(Posts.title, Posts.community, Posts.Username)
 
+# These lines need to move inside the functions that call them
+# This way they can be portable in the instances
+#Postschema = PostSchema(many=True)
+#postResult = Postschema.dump(Posts.query.all())
 
-Postschema = PostSchema(many=True)
-postResult = Postschema.dump(Posts.query.all())
 
-db.create_all()
-
-
-@app.route('/')
+@bp.route('/')
 def home():
     return render_template('home.html')
 
 
-@app.route('/account')
+@bp.route('/account')
 def account():
     return render_template('signup.html')
 
 
-@app.route('/json/posts')
+@bp.route('/json/posts')
 def jsonf():
     return jsonify(postResult)
 
 
-@app.route('/json/users')
+@bp.route('/json/users')
 def jsonUsers():
     return jsonify(userResult)
 
 
-@app.route('/votes/upvote', methods=['GET', 'POST', 'PUT'])
+@bp.route('/votes/upvote', methods=['GET', 'POST', 'PUT'])
 def incrementKarma():
     if request.method == 'POST':
         _username = request.form['username']
@@ -125,7 +126,7 @@ def incrementKarma():
     return render_template('incrementKarma.html')
 
 
-@app.route('/votes/downvote', methods=['GET', 'POST', 'PUT'])
+@bp.route('/votes/downvote', methods=['GET', 'POST', 'PUT'])
 def decrementKarma():
     if request.method == 'POST':
         _username = request.form['username']
@@ -153,7 +154,7 @@ def decrementKarma():
     return render_template('decrementKarma.html')
 
 
-@app.route('/posts/create', methods=['GET', 'POST'])
+@bp.route('/posts/create', methods=['GET', 'POST'])
 def createPost():
     postform = Posts()
     if request.method == 'POST':
@@ -191,7 +192,7 @@ def createPost():
     return render_template('createPost.html')
 
 
-@app.route('/posts/delete', methods=['GET', 'POST', 'DELETE'])
+@bp.route('/posts/delete', methods=['GET', 'POST', 'DELETE'])
 def deletePost():
     if request.method == 'POST':
         _title = request.form['title']  # title to be deleted
@@ -224,7 +225,7 @@ def deletePost():
     return render_template('deletepost.html')
 
 
-@app.route('/posts/retrieve', methods=['GET', 'POST'])
+@bp.route('/posts/retrieve', methods=['GET', 'POST'])
 def retrievePost():
     if request.method == 'POST':
         _title = request.form['title']
@@ -272,71 +273,33 @@ def retrievePost():
     return render_template('retrievePost.html')
 
 
-@app.route('/accounts/create', methods=['GET', 'POST'])
+@bp.route('/accounts/create', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
         _username = request.form['username']
         _email = request.form['email']
         _password = request.form['password']
+        _karma = 0
+        error = None
 
-        try:
-            # connects to sqlite.db file in current folder
-            engine = create_engine('sqlite:///users.db', echo=True)
-            db.metadata.create_all(bind=engine)  # creates the Users schema
+        if not _username:
+            error = "Username required"
 
-            # creates a object to store info into the database
-            Session = sessionmaker(bind=engine)
-            session = Session()
+        if not _email:
+            error = "Email required"
 
-            new_user = Users(userName=_username,
-                             email=_email, password=_password, karma=0)
+        if not _password:
+            error = "password required"
 
-            session.add(new_user)
-            session.commit()
-            session.close()
-            schema = UserSchema()
-            result = schema.dump(Users.query.filter_by(
-                userName=_username).first())
-            return Response(json.dumps(result),
-                            status=201,
-                            mimetype="application/json")
-
-        except:
-            print("Error in creating your acount, please try again")
-            return Response('ERROR 404', status=404, mimetype="application/json")
-
-    return render_template('home.html')
+        else:
+            c.execute("INSERT INTO users(userName,email,password,karma) VALUES(?,?,?,?)",
+                      (_username, _email, _password, _karma))
+            db.commit()
+            c.close()
+            db.close()
 
 
-@app.route('/accounts/login', methods=['GET', 'POST'])
-def loginpage():
-    if request.method == 'POST':
-        _username = request.form['username']
-        _password = request.form['password']
-
-        try:
-            # retrieves row of info to look at
-            userExists = Users.query.filter_by(userName=_username).first()
-
-            if userExists.userName == _username and userExists.password == _password:
-                print("Login validated")
-
-                return Response('Login validated',
-                                status=201,
-                                mimetype="application/json")
-
-            else:
-                return Response('ERROR 404', status=404, mimetype="application/json")
-                print("User not valid")
-
-        except:
-            return Response('ERROR 404', status=404, mimetype="application/json")
-            print('ERROR ERRROR')
-
-    return render_template('loginpage.html')
-
-
-@app.route('/accounts/updateEmail', methods=['GET', 'POST', 'PUT'])
+@bp.route('/accounts/updateEmail', methods=['GET', 'POST', 'PUT'])
 def updateEmail():
     if request.method == 'POST':
         _username = request.form['username']
@@ -364,7 +327,7 @@ def updateEmail():
     return render_template('updateEmail.html')
 
 
-@app.route('/accounts/delete', methods=['GET', 'POST', 'DELETE'])
+@bp.route('/accounts/delete', methods=['GET', 'POST', 'DELETE'])
 def deleteAcc():
     if request.method == 'POST':
         _username = request.form['username']
@@ -391,4 +354,4 @@ def deleteAcc():
 
 
 if __name__ == "__main__":
-    app.run(host='127.0.0.1', port=2015, debug=True)
+    app.run(debug=True, port=2015)
