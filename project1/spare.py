@@ -8,43 +8,6 @@ from project1.db import get_db
 
 bp = Blueprint("spare", __name__)
 
-db = sqlite3.connect('users.db')
-c = db.cursor()
-
-#c.execute('SELECT * from users')
-
-""" DROP TABLE IF EXISTS users
-DROP TABLE IF EXISTS posts """
-
-""" CREATE TABLE users(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    userName TEXT UNIQUE NOT NULL,
-    email TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL,
-    karma INTEGER NOT NULL
-)
-CREATE TABLE posts(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
-    community TEXT NOT NULL,
-    text TEXT NOT NULL,
-    Username TEXT NOT NULL,
-    url TEXT,
-    dt DATETIME NOT NULL
-)
- """
-
-c.execute('DROP TABLE IF EXISTS users')
-c.execute('DROP TABLE IF EXISTS posts')
-
-
-def createTable():
-    c.execute('CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, userName TEXT NOT NULL, email TEXT UNIQUE NOT NULL, password TEXT NOT NULL,karma INTEGER NOT NULL)')
-    c.execute('CREATE TABLE posts(id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT NOT NULL,community TEXT NOT NULL,text TEXT NOT NULL,Username TEXT NOT NULL,url TEXT,dt DATETIME NOT NULL)')
-
-
-createTable()
-
 
 class UserSchema(Schema):
     id = fields.Int(dump_only=True)
@@ -274,6 +237,9 @@ def retrievePost():
 
 @bp.route('/accounts/create', methods=['GET', 'POST'])
 def signup():
+    db = get_db()
+    c = db.cursor()
+
     if request.method == 'POST':
         _username = request.form['username']
         _email = request.form['email']
@@ -300,6 +266,9 @@ def signup():
 
 @bp.route('/accounts/updateEmail', methods=['GET', 'POST', 'PUT'])
 def updateEmail():
+    db = get_db()
+    c = db.cursor()
+
     if request.method == 'POST':
         _username = request.form['username']
         _password = request.form['password']
@@ -325,6 +294,9 @@ def updateEmail():
 
 @bp.route('/accounts/delete', methods=['GET', 'POST', 'DELETE'])
 def deleteAcc():
+    db = get_db()
+    c = db.cursor()
+
     if request.method == 'POST':
         _username = request.form['username']
         _password = request.form['password']
