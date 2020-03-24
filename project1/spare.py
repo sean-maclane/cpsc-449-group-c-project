@@ -1,6 +1,7 @@
 from flask import *
 from datetime import datetime
 from marshmallow import Schema, fields, pprint
+import sqlite3
 import os
 
 from project1.db import get_db
@@ -236,120 +237,80 @@ def retrievePost():
 
 @bp.route('/accounts/create', methods=['GET', 'POST'])
 def signup():
+    db = get_db()	
+    c = db.cursor()
+
     if request.method == 'POST':
         _username = request.form['username']
         _email = request.form['email']
         _password = request.form['password']
+        _karma = 0
+        error = None
 
-        try:
-            # connects to sqlite.db file in current folder
-            engine = create_engine('sqlite:///users.db', echo=True)
-            db.metadata.create_all(bind=engine)  # creates the Users schema
+        if not _username:
+            error = "Username required"
 
-            # creates a object to store info into the database
-            Session = sessionmaker(bind=engine)
-            session = Session()
+        if not _email:
+            error = "Email required"
 
-            new_user = Users(userName=_username,
-                             email=_email, password=_password, karma=0)
+        if not _password:
+            error = "password required"
 
-            session.add(new_user)
-            session.commit()
-            session.close()
-            schema = UserSchema()
-            result = schema.dump(Users.query.filter_by(
-                userName=_username).first())
-            return Response(json.dumps(result),
-                            status=201,
-                            mimetype="application/json")
-
-        except:
-            print("Error in creating your acount, please try again")
-            return Response('ERROR 404', status=404, mimetype="application/json")
-
-    return render_template('home.html')
-
-
-@bp.route('/accounts/login', methods=['GET', 'POST'])
-def loginpage():
-    if request.method == 'POST':
-        _username = request.form['username']
-        _password = request.form['password']
-
-        try:
-            # retrieves row of info to look at
-            userExists = Users.query.filter_by(userName=_username).first()
-
-            if userExists.userName == _username and userExists.password == _password:
-                print("Login validated")
-
-                return Response('Login validated',
-                                status=201,
-                                mimetype="application/json")
-
-            else:
-                return Response('ERROR 404', status=404, mimetype="application/json")
-                print("User not valid")
-
-        except:
-            return Response('ERROR 404', status=404, mimetype="application/json")
-            print('ERROR ERRROR')
-
-    return render_template('loginpage.html')
+        else:
+            c.execute("INSERT INTO users(userName,email,password,karma) VALUES(?,?,?,?)",
+                      (_username, _email, _password, _karma))
+            db.commit()
+            c.close()
+            db.close()
 
 
 @bp.route('/accounts/updateEmail', methods=['GET', 'POST', 'PUT'])
 def updateEmail():
+    db = get_db()	
+    c = db.cursor()
+
     if request.method == 'POST':
         _username = request.form['username']
         _password = request.form['password']
         new_email = request.form['email']
+        error = None
 
-        userExists = Users.query.filter_by(userName=_username).first()
-        if userExists.userName == _username and userExists.password == _password:
-            userExists.email = new_email
-            db.session.commit()
-            print('Email has been updated')
-            schema = UserSchema()
-            result = schema.dump(Users.query.filter_by(
-                userName=_username).first())
+        if not _username:
+            error = "Username required"
 
-            return Response(json.dumps(result),
-                            status=201,
-                            mimetype="application/json")
+        if not _password:
+            error = "password required"
+
+        if not new_email:
+            error = "Email required"
 
         else:
-            print(
-                "Username and password not found or do not match please check credentials")
-            return Response('ERROR 404', status=404, mimetype="application/json")
-
-    return render_template('updateEmail.html')
+            c.execute("UPDATE users SET email=? WHERE userName =? OR password=?",
+                      (new_email, _username, _password))
+            db.commit()
+            c.close()
+            db.close()
 
 
 @bp.route('/accounts/delete', methods=['GET', 'POST', 'DELETE'])
 def deleteAcc():
+    db = get_db()	
+    c = db.cursor()
+
     if request.method == 'POST':
         _username = request.form['username']
         _password = request.form['password']
-        try:
-            userExists = Users.query.filter_by(userName=_username).first()
-            if userExists.userName == _username and userExists.password == _password:
-                db.session.delete(userExists)
-                db.session.commit()
-                print('Account has been deleted')
-                schema = UserSchema()
-                result = schema.dump(Users.query.filter_by(
-                    userName=_username).first())
-                return Response(json.dumps(result),
-                                status=201,
-                                mimetype="application/json")
+        error = None
 
-        except:
-            print(
-                'Error in deleting your account please use a valid username and password')
-            return Response('ERROR 404', status=404, mimetype="application/json")
+        if not _username:
+            error = "Username required"
 
-    return render_template('deleteAcc.html')
+        if not _password:
+            error = "password required"
+
+        else:
+            c.execute("DELETE from users WHERE username=? AND password=?",
+                      (_username, _password))
 
 
 if __name__ == "__main__":
