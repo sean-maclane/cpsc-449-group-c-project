@@ -17,23 +17,33 @@ $ git pull origin master
 <<Enter github username and password>>
 ```
 
------------------------------------
-Python and Application Dependencies
------------------------------------
+--------------
+Python install
+--------------
 
 ```
 $ sudo apt install python3-pip
-$ pip3 install flask
-$ pip3 install sqlalchemy
-$ pip3 install flask-sqlalchemy
-$ pip3 install marshmallow
-$ python3 -m flask --version
+```
+
+---------------------------------------
+Python virtual enviornment, reccomended
+---------------------------------------
+```
+$ python3 -m venv venv
+$ . venv/bin/activate
+```
+
+---------------------------------
+Install dev and test Dependencies
+---------------------------------
+```
+$ pip install -e .
+$ pip install '.[test]'
 ```
 
 ------------------------
 Operational Dependencies
 ------------------------
-
 ```
 $ sudo apt install gunicorn3
 $ curl https://getcaddy.com | bash -s personal
@@ -48,16 +58,26 @@ Setup environment variables:
 
 ```
 $ cd project_root/
+$ export FLASK_APP=project1
 $ export FLASK_ENV=development
-$ export FLASK_APP=spare.py
 $ export FLASK_RUN_HOST=127.0.0.1
 $ export FLASK_RUN_PORT=2015
+$ flask init-db
 $ flask run
 ```
 
 Open the web browser and go to URL:
 
 http://localhost:2015/
+
+
+-------------------
+Running the tests
+-------------------
+```
+$ cd project_root/
+$ pytest
+```
 
 
 ----------------------
