@@ -11,7 +11,7 @@ bp = Blueprint("spare", __name__)
 db = sqlite3.connect('users.db')
 c = db.cursor()
 
-
+#c.execute('SELECT * from users')
 
 """ DROP TABLE IF EXISTS users
 DROP TABLE IF EXISTS posts """
@@ -305,26 +305,23 @@ def updateEmail():
         _username = request.form['username']
         _password = request.form['password']
         new_email = request.form['email']
+        error = None
 
-        userExists = Users.query.filter_by(userName=_username).first()
-        if userExists.userName == _username and userExists.password == _password:
-            userExists.email = new_email
-            db.session.commit()
-            print('Email has been updated')
-            schema = UserSchema()
-            result = schema.dump(Users.query.filter_by(
-                userName=_username).first())
+        if not _username:
+            error = "Username required"
 
-            return Response(json.dumps(result),
-                            status=201,
-                            mimetype="application/json")
+        if not _password:
+            error = "password required"
+
+        if not new_email:
+            error = "Email required"
 
         else:
-            print(
-                "Username and password not found or do not match please check credentials")
-            return Response('ERROR 404', status=404, mimetype="application/json")
-
-    return render_template('updateEmail.html')
+            c.execute("UPDATE users SET email=? WHERE userName =? OR password=?",
+                      (new_email, _username, _password))
+            db.commit()
+            c.close()
+            db.close()
 
 
 @bp.route('/accounts/delete', methods=['GET', 'POST', 'DELETE'])
@@ -332,25 +329,17 @@ def deleteAcc():
     if request.method == 'POST':
         _username = request.form['username']
         _password = request.form['password']
-        try:
-            userExists = Users.query.filter_by(userName=_username).first()
-            if userExists.userName == _username and userExists.password == _password:
-                db.session.delete(userExists)
-                db.session.commit()
-                print('Account has been deleted')
-                schema = UserSchema()
-                result = schema.dump(Users.query.filter_by(
-                    userName=_username).first())
-                return Response(json.dumps(result),
-                                status=201,
-                                mimetype="application/json")
+        error = None
 
-        except:
-            print(
-                'Error in deleting your account please use a valid username and password')
-            return Response('ERROR 404', status=404, mimetype="application/json")
+        if not _username:
+            error = "Username required"
 
-    return render_template('deleteAcc.html')
+        if not _password:
+            error = "password required"
+
+        else:
+            c.execute("DELETE from users WHERE username=? AND password=?",
+                      (_username, _password))
 
 
 if __name__ == "__main__":
