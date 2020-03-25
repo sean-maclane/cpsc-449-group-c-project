@@ -60,7 +60,7 @@ Input
 
 Possible errors- all return 404 status if not fulfilled
 1. None above provided,   “Provide information”
-2. Username and password not found “Create an account
+2. Username and password not found “Create an account"
 
 
 -Decrement votes
