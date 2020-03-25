@@ -171,7 +171,7 @@ def retrieve_existing_post():
         return Response(json.dumps({"message": "Please enter post title in search"}), status=404, content_type="application/json")
 
     if _post_title is not None:
-        db.execute('SELECT community, title, text, dt FROM posts WHERE title like '%?%'', (_post_title))
+        db.execute("SELECT community, title, text, dt FROM posts WHERE title = ?", (_post_title))
         return Response(json.dumps({"message": "Post retrieved successfully"}), status=201, content_type="application/json")
 
 
