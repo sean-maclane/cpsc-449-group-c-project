@@ -1,3 +1,6 @@
+# Local Branches
+/app
+
 # From Flask Tutorial
 venv/
 *.pyc
