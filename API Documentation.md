@@ -113,7 +113,7 @@ Possible errors- all return 404 status error if not fulfilled
 2. No title provided “Please provide title”
 3. No account info provided “Please provide account info”
 4. Wrong title but correct user info “Provide the correct post by the correct user”
-5. Correct title but wrong user info “Please provide correct use info”
+5. Correct title but wrong user info “Please provide correct user info”
 
 
 -Retrieve Post
