@@ -11,17 +11,13 @@ def test_accounts_create(client, app):
     url = "/accounts/create"
 
     # test a valid POST request
-    valid_data = {"username": "test_accounts_create", "email": "test_accounts_create@test_accounts_create.com", "password": "test_accounts_create"}
-    assert client.post(url, data=valid_data).status_code == 201
-
-    # make a second test account, for future tests
-    valid_data = {"username": "test_accounts_create_2", "email": "test_accounts_create_2@test_accounts_create_2.com", "password": "test_accounts_create_2"}
+    valid_data = {"username": "accounts_create", "email": "accounts@create.com", "password": "accounts_create"}
     assert client.post(url, data=valid_data).status_code == 201
 
     # test that the user was inserted into the database
     with app.app_context():
         assert (
-            get_db().execute("select * from users where username = 'test_accounts_create'").fetchone()
+            get_db().execute("SELECT * FROM users WHERE username = 'accounts_create'").fetchone()
             is not None
         )
 
@@ -29,8 +25,8 @@ def test_accounts_create(client, app):
     ("username", "email", "password", "message", "http_status_code"),
     (
         ("", "", "", b"Error in creating your account", 404),
-        ("other", "test_accounts_create@test_accounts_create.com", "other", b"Email already in use", 404),
-        ("test_accounts_create", "other@other.com", "other", b"Username already in use", 404),
+        ("other", "accounts@create.com", "other", b"Email already in use", 404),
+        ("accounts_create", "other@other.com", "other", b"Username already in use", 404),
         ("other", "bademail.com", "other", b"Not proper Email", 404),
     ),
 )
