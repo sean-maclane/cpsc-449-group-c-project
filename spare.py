@@ -8,44 +8,6 @@ from project1.db import get_db
 
 bp = Blueprint("spare", __name__)
 
-db = sqlite3.connect('users.db')
-c = db.cursor()
-
-#c.execute('SELECT * from users')
-
-""" DROP TABLE IF EXISTS users
-DROP TABLE IF EXISTS posts """
-
-""" CREATE TABLE users(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    userName TEXT UNIQUE NOT NULL,
-    email TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL,
-    karma INTEGER NOT NULL
-)
-
-CREATE TABLE posts(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
-    community TEXT NOT NULL,
-    text TEXT NOT NULL,
-    Username TEXT NOT NULL,
-    url TEXT,
-    dt DATETIME NOT NULL
-)
- """
-
-c.execute('DROP TABLE IF EXISTS users')
-c.execute('DROP TABLE IF EXISTS posts')
-
-
-def createTable():
-    c.execute('CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, userName TEXT NOT NULL, email TEXT UNIQUE NOT NULL, password TEXT NOT NULL,karma INTEGER NOT NULL)')
-    c.execute('CREATE TABLE posts(id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT NOT NULL,community TEXT NOT NULL,text TEXT NOT NULL,Username TEXT NOT NULL,url TEXT,dt DATETIME NOT NULL)')
-
-
-createTable()
-
 
 class UserSchema(Schema):
     id = fields.Int(dump_only=True)
@@ -98,60 +60,48 @@ def jsonUsers():
     return jsonify(userResult)
 
 
-@bp.route('/votes/upvote', methods=['GET', 'POST', 'PUT'])
+@bp.route('/votes/upvote', methods=['POST'])
 def incrementKarma():
-    if request.method == 'POST':
-        _username = request.form['username']
-        _password = request.form['password']
-        userExists = Users.query.filter_by(userName=_username).first()
+    db = get_db()
 
-        if userExists is not None:
-            if userExists.userName == _username and userExists.password == _password:
-                userExists.karma += 1
-                db.session.commit()
-                print("SUCCESS")
-                print(userExists.karma)
+    _username = request.form['username']
+    _password = request.form['password']
 
-                schema = UserSchema()
-                result = schema.dump(Users.query.filter_by(
-                    userName=_username).first())
+    if(_username == "" and _password == ""):
+        # error case 1
+        return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
-                return Response(json.dumps(result),
-                                status=201,
-                                mimetype="application/json")
-        else:
-            print("USER doesnt exists")
-            return Response('ERROR 404', status=404, mimetype="application/json")
+    login_id = db.execute(
+        'SELECT id FROM users WHERE username = ? and password = ?', (_username, _password)).fetchone()
+    if login_id is None:
+        # error case 2
+        return Response(json.dumps({"message": "Create an account"}), status=404, content_type="application/json")
 
-    return render_template('incrementKarma.html')
+    db.execute('UPDATE users SET karma=karma+1 WHERE id = ?', (login_id))
+    db.commit()
+    return Response(status=201)
 
 
-@bp.route('/votes/downvote', methods=['GET', 'POST', 'PUT'])
+@bp.route('/votes/downvote', methods=['POST'])
 def decrementKarma():
-    if request.method == 'POST':
-        _username = request.form['username']
-        _password = request.form['password']
-        userExists = Users.query.filter_by(userName=_username).first()
+    db = get_db()
 
-        if userExists is not None:
-            if userExists.userName == _username and userExists.password == _password:
-                userExists.karma -= 1
-                db.session.commit()
-                print("SUCCESS")
-                print(userExists.karma)
+    _username = request.form['username']
+    _password = request.form['password']
 
-                schema = UserSchema()
-                result = schema.dump(Users.query.filter_by(
-                    userName=_username).first())
+    if(_username == "" and _password == ""):
+        # error case 1
+        return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
-                return Response(json.dumps(result),
-                                status=201,
-                                mimetype="application/json")
-        else:
-            print("USER doesnt exists")
-            return Response('ERROR 404', status=404, mimetype="application/json")
+    login_id = db.execute(
+        'SELECT id FROM users WHERE username = ? and password = ?', (_username, _password)).fetchone()
+    if login_id is None:
+        # error case 2
+        return Response(json.dumps({"message": "Create an account"}), status=404, content_type="application/json")
 
-    return render_template('decrementKarma.html')
+    db.execute('UPDATE users SET karma=karma-1 WHERE id = ?', (login_id))
+    db.commit()
+    return Response(status=201)
 
 
 @bp.route('/posts/create', methods=['GET', 'POST'])
@@ -275,21 +225,26 @@ def retrievePost():
 
 @bp.route('/accounts/create', methods=['GET', 'POST'])
 def signup():
+    db = get_db()
+    c = db.cursor()
+
     if request.method == 'POST':
         _username = request.form['username']
         _email = request.form['email']
         _password = request.form['password']
         _karma = 0
-        error = None
 
         if not _username:
             error = "Username required"
+            return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
         if not _email:
             error = "Email required"
+            return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
         if not _password:
             error = "password required"
+            return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
         else:
             c.execute("INSERT INTO users(userName,email,password,karma) VALUES(?,?,?,?)",
@@ -297,10 +252,14 @@ def signup():
             db.commit()
             c.close()
             db.close()
+            return Response(json.dumps({"message": "Success"}), status=201, content_type="application/json")
 
 
 @bp.route('/accounts/updateEmail', methods=['GET', 'POST', 'PUT'])
 def updateEmail():
+    db = get_db()
+    c = db.cursor()
+
     if request.method == 'POST':
         _username = request.form['username']
         _password = request.form['password']
@@ -309,12 +268,15 @@ def updateEmail():
 
         if not _username:
             error = "Username required"
+            return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
         if not _password:
             error = "password required"
+            return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
         if not new_email:
             error = "Email required"
+            return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
         else:
             c.execute("UPDATE users SET email=? WHERE userName =? OR password=?",
@@ -322,24 +284,34 @@ def updateEmail():
             db.commit()
             c.close()
             db.close()
+            return Response(json.dumps({"message": "Succes"}), status=201, content_type="application/json")
 
 
 @bp.route('/accounts/delete', methods=['GET', 'POST', 'DELETE'])
 def deleteAcc():
+    db = get_db()
+    c = db.cursor()
+
     if request.method == 'POST':
         _username = request.form['username']
         _password = request.form['password']
         error = None
 
         if not _username:
-            error = "Username required"
+            return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
         if not _password:
-            error = "password required"
+
+            return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
         else:
             c.execute("DELETE from users WHERE username=? AND password=?",
                       (_username, _password))
+            db.commit()
+            c.close()
+            db.close()
+
+            return Response(json.dumps({"message": "Success"}), status=201, content_type="application/json")
 
 
 if __name__ == "__main__":
