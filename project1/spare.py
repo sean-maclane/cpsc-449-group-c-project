@@ -135,7 +135,7 @@ def create_post():
         # error case 5
         return Response(json.dumps({"message": "Please input some text body for the post"}), status=404, content_type="application/json")
 
-    if _post_title is not None and _post_community is not None and if _post_body is not None:
+    if _post_title is not None and _post_community is not None and _post_body is not None:
         db.execute('INSERT INTO post (community_id, author_id, title, body)
                     VALUES (
                         (SELECT id FROM community WHERE community_name = ?, (_post_community)),
@@ -173,7 +173,7 @@ def delete_post():
         # error case 4
         return Response(json.dumps({"message": "Post community not found"}), status=404, content_type="application/json")
 
-    if login_id is not None and _post_title is not None and if _post_community is not None:
+    if login_id is not None and _post_title is not None and _post_community is not None:
         db.execute('DELETE FROM post where title = ?', (_post_title))
         db.commit()
         return Response(json.dumps({"message": "Post deleted successfully"}), status=201, content_type="application/json")
