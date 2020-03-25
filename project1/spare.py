@@ -226,7 +226,6 @@ def retrievePost():
 @bp.route('/accounts/create', methods=['GET', 'POST'])
 def signup():
     db = get_db()
-    c = db.cursor()
 
     if request.method == 'POST':
         _username = request.form['username']
@@ -235,67 +234,61 @@ def signup():
         _karma = 0
 
         if not _username:
-            error = "Username required"
+
             return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
         if not _email:
-            error = "Email required"
+
             return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
         if not _password:
-            error = "password required"
+
             return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
         else:
-            c.execute("INSERT INTO users(userName,email,password,karma) VALUES(?,?,?,?)",
-                      (_username, _email, _password, _karma))
+            db.execute("INSERT INTO users(userName,email,password,karma) VALUES(?,?,?,?)",
+                       (_username, _email, _password, _karma))
             db.commit()
-            c.close()
-            db.close()
+
             return Response(json.dumps({"message": "Success"}), status=201, content_type="application/json")
 
 
 @bp.route('/accounts/updateEmail', methods=['GET', 'POST', 'PUT'])
 def updateEmail():
     db = get_db()
-    c = db.cursor()
 
     if request.method == 'POST':
         _username = request.form['username']
         _password = request.form['password']
         new_email = request.form['email']
-        error = None
 
         if not _username:
-            error = "Username required"
+
             return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
         if not _password:
-            error = "password required"
+
             return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
         if not new_email:
-            error = "Email required"
+
             return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
         else:
-            c.execute("UPDATE users SET email=? WHERE userName =? OR password=?",
-                      (new_email, _username, _password))
+            db.execute("UPDATE users SET email=? WHERE userName =? OR password=?",
+                       (new_email, _username, _password))
             db.commit()
-            c.close()
-            db.close()
+
             return Response(json.dumps({"message": "Succes"}), status=201, content_type="application/json")
 
 
 @bp.route('/accounts/delete', methods=['GET', 'POST'])
 def deleteAcc():
     db = get_db()
-    c = db.cursor()
 
     if request.method == 'POST':
         _username = request.form['username']
         _password = request.form['password']
-        error = None
 
         if not _username:
             return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
@@ -305,11 +298,9 @@ def deleteAcc():
             return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
         else:
-            c.execute("DELETE from users WHERE username=? AND password=?",
-                      (_username, _password))
+            db.execute("DELETE from users WHERE username=? AND password=?",
+                       (_username, _password))
             db.commit()
-            c.close()
-            db.close()
 
             return Response(json.dumps({"message": "Success"}), status=201, content_type="application/json")
 
