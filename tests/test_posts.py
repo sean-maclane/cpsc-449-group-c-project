@@ -1,6 +1,7 @@
 import pytest
 from flask import g
 from flask import session
+from datetime import datetime
 
 from project1.db import get_db
 
@@ -26,28 +27,21 @@ test_data_2 = {
 
 # Test /posts/create
 def test_posts_create(client, app):
+    # Add user for posts/create testing
+    with app.app_context():
+        get_db().execute('INSERT INTO users (username, email, password, karma) VALUES (?, ?, ?, ?);', ("posts_create", "posts@create.com", "posts_create", 0))
+        get_db().commit()
+
     url = "/posts/create"
 
-    # Create the account we will be testing posts with
-    post_account_data = {"username": test_data_1['username'], "email": test_data_1['email'], "password": test_data_1['password']}
-    client.post("/accounts/create", data=post_account_data)
-    
-    # Create a second account for testing
-    post_account_data = {"username": test_data_2['username'], "email": test_data_2['email'], "password": test_data_2['password']}
-    client.post("/accounts/create", data=post_account_data)
-
     # test a valid POST request
-    valid_data = {"title": test_data_1['title'], "community": test_data_1['community'], "text": test_data_1['text'], "username": test_data_1['username'], "url": test_data_1['url']}
-    assert client.post(url, data=valid_data).status_code == 201
-
-    # create a second post for testing
-    valid_data = {"title": test_data_2['title'], "community": test_data_2['community'], "text": test_data_2['text'], "username": test_data_2['username'], "url": test_data_2['url']}
+    valid_data = {"title": "posts_create", "community": "posts_create", "text": "posts_create", "username": "posts_create", "url": "posts_create.com"}
     assert client.post(url, data=valid_data).status_code == 201
 
     # test that the post was inserted into the database
     with app.app_context():
         assert (
-            get_db().execute("select * from posts where title = ?", (test_data_1['title'])).fetchone()
+            get_db().execute("SELECT * FROM posts WHERE title = 'posts_create'").fetchone()
             is not None
         )
 
@@ -55,7 +49,7 @@ def test_posts_create(client, app):
     ("title", "community", "text", "username", "url", "message", "http_status_code"),
     (
         ("", "", "", "", "", b"Please fill out information", 404),
-        (test_data_1['title'], test_data_1['community'], test_data_1['text'], "bad_username", test_data_1['url'], b"Please make an account to post", 404),
+        ("posts_create", "posts_create", "posts_create", "bad_username", "posts_create.com", b"Please make an account to post", 404),
     ),
 )
 def test_posts_create_validate(client, title, community, text, username, url, message, http_status_code):
@@ -70,6 +64,12 @@ def test_posts_create_validate(client, title, community, text, username, url, me
 
 # Test /posts/retrieve
 def test_posts_retrieve(client, app):
+    # Add user and post for posts/retrieve testing
+    with app.app_context():
+        get_db().execute('INSERT INTO users (username, email, password, karma) VALUES (?, ?, ?, ?);', ("posts_retrieve", "posts@retrieve.com", "posts_retrieve", 0))
+        get_db().execute('INSERT INTO posts (title, community, text, username, url, dt) VALUES (?, ?, ?, ?, ?, ?);', ("posts_retrieve", "posts_retrieve", "posts_retrieve", "posts_retrieve", "posts_retrieve.com", datetime.now()))
+        get_db().commit()
+
     url = "/posts/retrieve"
 
     # test a valid POST request, CASE 1 retrieve all posts
@@ -77,22 +77,22 @@ def test_posts_retrieve(client, app):
     assert client.post(url, data=valid_data).status_code == 201
 
     # test a valid POST request, CASE 2 retrieve all posts with title
-    valid_data = {"title": test_data_1['title'], "community": ""}
+    valid_data = {"title": "posts_retrieve", "community": ""}
     assert client.post(url, data=valid_data).status_code == 201
 
     # test a valid POST request, CASE 3 retrieve all posts from community
-    valid_data = {"title": "", "community": test_data_1['community']}
+    valid_data = {"title": "", "community": "posts_retrieve"}
     assert client.post(url, data=valid_data).status_code == 201
 
     # test a valid POST request, CASE 4 retrieve all posts from title and community
-    valid_data = {"title": test_data_1['title'], "community": test_data_1['community']}
+    valid_data = {"title": "posts_retrieve", "community": "posts_retrieve"}
     assert client.post(url, data=valid_data).status_code == 201
 
 @pytest.mark.parametrize(
     ("title", "community", "message", "http_status_code"),
     (
-        ("bad_title", test_data_1['community'], b"Please provide a correct title", 404),
-        (test_data_1['community'], "bad_community", b"Please make a community that exists", 404),
+        ("bad_title", "posts_retrieve", b"Please provide a correct title", 404),
+        ("posts_retrieve", "bad_community", b"Please make a community that exists", 404),
         ("bad_title", "bad_community", b"Check information", 404),
     ),
 )
@@ -108,16 +108,22 @@ def test_posts_retrieve_validate(client, title, community, message, http_status_
 
 # Test posts/delete
 def test_posts_delete(client, app):
+    # Add user and post for posts/delete testing
+    with app.app_context():
+        get_db().execute('INSERT INTO users (username, email, password, karma) VALUES (?, ?, ?, ?);', ("posts_delete", "posts@delete.com", "posts_delete", 0))
+        get_db().execute('INSERT INTO posts (title, community, text, username, url, dt) VALUES (?, ?, ?, ?, ?, ?);', ("posts_delete", "posts_delete", "posts_delete", "posts_delete", "posts_delete.com", datetime.now()))
+        get_db().commit()
+
     url = "/posts/delete"
 
     # test a valid POST request
-    valid_data = {"title": test_data_1['title'], "username": test_data_1['username'], "password": test_data_1['password']}
+    valid_data = {"title": "posts_delete", "username": "posts_delete", "password": "posts_delete"}
     assert client.post(url, data=valid_data).status_code == 201
 
     # test that the post was deleted from the database
     with app.app_context():
         assert (
-            get_db().execute("select * from posts where title = ?", (test_data_1['title'])).fetchone()
+            get_db().execute("SELECT * FROM posts where title = 'posts_delete'").fetchone()
             is None
         )
 
@@ -125,10 +131,10 @@ def test_posts_delete(client, app):
     ("title", "username", "password", "message", "http_status_code"),
     (
         ("", "", "", b"Please provide information", 404),
-        ("", test_data_1['username'], test_data_1['password'], b"Please provide title", 404),
-        (test_data_1['title'], "", "", b"Please provide account info", 404),
-        ("bad_title", test_data_1['username'], test_data_1['password'], b"Provide the correct post by the correct user", 404),
-        (test_data_2['title'], "bad_username", "bad_password", b"Please provide correct use info", 404),
+        ("", "posts_delete", "posts_delete", b"Please provide title", 404),
+        ("posts_delete", "", "", b"Please provide account info", 404),
+        ("bad_title", "posts_delete", "posts_delete", b"Provide the correct post by the correct user", 404),
+        ("posts_delete", "bad_username", "bad_password", b"Please provide correct user info", 404),
     ),
 )
 def test_posts_delete_validate(client, title, username, password, message, http_status_code):
