@@ -136,45 +136,22 @@ def create_post():
         return Response(json.dumps({"message": "Please input some text body for the post"}), status=404, content_type="application/json")
 
     if _post_title is not None and _post_community is not None and _post_body is not None:
-        db.execute('INSERT INTO post (community_id, author_id, title, body)
-                    VALUES (
-                        (SELECT id FROM community WHERE community_name = ?, (_post_community)),
-                        login_id,
-                        ?, (_post_title),
-                        ?, (_post_body)
-                    )
-                ')
+        db.execute("INSERT INTO posts (community, author_id, title, body) VALUES (?, ?, ?, ?)", (_post_community, login_id, _post_title, _post_body))
         db.commit()
         return Response(json.dumps({"message": "Post created successfully"}), status=201, content_type="application/json")
 
 
 @appmain_blueprint.route('/posts/delete', methods=['GET', 'POST', 'DELETE'])
 def delete_post():
-    """
-    User has to be logged in to delete one of his/her posts
-    Get the title of the post, retrieve the ID from post title and then delete
-    """
     db = get_db()
 
-    _username = request.form['username']
     _post_title = request.form['Post Title']
-    _post_community = request.form['Post Community']
-
-    login_id = db.execute('SELECT id FROM users WHERE username = ? and password = ?', (_username))
-    if login_id is None:
-        # error case 2
-        return Response(json.dumps({"message": "User account not found"}), status=404, content_type="application/json")
 
     if _post_title is None:
-        # error case 3
         return Response(json.dumps({"message": "Post title not found"}), status=404, content_type="application/json")
 
-    if _post_community is None:
-        # error case 4
-        return Response(json.dumps({"message": "Post community not found"}), status=404, content_type="application/json")
-
-    if login_id is not None and _post_title is not None and _post_community is not None:
-        db.execute('DELETE FROM post where title = ?', (_post_title))
+    if _post_title is not None:
+        db.execute('DELETE FROM posts where title = ?', (_post_title))
         db.commit()
         return Response(json.dumps({"message": "Post deleted successfully"}), status=201, content_type="application/json")
 
@@ -194,7 +171,7 @@ def retrieve_existing_post():
         return Response(json.dumps({"message": "Please enter post title in search"}), status=404, content_type="application/json")
 
     if _post_title is not None:
-        db.execute('SELECT title, body, author_id, community_id, created FROM post WHERE title like '%?%', (_post_title)')
+        db.execute('SELECT title, text, author_id, community_id, created FROM post WHERE title like '%?%', (_post_title)')
         return Response(json.dumps({"message": "Post retrieved successfully"}), status=201, content_type="application/json")
 
 
@@ -254,7 +231,7 @@ def updateEmail():
                        (new_email, _username, _password))
             db.commit()
 
-            return Response(json.dumps({"message": "Succes"}), status=201, content_type="application/json")
+            return Response(json.dumps({"message": "Success"}), status=201, content_type="application/json")
 
 
 @appmain_blueprint.route('/accounts/delete', methods=['GET', 'POST'])
