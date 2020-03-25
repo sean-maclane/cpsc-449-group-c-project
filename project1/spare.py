@@ -118,7 +118,7 @@ def create_post():
         # error case 1
         return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
-    login_id = db.execute('SELECT id FROM user WHERE username = ? and password = ?', (_username)
+    login_id = db.execute('SELECT id FROM user WHERE username = ? and password = ?', (_username))
     if login_id is None:
         # error case 2
         return Response(json.dumps({"message": "Create an account"}), status=404, content_type="application/json")
