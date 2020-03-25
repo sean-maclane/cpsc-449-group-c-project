@@ -5,25 +5,6 @@ from datetime import datetime
 
 from project1.db import get_db
 
-test_data_1 = {
-    "title": "test_posts_1",
-    "community": "test_posts_1",
-    "text": "test_posts_1",
-    "username": "test_posts_1",
-    "email": "test_posts_1@test_posts_1.com",
-    "password": "test_posts_1",
-    "url": "test_posts_1"
-}
-
-test_data_2 = {
-    "title": "test_posts_2",
-    "community": "test_posts_2",
-    "text": "test_posts_2",
-    "username": "test_posts_2",
-    "email": "test_posts_2@test_posts_2.com",
-    "password": "test_posts_2",
-    "url": "test_posts_2"
-}
 
 # Test /posts/create
 def test_posts_create(client, app):
@@ -74,19 +55,48 @@ def test_posts_retrieve(client, app):
 
     # test a valid POST request, CASE 1 retrieve all posts
     valid_data = {"title": "", "community": ""}
-    assert client.post(url, data=valid_data).status_code == 201
+    case1_response = client.post(url, data=valid_data)
+    assert case1_response.status_code == 201
+    """ unstable section
+    num_posts_retrieved = len(case1_response.data)
+    with app.app_context():
+        all_post_count = get_db().execute('SELECT COUNT(*) FROM posts')
+        assert num_posts_retrieved == all_post_count
+    """
+
 
     # test a valid POST request, CASE 2 retrieve all posts with title
     valid_data = {"title": "posts_retrieve", "community": ""}
-    assert client.post(url, data=valid_data).status_code == 201
+    case2_response = client.post(url, data=valid_data)
+    assert case2_response.status_code == 201
+    """ unstable section
+    num_posts_retrieved = len(case2_response.data)
+    with app.app_context():
+        all_post_count = get_db().execute("SELECT COUNT(*) FROM posts WHERE title = 'posts_retrieve'")
+        assert num_posts_retrieved == all_post_count
+    """
 
     # test a valid POST request, CASE 3 retrieve all posts from community
     valid_data = {"title": "", "community": "posts_retrieve"}
-    assert client.post(url, data=valid_data).status_code == 201
+    case3_response = client.post(url, data=valid_data)
+    assert case3_response.status_code == 201
+    """ unstable section
+    num_posts_retrieved = len(case3_response.data)
+    with app.app_context():
+        all_post_count = get_db().execute("SELECT COUNT(*) FROM posts WHERE community = 'posts_retrieve'")
+        assert num_posts_retrieved == all_post_count
+    """
 
     # test a valid POST request, CASE 4 retrieve all posts from title and community
     valid_data = {"title": "posts_retrieve", "community": "posts_retrieve"}
-    assert client.post(url, data=valid_data).status_code == 201
+    case4_response = client.post(url, data=valid_data)
+    assert case4_response.status_code == 201
+    """ unstable section
+    num_posts_retrieved = len(case4_response.data)
+    with app.app_context():
+        all_post_count = get_db().execute("SELECT COUNT(*) FROM posts WHERE title = 'posts_retrieve' AND community = 'posts_retrieve'")
+        assert num_posts_retrieved == all_post_count
+    """
 
 @pytest.mark.parametrize(
     ("title", "community", "message", "http_status_code"),
