@@ -196,54 +196,6 @@ def retrieve_existing_post():
         return Response(json.dumps({"message": "Post retrieved successfully"}), status=201, content_type="application/json")
 
 
-@appmain_blueprint.route('/posts/retrieve', methods=['GET', 'POST'])
-def retrievePost():
-    if request.method == 'POST':
-        _title = request.form['title']
-        _community = request.form['community']
-
-        entry = Posts.query.filter_by(title=_title).all()
-        entryCommunity = Posts.query.filter_by(community=_community).all()
-
-        yes = Posts.query.filter(Posts.title)
-
-        sortedCategory = Posts.query.filter(
-            and_(Posts.title == _title, Posts.community == _community)).all()
-
-        fields = ['title', 'community', 'Username']
-        yes = Posts.query.options(load_only(*fields)).all()
-
-        if _title == "" and _community == "":  # retrieve all posts
-            print(yes)
-            postResult = Postschema.dump(yes)
-            return Response(json.dumps(postResult),
-                            status=201,
-                            mimetype="application/json")
-
-        if _title == "":  # if title entry is blank look at community and output those
-            print(entryCommunity)
-            postResult = Postschema.dump(entryCommunity)
-            return Response(json.dumps(postResult),
-                            status=201,
-                            mimetype="application/json")
-
-        if _community == "":  # if community is blank output title entries
-            print(entry)
-            postResult = Postschema.dump(entry)
-            return Response(json.dumps(postResult),
-                            status=201,
-                            mimetype="application/json")
-
-        else:
-            print(sortedCategory)  # else both fields are filled in
-            postResult = Postschema.dump(sortedCategory)
-            return Response(json.dumps(postResult),
-                            status=201,
-                            mimetype="application/json")
-
-    return render_template('retrievePost.html')
-
-
 @appmain_blueprint.route('/accounts/create', methods=['GET', 'POST'])
 def signup():
     db = get_db()
