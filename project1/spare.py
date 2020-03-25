@@ -71,7 +71,8 @@ def incrementKarma():
         # error case 1
         return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
-    login_id = db.execute('SELECT id FROM users WHERE username = ? and password = ?', (_username, _password)).fetchone()
+    login_id = db.execute(
+        'SELECT id FROM users WHERE username = ? and password = ?', (_username, _password)).fetchone()
     if login_id is None:
         # error case 2
         return Response(json.dumps({"message": "Create an account"}), status=404, content_type="application/json")
@@ -79,7 +80,6 @@ def incrementKarma():
     db.execute('UPDATE users SET karma=karma+1 WHERE id = ?', (login_id))
     db.commit()
     return Response(status=201)
-
 
 
 @bp.route('/votes/downvote', methods=['POST'])
@@ -93,7 +93,8 @@ def decrementKarma():
         # error case 1
         return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
-    login_id = db.execute('SELECT id FROM users WHERE username = ? and password = ?', (_username, _password)).fetchone()
+    login_id = db.execute(
+        'SELECT id FROM users WHERE username = ? and password = ?', (_username, _password)).fetchone()
     if login_id is None:
         # error case 2
         return Response(json.dumps({"message": "Create an account"}), status=404, content_type="application/json")
@@ -232,16 +233,18 @@ def signup():
         _email = request.form['email']
         _password = request.form['password']
         _karma = 0
-        error = None
 
         if not _username:
             error = "Username required"
+            return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
         if not _email:
             error = "Email required"
+            return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
         if not _password:
             error = "password required"
+            return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
         else:
             c.execute("INSERT INTO users(userName,email,password,karma) VALUES(?,?,?,?)",
@@ -249,6 +252,7 @@ def signup():
             db.commit()
             c.close()
             db.close()
+            return Response(json.dumps({"message": "Success"}), status=201, content_type="application/json")
 
 
 @bp.route('/accounts/updateEmail', methods=['GET', 'POST', 'PUT'])
@@ -264,12 +268,15 @@ def updateEmail():
 
         if not _username:
             error = "Username required"
+            return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
         if not _password:
             error = "password required"
+            return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
         if not new_email:
             error = "Email required"
+            return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
         else:
             c.execute("UPDATE users SET email=? WHERE userName =? OR password=?",
@@ -277,9 +284,10 @@ def updateEmail():
             db.commit()
             c.close()
             db.close()
+            return Response(json.dumps({"message": "Succes"}), status=201, content_type="application/json")
 
 
-@bp.route('/accounts/delete', methods=['GET', 'POST', 'DELETE'])
+@bp.route('/accounts/delete', methods=['GET', 'POST'])
 def deleteAcc():
     db = get_db()
     c = db.cursor()
@@ -290,14 +298,20 @@ def deleteAcc():
         error = None
 
         if not _username:
-            error = "Username required"
+            return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
         if not _password:
-            error = "password required"
+
+            return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
         else:
             c.execute("DELETE from users WHERE username=? AND password=?",
                       (_username, _password))
+            db.commit()
+            c.close()
+            db.close()
+
+            return Response(json.dumps({"message": "Success"}), status=201, content_type="application/json")
 
 
 if __name__ == "__main__":
