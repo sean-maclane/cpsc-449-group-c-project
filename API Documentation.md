@@ -94,8 +94,8 @@ Input
 5. url
 
 Possible errors- all return 404
-1. No information provided,  “ Please fill out information”
-2. Username doesn't exist to make posts,  “ Please make an account to post”
+1. No information provided,  “Please fill out information”
+2. Username doesn't exist to make posts,  “Please make an account to post”
 
 
 -Delete Post
@@ -106,10 +106,10 @@ Method=POST, takes in form input, upon completion returns 201
 Input
 1. title
 2. username
-3. Password
+3. password
 
 Possible errors- all return 404 status error if not fulfilled
-1. No information provided “Please provide information
+1. No information provided “Please provide information"
 2. No title provided “Please provide title”
 3. No account info provided “Please provide account info”
 4. Wrong title but correct user info “Provide the correct post by the correct user”
@@ -136,9 +136,6 @@ CASE 4: Both title and community are provided
      Retrieves all posts from inputted title and community 
 
 Possible Errors - return 404 status code
-1. No posts exist in the database “ Please make a post”
-2. Incorrect title “Please provide a correct title:
-3. Community doesn't exist “Please make a community that exists”
-4. Incorrect title Incorrect community “Check information”
-5. Incorrect title correct community “Check information”
-6. Correct title, incorrect community “Check information” vice versa
+1. Incorrect title “Please provide a correct title"
+2. Community doesn't exist “Please make a community that exists”
+3. Incorrect title Incorrect community “Check information”
