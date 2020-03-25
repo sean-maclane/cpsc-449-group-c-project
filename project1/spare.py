@@ -179,10 +179,12 @@ def delete_post():
         return Response(json.dumps({"message": "Post deleted successfully"}), status=201, content_type="application/json")
 
 
-@appmain_blueprint.route('/posts/retrieve', methods=['GET', 'POST'])
+@appmain_blueprint.route('/posts/retrieve-existing', methods=['GET', 'POST'])
 def retrieve_existing_post():
     """
-
+    Posts can be retrieved by anyone accessing the site; login not required.
+    Post title will be search for and values will be retrieved based on the ID
+    of the search field
     """
     db = get_db()
 
