@@ -74,9 +74,18 @@ http://localhost:2015/
 -------------------
 Running the tests
 -------------------
+Run these commands in the root directory of the project
+Standard:
 ```
-$ cd project_root/
 $ pytest
+```
+To file:
+```
+$ pytest >error.log
+```
+Less output:
+```
+$ pytest --tb=line
 ```
 
 
