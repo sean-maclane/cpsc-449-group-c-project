@@ -21,5 +21,3 @@ CREATE TABLE posts (
   url TEXT,
   dt DATETIME NOT NULL
 );
-
-COMMIT;

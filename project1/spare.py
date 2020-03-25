@@ -6,7 +6,7 @@ import os
 
 from project1.db import get_db
 
-appmain_blueprint = Blueprint("app_main", __name__)
+bp = Blueprint("spare", __name__)
 
 
 class UserSchema(Schema):
@@ -40,27 +40,27 @@ class PostSchema(Schema):
 #postResult = Postschema.dump(Posts.query.all())
 
 
-@appmain_blueprint.route('/')
+@bp.route('/')
 def home():
     return render_template('home.html')
 
 
-@appmain_blueprint.route('/account')
+@bp.route('/account')
 def account():
     return render_template('signup.html')
 
 
-@appmain_blueprint.route('/json/posts')
+@bp.route('/json/posts')
 def jsonf():
     return jsonify(postResult)
 
 
-@appmain_blueprint.route('/json/users')
+@bp.route('/json/users')
 def jsonUsers():
     return jsonify(userResult)
 
 
-@appmain_blueprint.route('/votes/upvote', methods=['POST'])
+@bp.route('/votes/upvote', methods=['POST'])
 def incrementKarma():
     db = get_db()
 
@@ -82,7 +82,7 @@ def incrementKarma():
     return Response(status=201)
 
 
-@appmain_blueprint.route('/votes/downvote', methods=['POST'])
+@bp.route('/votes/downvote', methods=['POST'])
 def decrementKarma():
     db = get_db()
 
@@ -104,7 +104,7 @@ def decrementKarma():
     return Response(status=201)
 
 
-@appmain_blueprint.route('/posts/create', methods=['GET', 'POST'])
+@bp.route('/posts/create', methods=['GET', 'POST'])
 def create_post():
     db = get_db()
 
@@ -141,7 +141,7 @@ def create_post():
         return Response(json.dumps({"message": "Post created successfully"}), status=201, content_type="application/json")
 
 
-@appmain_blueprint.route('/posts/delete', methods=['GET', 'POST', 'DELETE'])
+@bp.route('/posts/delete', methods=['GET', 'POST', 'DELETE'])
 def delete_post():
     db = get_db()
 
@@ -156,7 +156,7 @@ def delete_post():
         return Response(json.dumps({"message": "Post deleted successfully"}), status=201, content_type="application/json")
 
 
-@appmain_blueprint.route('/posts/retrieve-existing', methods=['GET', 'POST'])
+@bp.route('/posts/retrieve-existing', methods=['GET', 'POST'])
 def retrieve_existing_post():
     """
     Posts can be retrieved by anyone accessing the site; login not required.
@@ -175,7 +175,7 @@ def retrieve_existing_post():
         return Response(json.dumps({"message": "Post retrieved successfully"}), status=201, content_type="application/json")
 
 
-@appmain_blueprint.route('/accounts/create', methods=['GET', 'POST'])
+@bp.route('/accounts/create', methods=['GET', 'POST'])
 def signup():
     db = get_db()
 
@@ -205,7 +205,7 @@ def signup():
             return Response(json.dumps({"message": "Success"}), status=201, content_type="application/json")
 
 
-@appmain_blueprint.route('/accounts/updateEmail', methods=['GET', 'POST', 'PUT'])
+@bp.route('/accounts/updateEmail', methods=['GET', 'POST', 'PUT'])
 def updateEmail():
     db = get_db()
 
@@ -231,10 +231,10 @@ def updateEmail():
                        (new_email, _username, _password))
             db.commit()
 
-            return Response(json.dumps({"message": "Success"}), status=201, content_type="application/json")
+            return Response(json.dumps({"message": "Succes"}), status=201, content_type="application/json")
 
 
-@appmain_blueprint.route('/accounts/delete', methods=['GET', 'POST'])
+@bp.route('/accounts/delete', methods=['GET', 'POST'])
 def deleteAcc():
     db = get_db()
 

@@ -38,7 +38,7 @@ def create_app(test_config=None):
     # apply the blueprints to the app
     from project1 import spare
 
-    app.register_blueprint(spare.appmain_blueprint)
+    app.register_blueprint(spare.bp)
 
     # make url_for('index') == url_for('posts.index')
     # in another app, you might define a separate main index here with
