@@ -6,7 +6,7 @@ import os
 
 from project1.db import get_db
 
-bp = Blueprint("spare", __name__)
+appmain_blueprint = Blueprint("app_main", __name__)
 
 
 class UserSchema(Schema):
@@ -40,27 +40,27 @@ class PostSchema(Schema):
 #postResult = Postschema.dump(Posts.query.all())
 
 
-@bp.route('/')
+@appmain_blueprint.route('/')
 def home():
     return render_template('home.html')
 
 
-@bp.route('/account')
+@appmain_blueprint.route('/account')
 def account():
     return render_template('signup.html')
 
 
-@bp.route('/json/posts')
+@appmain_blueprint.route('/json/posts')
 def jsonf():
     return jsonify(postResult)
 
 
-@bp.route('/json/users')
+@appmain_blueprint.route('/json/users')
 def jsonUsers():
     return jsonify(userResult)
 
 
-@bp.route('/votes/upvote', methods=['POST'])
+@appmain_blueprint.route('/votes/upvote', methods=['POST'])
 def incrementKarma():
     db = get_db()
 
@@ -82,7 +82,7 @@ def incrementKarma():
     return Response(status=201)
 
 
-@bp.route('/votes/downvote', methods=['POST'])
+@appmain_blueprint.route('/votes/downvote', methods=['POST'])
 def decrementKarma():
     db = get_db()
 
@@ -104,78 +104,99 @@ def decrementKarma():
     return Response(status=201)
 
 
-@bp.route('/posts/create', methods=['GET', 'POST'])
-def createPost():
-    postform = Posts()
-    if request.method == 'POST':
-        _title = request.form['title']
-        _community = request.form['community']
-        _text = request.form['text']
-        _username = request.form['username']
-        _url = request.form['url']
-        holder = datetime.now()
-        timeCreated = datetime.strftime(
-            holder, '%Y/%m/%d %H.%M%p')  # creates time as string
+@appmain_blueprint.route('/posts/create', methods=['GET', 'POST'])
+def create_post():
+    db = get_db()
 
-        new_post = Posts(title=_title, community=_community,
-                         text=_text, Username=_username, url=_url, dt=timeCreated)
-        Account = Users.query.filter_by(userName=_username).first()
-        if Account is not None:
-            db.session.add(new_post)
-            db.session.commit()
-            postResult = Postschema.dump(Posts.query.all())
-            print("SUCCESS")
+    _username = request.form['username']
+    _password = request.form['password']
+    _post_title = request.form['Post Title']
+    _post_community = request.form['Post Community']
+    _post_body = request.form['Post Body']
 
-            # return jsonify(result), 201
+    if(_username == "" and _password == ""):
+        # error case 1
+        return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
-            return Response(json.dumps(postResult),
-                            status=201,
-                            mimetype="application/json")
+    login_id = db.execute('SELECT id FROM user WHERE username = ? and password = ?', (_username)
+    if login_id is None:
+        # error case 2
+        return Response(json.dumps({"message": "Create an account"}), status=404, content_type="application/json")
 
-            # return Response(status=201, mimetype='application/json')
+    if _post_title is None:
+        # error case 3
+        return Response(json.dumps({"message": "Enter post title"}), status=404, content_type="application/json")
 
-        else:
-            return Response('ERROR 404', status=404, mimetype="application/json")
+    if _post_community is None:
+        # error case 4
+        return Response(json.dumps({"message": "Enter post community"}), status=404, content_type="application/json")
 
-        return render_template('home.html')
+    if _post_body is None:
+        # error case 5
+        return Response(json.dumps({"message": "Please input some text body for the post"}), status=404, content_type="application/json")
 
-    return render_template('createPost.html')
-
-
-@bp.route('/posts/delete', methods=['GET', 'POST', 'DELETE'])
-def deletePost():
-    if request.method == 'POST':
-        _title = request.form['title']  # title to be deleted
-        _username = request.form['username']  # validate info
-        _password = request.form['password']  # validate info
-
-        # retrieves all posts relative to the user
-        entry = Posts.query.filter_by(Username=_username, title=_title).first()
-
-        userExists = Users.query.filter_by(userName=_username).first()
-
-        if userExists is not None:  # checks if user exists helps redirect 404 error
-            if userExists.userName == _username and userExists.password == _password:  # validate
-                db.session.delete(entry)
-                db.session.commit()
-                print("POST HAS BEEN DELETED")
-                postResult = Postschema.dump(
-                    Posts.query.order_by(Posts.title).all())
-                return Response(json.dumps(postResult),
-                                status=201,
-                                mimetype="application/json")
-            else:
-                return Response('ERROR 404', status=404, mimetype="application/json")
-
-        else:
-            print("User does not exist")
-            return Response('ERROR 404', status=404, mimetype="application/json")
-            return render_template('signup.html')
-
-    return render_template('deletepost.html')
+    if _post_title is not None and _post_community is not None and if _post_body is not None:
+        db.execute('INSERT INTO post (community_id, author_id, title, body)
+                    VALUES (
+                        (SELECT id FROM community WHERE community_name = ?, (_post_community)),
+                        login_id,
+                        ?, (_post_title),
+                        ?, (_post_body)
+                    )
+                ')
+        db.commit()
+        return Response(json.dumps({"message": "Post created successfully"}), status=201, content_type="application/json")
 
 
-@bp.route('/posts/retrieve', methods=['GET', 'POST'])
+@appmain_blueprint.route('/posts/delete', methods=['GET', 'POST', 'DELETE'])
+def delete_post():
+    """
+    User has to be logged in to delete one of his/her posts
+    Get the title of the post, retrieve the ID from post title and then delete
+    """
+    db = get_db()
+
+    _username = request.form['username']
+    _post_title = request.form['Post Title']
+    _post_community = request.form['Post Community']
+
+    login_id = db.execute('SELECT id FROM users WHERE username = ? and password = ?', (_username))
+    if login_id is None:
+        # error case 2
+        return Response(json.dumps({"message": "User account not found"}), status=404, content_type="application/json")
+
+    if _post_title is None:
+        # error case 3
+        return Response(json.dumps({"message": "Post title not found"}), status=404, content_type="application/json")
+
+    if _post_community is None:
+        # error case 4
+        return Response(json.dumps({"message": "Post community not found"}), status=404, content_type="application/json")
+
+    if login_id is not None and _post_title is not None and if _post_community is not None:
+        db.execute('DELETE FROM post where title = ?', (_post_title))
+        db.commit()
+        return Response(json.dumps({"message": "Post deleted successfully"}), status=201, content_type="application/json")
+
+
+@appmain_blueprint.route('/posts/retrieve', methods=['GET', 'POST'])
+def retrieve_existing_post():
+    """
+
+    """
+    db = get_db()
+
+    _post_title = request.form['Post Title']
+
+    if _post_title is None:
+        return Response(json.dumps({"message": "Please enter post title in search"}), status=404, content_type="application/json")
+
+    if _post_title is not None:
+        db.execute('SELECT title, body, author_id, community_id, created FROM post WHERE title like '%?%', (_post_title)')
+        return Response(json.dumps({"message": "Post retrieved successfully"}), status=201, content_type="application/json")
+
+
+@appmain_blueprint.route('/posts/retrieve', methods=['GET', 'POST'])
 def retrievePost():
     if request.method == 'POST':
         _title = request.form['title']
@@ -223,7 +244,7 @@ def retrievePost():
     return render_template('retrievePost.html')
 
 
-@bp.route('/accounts/create', methods=['GET', 'POST'])
+@appmain_blueprint.route('/accounts/create', methods=['GET', 'POST'])
 def signup():
     db = get_db()
 
@@ -253,7 +274,7 @@ def signup():
             return Response(json.dumps({"message": "Success"}), status=201, content_type="application/json")
 
 
-@bp.route('/accounts/updateEmail', methods=['GET', 'POST', 'PUT'])
+@appmain_blueprint.route('/accounts/updateEmail', methods=['GET', 'POST', 'PUT'])
 def updateEmail():
     db = get_db()
 
@@ -282,7 +303,7 @@ def updateEmail():
             return Response(json.dumps({"message": "Succes"}), status=201, content_type="application/json")
 
 
-@bp.route('/accounts/delete', methods=['GET', 'POST'])
+@appmain_blueprint.route('/accounts/delete', methods=['GET', 'POST'])
 def deleteAcc():
     db = get_db()
 
