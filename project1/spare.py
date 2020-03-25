@@ -256,15 +256,15 @@ def signup():
 
         if not _username:
 
-            return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
+            return Response(json.dumps({"message": "Username already in use"}), status=404, content_type="application/json")
 
         if not _email:
 
-            return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
+            return Response(json.dumps({"message": "Not proper email"}), status=404, content_type="application/json")
 
         if not _password:
 
-            return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
+            return Response(json.dumps({"message": "Error in creating your account"}), status=404, content_type="application/json")
 
         else:
             db.execute("INSERT INTO users(userName,email,password,karma) VALUES(?,?,?,?)",
@@ -285,15 +285,15 @@ def updateEmail():
 
         if not _username:
 
-            return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
+            return Response(json.dumps({"message": "No account to update email"}), status=404, content_type="application/json")
 
         if not _password:
 
-            return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
+            return Response(json.dumps({"message": "No account to update email"}), status=404, content_type="application/json")
 
         if not new_email:
 
-            return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
+            return Response(json.dumps({"message": "Enter a new email for account"}), status=404, content_type="application/json")
 
         else:
             db.execute("UPDATE users SET email=? WHERE userName =? OR password=?",
@@ -312,7 +312,7 @@ def deleteAcc():
         _password = request.form['password']
 
         if not _username:
-            return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
+            return Response(json.dumps({"message": "No account to delete"}), status=404, content_type="application/json")
 
         if not _password:
 
