@@ -1,23 +1,36 @@
--- Initialize the database.
--- Drop any existing data and create empty tables.
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS community;
+DROP TABLE IF EXISTS post;
+DROP TABLE IF EXISTS vote;
 
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS posts;
-
-CREATE TABLE users (
+CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  userName TEXT UNIQUE NOT NULL,
+  username TEXT UNIQUE NOT NULL,
+  user_pwd TEXT NOT NULL,
   email TEXT UNIQUE NOT NULL,
-  password TEXT NOT NULL,
   karma INTEGER NOT NULL
 );
 
-CREATE TABLE posts (
+CREATE TABLE community (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  community_name TEXT UNIQUE NOT NULL
+);
+
+CREATE TABLE post (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   title TEXT NOT NULL,
-  community TEXT NOT NULL,
-  text TEXT NOT NULL,
-  Username TEXT NOT NULL,
-  url TEXT,
-  dt DATETIME NOT NULL
+  body TEXT NOT NULL,
+  author_id INTEGER NOT NULL,
+  community_id INTEGER NOT NULL,
+  created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (author_id) REFERENCES user (id),
+  FOREIGN KEY (community_id) REFERENCES community (id)
 );
+
+CREATE TABLE vote (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  upvote INTEGER NOT NULL,
+  downvote INTEGER NOT NULL
+);
+
+COMMIT;
