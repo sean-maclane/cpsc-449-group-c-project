@@ -1,6 +1,8 @@
 import pytest
 from flask import g
 from flask import session
+from flask import *
+import json
 
 from project1.db import get_db
 
@@ -44,16 +46,22 @@ def test_accounts_create_validate(client, username, email, password, message, ht
 
 # Test accounts/updateEmail
 def test_accounts_updateEmail(client, app):
+    # Add user for delete testing
+    with app.app_context():
+        get_db().execute('INSERT INTO users (username, email, password, karma) VALUES (?, ?, ?, ?);', ("accounts_updateEmail", "accounts@updateEmail.com", "accounts_updateEmail", 0))
+        get_db().execute('INSERT INTO users (username, email, password, karma) VALUES (?, ?, ?, ?);', ("accounts_updateEmail_2", "accounts_2@updateEmail_2.com", "accounts_updateEmail_2", 0))
+        get_db().commit()
+    
     url = "/accounts/updateEmail"
 
     # test a valid POST request
-    valid_data = {"username": "test_accounts_create", "email": "new_test_accounts_create@test_accounts_create.com", "password": "test_accounts_create"}
+    valid_data = {"username": "accounts_updateEmail", "email": "new_accounts@updateEmail.com", "password": "accounts_updateEmail"}
     assert client.post(url, data=valid_data).status_code == 201
 
     # test that the new email was inserted into the database
     with app.app_context():
         assert (
-            get_db().execute("select * from users where username = 'test_accounts_create' and email = 'new_test_accounts_create@test_accounts_create.com'").fetchone()
+            get_db().execute("select * from users where username = 'test_accounts_create' and email = 'new_accounts@updateEmail.com'").fetchone()
             is not None
         )
 
@@ -62,8 +70,8 @@ def test_accounts_updateEmail(client, app):
     (
         ("", "", "", b"Provided information", 404),
         ("nonexistant_username", "new@new.com", "nonexistant_password", b"No account to update email", 404),
-        ("test_accounts_create", "", "test_accounts_create", b"Enter a new email for account", 404),
-        ("test_accounts_create", "test_accounts_create_2@test_accounts_create_2.com", "test_accounts_create", b"Please provide a unique email", 404),
+        ("accounts_updateEmail", "", "accounts_updateEmail", b"Enter a new email for account", 404),
+        ("accounts_updateEmail", "accounts_2@updateEmail_2.com", "accounts_updateEmail", b"Please provide a unique email", 404),
     ),
 )
 def test_accounts_updateEmail_validate(client, username, email, password, message, http_status_code):
@@ -78,16 +86,21 @@ def test_accounts_updateEmail_validate(client, username, email, password, messag
 
 # Test accounts/delete
 def test_accounts_delete(client, app):
+    # Add user for delete testing
+    with app.app_context():
+        get_db().execute('INSERT INTO users (username, email, password, karma) VALUES (?, ?, ?, ?);', ("accounts_delete", "accounts@delete.com", "accounts_delete", 0))
+        get_db().commit()
+
     url = "/accounts/delete"
 
     # test a valid POST request
-    valid_data = {"username": "test_accounts_create_2", "password": "test_accounts_create_2"}
+    valid_data = {"username": "accounts_delete", "password": "accounts_delete"}
     assert client.post(url, data=valid_data).status_code == 201
 
     # test that the user was deleted from the database
     with app.app_context():
         assert (
-            get_db().execute("select * from users where username = 'test_accounts_create_2'").fetchone()
+            get_db().execute("select * from users where username = 'accounts_delete'").fetchone()
             is None
         )
 
@@ -110,16 +123,21 @@ def test_accounts_delete_validate(client, username, password, message, http_stat
 
 # Test votes/upvote
 def test_votes_upvote(client, app):
+    # Add user for upvote testing
+    with app.app_context():
+        get_db().execute('INSERT INTO users (username, email, password, karma) VALUES (?, ?, ?, ?);', ("votes_upvote", "votes@upvote.com", "votes_upvote", 0))
+        get_db().commit()
+
     url = "/votes/upvote"
 
     # test a valid POST request
-    valid_data = {"username": "test_accounts_create", "password": "test_accounts_create"}
+    valid_data = {"username": "votes_upvote", "password": "votes_upvote"}
     assert client.post(url, data=valid_data).status_code == 201
 
     # test that the karma was incremented in the database
     with app.app_context():
         assert (
-            get_db().execute("select * from users where username = 'test_accounts_create' and karma = '1'").fetchone()
+            get_db().execute("SELECT * FROM users WHERE username = 'votes_upvote' and karma = '1'").fetchone()
             is not None
         )
 
@@ -142,16 +160,21 @@ def test_votes_upvote_validate(client, username, password, message, http_status_
 
 # Test votes/downvote
 def test_votes_downvote(client, app):
+    # Add user for downvote testing
+    with app.app_context():
+        get_db().execute('INSERT INTO users (username, email, password, karma) VALUES (?, ?, ?, ?);', ("votes_downvote", "votes@downvote.com", "votes_downvote", 0))
+        get_db().commit()
+    
     url = "/votes/downvote"
 
     # test a valid POST request
-    valid_data = {"username": "test_accounts_create", "password": "test_accounts_create"}
+    valid_data = {"username": "votes_downvote", "password": "votes_downvote"}
     assert client.post(url, data=valid_data).status_code == 201
 
     # test that the karma was decremented in the database
     with app.app_context():
         assert (
-            get_db().execute("select * from users where username = 'test_accounts_create' and karma = '0'").fetchone()
+            get_db().execute("SELECT * FROM users WHERE username = 'votes_downvote' and karma = '-1'").fetchone()
             is not None
         )
 
