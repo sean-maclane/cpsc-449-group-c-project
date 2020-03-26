@@ -77,3 +77,11 @@ def retrieve_existing_post():
     if _post_title is not None:
         db.execute("SELECT community, title, text, dt FROM posts WHERE title = ?", (_post_title))
         return Response(json.dumps({"message": "Post retrieved successfully"}), status=201, content_type="application/json")
+        
+
+# WSGI entrypoint for POSTS
+from project1 import create_app
+app = create_app()
+
+if __name__ == '__main__':
+    app.run(host='127.0.0.1', port=2015)
