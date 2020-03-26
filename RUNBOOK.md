@@ -17,28 +17,17 @@ $ git pull origin master
 <<Enter github username and password>>
 ```
 
---------------
-Python install
---------------
+----------------------------------------------------------------
+Python package management, virtual enviornment, and dependencies
+----------------------------------------------------------------
 
 ```
 $ sudo apt install python3-pip
-```
-
----------------------------------------
-Python virtual enviornment, reccomended
----------------------------------------
-```
+$ sudo apt install python3-venv
 $ python3 -m venv venv
 $ . venv/bin/activate
-```
-
----------------------------------
-Install dev and test Dependencies
----------------------------------
-```
-$ pip install -e .
-$ pip install '.[test]'
+$ pip3 install -e .
+$ pip3 install '.[test]'
 ```
 
 ------------------------
