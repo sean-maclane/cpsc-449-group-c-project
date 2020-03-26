@@ -36,9 +36,11 @@ def create_app(test_config=None):
     db.init_app(app)
 
     # apply the blueprints to the app
-    from project1 import spare
+    from project1 import accounts, posts, votes
 
-    app.register_blueprint(spare.bp)
+    app.register_blueprint(accounts.bp)
+    app.register_blueprint(posts.bp)
+    app.register_blueprint(votes.bp)
 
     # make url_for('index') == url_for('posts.index')
     # in another app, you might define a separate main index here with
