@@ -1,5 +1,5 @@
 # Local Branches
-/app
+*pycache__/
 
 # From Flask Tutorial
 venv/
