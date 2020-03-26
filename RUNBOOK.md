@@ -92,9 +92,9 @@ Test gunicorn3 - (gunicorn3 wsgi_py3_file:app) :
 
     $ gunicorn3 wsgi:app
 
-Run a Flask application with 4 worker processes binding to localhost port 8000 (-b 127.0.0.1:8000)
+Run a Flask application with 4 worker processes binding to localhost port 2015 (-b 127.0.0.1:2015) for file `posts.py` in directory `project1`
 
-    $ gunicorn3 -w 4 -b 127.0.0.1:2015 wsgi:app
+    $ gunicorn3 -w 4 -b 127.0.0.1:2015 project1.posts:app
 
 Open the web browser and go to URL:
 
@@ -104,10 +104,13 @@ These instructions can be put in a PROCFILE, which has the following format:
 
     process1_nickname: shell_command_for_process1
     process2_nickname: shell_command_for_process2
+    process3_nickname: shell_command_for_process3
 
 Contents of the PROCFILE:
 
-    main_test: gunicorn3 --bind 127.0.0.1:$PORT --access-logfile - --error-logfile - --log-level debug wsgi:app
+    posts_test: gunicorn3 --bind 127.0.0.1:$PORT --access-logfile - --error-logfile - --log-level debug project1.posts:app
+    votes_test: gunicorn3 --bind 127.0.0.1:$PORT --access-logfile - --error-logfile - --log-level debug project1.votes:app
+    accounts_test: gunicorn3 --bind 127.0.0.1:$PORT --access-logfile - --error-logfile - --log-level debug project1.accounts:app
 
 **NOTE**: As per the [foreman documentation][1] if multiple instances of the same process are assigned `$PORT`, then each of them increments by 1, and the variable increments by 100 for each new process line in the `Procfile`
 
@@ -185,7 +188,7 @@ Contents of the PROCFILE:
 
 Orchestration can now be run like, which starts all processes:
 
-    $ foreman start -m main_test=3,caddy_lbt=1 --port 3000
+    $ foreman start -m posts_test=3,votes_test=3,accounts_test=1,caddy_lbt=1 --port 3000
 
 **NOTE**: Worker processes will start with 3000, so if `main_test` has three worker processes, they will be bound to `3000`, `3001`, and `3002`.
 The process (votes) will run on `3100`, `3101`, and `3102`, if it has 3 worker processes.
