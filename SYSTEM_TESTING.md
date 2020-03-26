@@ -41,5 +41,4 @@ Consolidate stuff from:
 + https://www.blazemeter.com/blog/jmeter-vs-locust-which-one-should-you-choose/
 + https://medium.com/better-programming/introduction-to-locust-an-open-source-load-testing-tool-in-python-2b2e89ea1ff
 + https://blog.realkinetic.com/load-testing-with-locust-part-1-174040afdf23?gi=7c21be14aa79
-+ https://buttercms.com/blog/load-testing-round-up-8-tools-you-can-use-to-strengthen-your-stack
 + https://www.tothenew.com/blog/performing-heavy-load-testing-on-your-website-using-python-based-tool-locust/
