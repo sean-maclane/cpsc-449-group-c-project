@@ -88,17 +88,17 @@ Create WSGI python entrypoint of the application for gunicorn, on port `2015`:
 	if __name__ == '__main__':
 		flask_variable.run(host='127.0.0.1', port=2015)
 
-Test gunicorn3 - (gunicorn3 py3_filename:app) :
+Test gunicorn3 - (gunicorn3 wsgi_py3_file:app) :
 
-    $ gunicorn3 main:app
+    $ gunicorn3 wsgi:app
 
 Run a Flask application with 4 worker processes binding to localhost port 8000 (-b 127.0.0.1:8000)
 
-    $ gunicorn3 -w 4 -b 127.0.0.1:8000 main:app
+    $ gunicorn3 -w 4 -b 127.0.0.1:2015 wsgi:app
 
 Open the web browser and go to URL:
 
-http://127.0.0.1:8000
+http://127.0.0.1:2015
 
 These instructions can be put in a PROCFILE, which has the following format:
 
@@ -124,19 +124,20 @@ To perform the below operations:
 
 A CADDYFILE would have to be created and the content would look like:
 
-    localhost:8000/votes {
-        proxy / localhost:8100 localhost:8200 localhost:8300 {
+    127.0.0.1:2015/posts {
+        proxy / 127.0.0.1:3000 127.0.0.1:3001 127.0.0.1:3002 {
             policy least_conn
             transparent
         }
     }
 
-    localhost:8000/posts {
-        proxy / localhost:8101 localhost:8201 localhost:8301 {
+    127.0.0.1:2015/votes {
+        proxy / 127.0.0.1:3100 127.0.0.1:3101 127.0.0.1:3102 {
             policy least_conn
             transparent
         }
     }
+
 
 **Explanation**:
 All reqests coming to the application's votes page will be redirected to a proxies localhost:8100 localhost:8200 localhost:8300
@@ -179,7 +180,7 @@ Orchestration will be carried out with foreman. Before carrying out orchestratio
 
 Contents of the PROCFILE:
 
-    main_test: gunicorn3 -w 4 -b 127.0.0.1:8000 --access-logfile gunicorn3_main main:app
+    main_test: gunicorn3 --bind 127.0.0.1:$PORT --access-logfile - --error-logfile - --log-level debug wsgi:app
     caddy_lbt: ulimit -n 8192 && caddy
 
 Orchestration can now be run like, which starts all processes:
