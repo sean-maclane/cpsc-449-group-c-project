@@ -39,8 +39,8 @@ def test_posts_create_validate(client, title, community, text, username, url, me
     
     response = client.post(url, data=bad_data)
 
-    assert message in response.data
     assert http_status_code == response.status_code
+    assert message in response.data
 
 
 # Test /posts/retrieve
@@ -112,8 +112,8 @@ def test_posts_retrieve_validate(client, title, community, message, http_status_
     
     response = client.post(url, data=bad_data)
 
-    assert message in response.data
     assert http_status_code == response.status_code
+    assert message in response.data
 
 
 # Test posts/delete
@@ -153,5 +153,5 @@ def test_posts_delete_validate(client, title, username, password, message, http_
 
     response = client.post(url, data=bad_data)
 
-    assert message in response.data
     assert http_status_code == response.status_code
+    assert message in response.data
