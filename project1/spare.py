@@ -181,28 +181,36 @@ def signup():
 
     if request.method == 'POST':
         _username = request.form['username']
-        _email = request.form['email']
         _password = request.form['password']
+        _email = request.form['email']
+
         _karma = 0
 
-        if not _username:
+        validEmail = db.execute(
+            'SELECT email FROM users WHERE email=?', (_email,)).fetchone()
+
+        validUser = db.execute(
+            'SELECT userName FROM users WHERE userName=?', (_username,)).fetchone()
+
+        if _username == "" and _password == "" and _email == "":
+            return Response(json.dumps({"message": "Error in creating your account"}), status=404, content_type="application/json")
+
+        if _email == "":
+            return Response(json.dumps({"message": "Not Proper email"}), status=404, content_type="application/json")
+
+        if validEmail is not None:
+            return Response(json.dumps({"message": "Email already in use"}), status=404, content_type="application/json")
+
+        if validUser is not None:
 
             return Response(json.dumps({"message": "Username already in use"}), status=404, content_type="application/json")
-
-        if not _email:
-
-            return Response(json.dumps({"message": "Not proper email"}), status=404, content_type="application/json")
-
-        if not _password:
-
-            return Response(json.dumps({"message": "Error in creating your account"}), status=404, content_type="application/json")
 
         else:
             db.execute("INSERT INTO users(userName,email,password,karma) VALUES(?,?,?,?)",
                        (_username, _email, _password, _karma))
             db.commit()
 
-            return Response(json.dumps({"message": "Success"}), status=201, content_type="application/json")
+            return Response(status=201)
 
 
 @bp.route('/accounts/updateEmail', methods=['GET', 'POST', 'PUT'])
@@ -214,15 +222,29 @@ def updateEmail():
         _password = request.form['password']
         new_email = request.form['email']
 
-        if not _username:
+        validEmail = db.execute(
+            'SELECT email FROM users WHERE email=?', (new_email,)).fetchone()
+
+        validUser = db.execute(
+            'SELECT userName FROM users WHERE userName=? AND password=?', (_username, _password,)).fetchone()
+
+        if _username == "" and _password == "" and new_email == "":
+
+            return Response(json.dumps({"message": "Provided information"}), status=404, content_type="application/json")
+
+        if new_email == "":
+
+            return Response(json.dumps({"message": "Enter a new email for account"}), status=404, content_type="application/json")
+
+        if validUser is None:
 
             return Response(json.dumps({"message": "No account to update email"}), status=404, content_type="application/json")
 
-        if not _password:
+        if validUser is not None and validEmail is not None:
 
-            return Response(json.dumps({"message": "No account to update email"}), status=404, content_type="application/json")
+            return Response(json.dumps({"message": "Please provide a unique email"}), status=404, content_type="application/json")
 
-        if not new_email:
+        if validEmail is not None:
 
             return Response(json.dumps({"message": "Enter a new email for account"}), status=404, content_type="application/json")
 
@@ -231,7 +253,7 @@ def updateEmail():
                        (new_email, _username, _password))
             db.commit()
 
-            return Response(json.dumps({"message": "Succes"}), status=201, content_type="application/json")
+            return Response(status=201)
 
 
 @bp.route('/accounts/delete', methods=['GET', 'POST'])
@@ -242,19 +264,21 @@ def deleteAcc():
         _username = request.form['username']
         _password = request.form['password']
 
-        if not _username:
+        validUser = db.execute(
+            'SELECT userName FROM users WHERE userName=? AND password=?', (_username, _password,)).fetchone()
+
+        if _username == "" and _password == "":
+            return Response(json.dumps({"message": "Provide Information"}), status=404, content_type="application/json")
+
+        if validUser is None:
             return Response(json.dumps({"message": "No account to delete"}), status=404, content_type="application/json")
-
-        if not _password:
-
-            return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
         else:
             db.execute("DELETE from users WHERE username=? AND password=?",
                        (_username, _password))
             db.commit()
 
-            return Response(json.dumps({"message": "Success"}), status=201, content_type="application/json")
+            return Response(status=201)
 
 
 if __name__ == "__main__":
