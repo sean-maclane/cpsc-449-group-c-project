@@ -1,5 +1,12 @@
-localhost:2015/posts, 127.0.0.1:2015/posts {
-    proxy / 127.0.0.1:2016 127.0.0.1:2017 127.0.0.1:2018 {
+127.0.0.1:2015/posts {
+    proxy / 127.0.0.1:3000 127.0.0.1:3001 127.0.0.1:3002 {
+        policy least_conn
+        transparent
+    }
+}
+
+127.0.0.1:2015/votes {
+    proxy / 127.0.0.1:3100 127.0.0.1:3101 127.0.0.1:3102 {
         policy least_conn
         transparent
     }
