@@ -1,4 +1,4 @@
 include LICENSE
-include flaskr/schema.sql
+include project1/schema.sql
 graft tests
 global-exclude *.pyc
