@@ -19,7 +19,7 @@ Test / Locust file Template
 Load Testing
 ------------
 
-$ locust -f locustfile.py --host=http://localhost:2015 --no-web -c 1000 -r 100
+$ locust -f locustfile.py --host=http://localhost:2015 --no-web -c 100 -r 10
 
 where:
 
