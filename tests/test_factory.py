@@ -1,3 +1,7 @@
+'''
+This file was adapted from the flask documentation for our project
+'''
+
 from project1 import create_app
 
 

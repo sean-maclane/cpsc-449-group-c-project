@@ -1,3 +1,7 @@
+'''
+This file was adapted from the flask documentation for our project
+'''
+
 import io
 
 from setuptools import find_packages
@@ -11,10 +15,10 @@ setup(
     version="1.0.0",
     license="MIT",
     maintainer="CPSC 440 Group C",
-    description="",
+    description="A simple reddit clone backend",
     long_description=readme,
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
-    install_requires=["flask", "wheel", "pytest", "coverage", "locustio"]
+    install_requires=["flask", "pytest", "coverage", "locustio"],
 )
