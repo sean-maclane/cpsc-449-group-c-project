@@ -23,6 +23,7 @@ class UserBehavior(TaskSet):
         self.community = next(community_generator)
 
         self.create_account()
+        self.retrieve_post()
     
     def on_stop(self):
         self.delete_account()
