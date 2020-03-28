@@ -1,3 +1,7 @@
+'''
+This file was adapted from the flask documentation for our project
+'''
+
 import os
 import tempfile
 
