@@ -25,19 +25,22 @@ def signup():
         validUser = db.execute(
             'SELECT userName FROM users WHERE userName=?', (_username,)).fetchone()
 
+        
+
         if _username == "" and _password == "" and _email == "":
             return Response(json.dumps({"message": "Error in creating your account"}), status=404, content_type="application/json")
 
-        if _email == "":
-            return Response(json.dumps({"message": "Not Proper email"}), status=404, content_type="application/json")
 
         if validEmail is not None:
-            return Response(json.dumps({"message": "Email already in use"}), status=404, content_type="application/json")
+            return Response(json.dumps({"message":"Email already in use"}), status=404, content_type="application/json")
 
         if validUser is not None:
 
             return Response(json.dumps({"message": "Username already in use"}), status=404, content_type="application/json")
 
+        if '@' not in _email:
+            return Response(json.dumps({"message": "Not proper Email"}), status=404, content_type="application/json")
+            
         else:
             db.execute("INSERT INTO users(userName,email,password,karma) VALUES(?,?,?,?)",
                        (_username, _email, _password, _karma))
@@ -73,13 +76,13 @@ def updateEmail():
 
             return Response(json.dumps({"message": "No account to update email"}), status=404, content_type="application/json")
 
-        if validUser is not None and validEmail is not None:
+        if validEmail is None and validUser is not None :
 
-            return Response(json.dumps({"message": "Please provide a unique email"}), status=404, content_type="application/json")
+            return Response(json.dumps({"message": "Enter a new email for account"}), status=404, content_type="application/json")
 
         if validEmail is not None:
 
-            return Response(json.dumps({"message": "Enter a new email for account"}), status=404, content_type="application/json")
+            return Response(json.dumps({"message": "Please provide a unique email"}), status=404, content_type="application/json")
 
         else:
             db.execute("UPDATE users SET email=? WHERE userName =? OR password=?",
