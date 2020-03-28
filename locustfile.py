@@ -39,7 +39,7 @@ class UserBehavior(TaskSet):
         self.email = next(email_generator)
         
         url = "/accounts/updateEmail"
-        data = {"username": self.username , "password": self.password}
+        data = {"username": self.username , "password": self.password, "email": self.email}
         self.client.post(url, data)
 
     '''
