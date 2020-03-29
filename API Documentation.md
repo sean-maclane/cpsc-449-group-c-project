@@ -131,6 +131,6 @@ Unique cases for post retrieval
 	- Retrieves all posts from inputted title and community 
 
 Possible Errors - return 404 status code
-1. Title not found "No post with this title"
-2. Community not found "No community with this name"
-3. Title and community not found "Title and community not found"
+1. Title not provided "Provide a title"
+2. Community not provided "Provide a community"
+3. Title and community not provided "Provide a title and community"

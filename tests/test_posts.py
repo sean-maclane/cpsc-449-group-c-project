@@ -100,9 +100,9 @@ def test_posts_retrieve(client, app):
 @pytest.mark.parametrize(
     ("title", "community", "message", "http_status_code"),
     (
-        ("bad_title", "posts_retrieve", b"No post with this title", 404),
-        ("posts_retrieve", "bad_community", b"No community with this name", 404),
-        ("bad_title", "bad_community", b"Title and community not found", 404),
+        ("", "posts_retrieve", b"Provide a title", 404),
+        ("posts_retrieve", "", b"Provide a community", 404),
+        ("", "", b"Provide a title and community", 404),
     ),
 )
 def test_posts_retrieve_validate(client, title, community, message, http_status_code):
