@@ -22,7 +22,7 @@ def create_post():
         # error case 1
         return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
-    login_id = db.execute('SELECT id FROM user WHERE username = ? and password = ?', (_username))
+    login_id = db.execute('SELECT id FROM user WHERE username = ? and password = ?', (_username, _password))
     if login_id is None:
         # error case 2
         return Response(json.dumps({"message": "Create an account"}), status=404, content_type="application/json")
@@ -55,7 +55,7 @@ def delete_post():
         return Response(json.dumps({"message": "Post title not found"}), status=404, content_type="application/json")
 
     if _post_title is not None:
-        db.execute('DELETE FROM posts where title = ?', (_post_title))
+        db.execute('DELETE FROM posts where title = ?', (_post_title,))
         db.commit()
         return Response(json.dumps({"message": "Post deleted successfully"}), status=201, content_type="application/json")
 
@@ -75,7 +75,7 @@ def retrieve_existing_post():
         return Response(json.dumps({"message": "Please enter post title in search"}), status=404, content_type="application/json")
 
     if _post_title is not None:
-        db.execute("SELECT community, title, text, dt FROM posts WHERE title = ?", (_post_title))
+        db.execute("SELECT community, title, text, dt FROM posts WHERE title = ?", (_post_title,))
         return Response(json.dumps({"message": "Post retrieved successfully"}), status=201, content_type="application/json")
         
 
