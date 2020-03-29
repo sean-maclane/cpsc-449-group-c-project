@@ -7,7 +7,7 @@ def get_unique_username():
 
 def get_unique_email():
     id = 0
-    base_string = "locust_email_"
+    base_string = "locust@email_"
     while True:
         id = id + 1
         yield base_string + str(id)

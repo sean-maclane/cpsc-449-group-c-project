@@ -22,15 +22,19 @@ class UserBehavior(TaskSet):
         self.post_body = next(post_text_generator)
         self.community = next(community_generator)
 
+        self.hello_world()
         self.create_account()
-        self.retrieve_post()
     
     def on_stop(self):
         self.delete_account()
 
+    def hello_world(self):
+        url = "/hello"
+        self.client.get(url)
+
     def create_account(self):
         url = "/accounts/create"
-        data = {"username": self.username , "password": self.password, "email": self.email}
+        data = {"username": self.username, "password": self.password, "email": self.email}
         self.client.post(url, data)
 
     def delete_account(self):
@@ -61,14 +65,8 @@ class UserBehavior(TaskSet):
     @task(1)
     def retrieve_post(self):
         retrieve_url = '/posts/retrieve'
-        retrieve_data1 = {'title': '', 'community': ''}                             # case 1 from test_posts.py
-        retrieve_data2 = {'title': self.post_title, 'community': ''}                # case 2 from test_posts.py
-        retrieve_data3 = {'title': '', 'community': self.community}                 # case 3 from test_posts.py
-        retrieve_data4 = {'title': self.post_title, 'community': self.community}    # case 4 from test_posts.py
-        self.client.post(retrieve_url, retrieve_data1)
-        self.client.post(retrieve_url, retrieve_data2)
-        self.client.post(retrieve_url, retrieve_data3)
-        self.client.post(retrieve_url, retrieve_data4)
+        retrieve_data = {'title': self.post_title, 'community': self.community}
+        self.client.post(retrieve_url, retrieve_data)
 
     @task
     def create_post(self):
