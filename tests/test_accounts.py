@@ -9,6 +9,11 @@ from project1.db import get_db
 
 # Test /accounts/create
 def test_accounts_create(client, app):
+    # Add existing user for error testing
+    with app.app_context():
+        get_db().execute('INSERT INTO users (username, email, password, karma) VALUES (?, ?, ?, ?);', ("existing_accounts_create", "existing_accounts@create.com", "existing_accounts_create", 0))
+        get_db().commit()
+    
     url = "/accounts/create"
 
     # test a valid POST request
@@ -26,9 +31,7 @@ def test_accounts_create(client, app):
     ("username", "email", "password", "message", "http_status_code"),
     (
         ("", "", "", b"Error in creating your account", 404),
-        ("other", "accounts@create.com", "other", b"Email already in use", 404),
-        ("accounts_create", "other@other.com", "other", b"Username already in use", 404),
-        ("other", "bademail.com", "other", b"Not proper Email", 404),
+        ("other2", "bademail.com", "other2", b"Not proper Email", 404),
     ),
 )
 def test_accounts_create_validate(client, username, email, password, message, http_status_code):

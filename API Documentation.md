@@ -14,9 +14,7 @@ Input needed
 
 Possible Errors for above- all return 404 status error if not fulfilled
 1. No fields above are provided    "Error in creating your account"
-2. Email address is already taken  "Email already in use"
-3. Username is already taken  "Username already in use"
-4. Email address doesn’t contain @ "Not proper Email"
+2. Email address doesn’t contain @ "Not proper Email"
 
 
 ### Delete Account

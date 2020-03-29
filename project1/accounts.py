@@ -19,24 +19,8 @@ def signup():
 
         _karma = 0
 
-        validEmail = db.execute(
-            'SELECT email FROM users WHERE email=?', (_email,)).fetchone()
-
-        validUser = db.execute(
-            'SELECT userName FROM users WHERE userName=?', (_username,)).fetchone()
-
-        
-
         if _username == "" and _password == "" and _email == "":
             return Response(json.dumps({"message": "Error in creating your account"}), status=404, content_type="application/json")
-
-
-        if validEmail is not None:
-            return Response(json.dumps({"message":"Email already in use"}), status=404, content_type="application/json")
-
-        if validUser is not None:
-
-            return Response(json.dumps({"message": "Username already in use"}), status=404, content_type="application/json")
 
         if '@' not in _email:
             return Response(json.dumps({"message": "Not proper Email"}), status=404, content_type="application/json")
