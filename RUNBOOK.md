@@ -55,27 +55,9 @@ $ flask run
 ```
 
 Open the web browser and go to URL:
-
+```
 http://localhost:2015/
-
-
--------------------
-Running the tests
--------------------
-Run these commands in the root directory of the project
-Standard:
 ```
-$ pytest
-```
-To file:
-```
-$ pytest >error.log
-```
-Less output:
-```
-$ pytest --tb=line
-```
-
 
 ----------------------
 WSGI Server Deployment
