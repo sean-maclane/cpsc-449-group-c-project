@@ -49,14 +49,21 @@ def delete_post():
     db = get_db()
 
     _post_title = request.form['title']
+    _username = request.form['username']
+    _password = request.form['password']
 
-    if _post_title is None:
-        return Response(json.dumps({"message": "Post title not found"}), status=404, content_type="application/json")
+    if _post_title == "":
+        return Response(json.dumps({"message": "Please provide title"}), status=404, content_type="application/json")
 
-    if _post_title is not None:
-        db.execute('DELETE FROM posts where title = ?', (_post_title,))
-        db.commit()
-        return Response(json.dumps({"message": "Post deleted successfully"}), status=201, content_type="application/json")
+    if _username == "":
+        return Response(json.dumps({"message": "Please provide username"}), status=404, content_type="application/json")
+
+    if _password == "":
+        return Response(json.dumps({"message": "Please provide password"}), status=404, content_type="application/json")
+
+    db.execute('DELETE FROM posts where title = ?', (_post_title,))
+    db.commit()
+    return Response(json.dumps({"message": "Post deleted successfully"}), status=201, content_type="application/json")
 
 
 @bp.route('/retrieve', methods=['GET', 'POST'])
