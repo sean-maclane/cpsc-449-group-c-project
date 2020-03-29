@@ -37,43 +37,27 @@ def signup():
 def updateEmail():
     db = get_db()
 
-    if request.method == 'POST':
-        _username = request.form['username']
-        _password = request.form['password']
-        new_email = request.form['email']
+    _username = request.form['username']
+    _password = request.form['password']
+    _new_email = request.form['email']
 
-        validEmail = db.execute(
-            'SELECT email FROM users WHERE email=?', (new_email,)).fetchone()
+    if(_username == "" and _password == ""):
+        # error case 1
+        return Response(json.dumps({"message": "Provided information"}), status=404, content_type="application/json")
+    
+    if(_new_email == ""):
+        # error case 1
+        return Response(json.dumps({"message": "Enter a new email for account"}), status=404, content_type="application/json")
 
-        validUser = db.execute(
-            'SELECT userName FROM users WHERE userName=? AND password=?', (_username, _password,)).fetchone()
+    login_id = db.execute(
+        'SELECT id FROM users WHERE username = ? and password = ?', (_username, _password)).fetchone()
+    if login_id is None:
+        # error case 2
+        return Response(json.dumps({"message": "No account to update email"}), status=404, content_type="application/json")
 
-        if _username == "" and _password == "" and new_email == "":
-
-            return Response(json.dumps({"message": "Provided information"}), status=404, content_type="application/json")
-
-        if new_email == "":
-
-            return Response(json.dumps({"message": "Enter a new email for account"}), status=404, content_type="application/json")
-
-        if validUser is None:
-
-            return Response(json.dumps({"message": "No account to update email"}), status=404, content_type="application/json")
-
-        if validEmail is None and validUser is not None :
-
-            return Response(json.dumps({"message": "Enter a new email for account"}), status=404, content_type="application/json")
-
-        if validEmail is not None:
-
-            return Response(json.dumps({"message": "Please provide a unique email"}), status=404, content_type="application/json")
-
-        else:
-            db.execute("UPDATE users SET email=? WHERE userName =? OR password=?",
-                       (new_email, _username, _password))
-            db.commit()
-
-            return Response(status=201)
+    db.execute('UPDATE users SET email = ? WHERE id = ?', (_new_email, login_id))
+    db.commit()
+    return Response(status=201)
 
 
 @bp.route('/delete', methods=['GET', 'POST'])
