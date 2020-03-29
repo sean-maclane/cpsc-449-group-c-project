@@ -16,7 +16,7 @@ def test_posts_create(client, app):
     url = "/posts/create"
 
     # test a valid POST request
-    valid_data = {"title": "posts_create", "community": "posts_create", "text": "posts_create", "username": "posts_create", "url": "posts_create.com"}
+    valid_data = {"title": "posts_create", "community": "posts_create", "text": "posts_create", "username": "posts_create"}
     assert client.post(url, data=valid_data).status_code == 201
 
     # test that the post was inserted into the database
@@ -27,15 +27,15 @@ def test_posts_create(client, app):
         )
 
 @pytest.mark.parametrize(
-    ("title", "community", "text", "username", "url", "message", "http_status_code"),
+    ("title", "community", "text", "username", "message", "http_status_code"),
     (
-        ("", "", "", "", "", b"Please fill out information", 404),
-        ("posts_create", "posts_create", "posts_create", "bad_username", "posts_create.com", b"Please make an account to post", 404),
+        ("", "", "", "", b"Please fill out information", 404),
+        ("posts_create", "posts_create", "posts_create", "bad_username", b"Please make an account to post", 404),
     ),
 )
-def test_posts_create_validate(client, title, community, text, username, url, message, http_status_code):
+def test_posts_create_validate(client, title, community, text, username,message, http_status_code):
     url = "/posts/create"
-    bad_data = {"title": title, "community": community, "text": text, "username": username, "url": url}
+    bad_data = {"title": title, "community": community, "text": text, "username": username}
     
     response = client.post(url, data=bad_data)
 
