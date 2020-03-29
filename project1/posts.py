@@ -14,9 +14,9 @@ def create_post():
 
     _username = request.form['username']
     _password = request.form['password']
-    _post_title = request.form['Post Title']
-    _post_community = request.form['Post Community']
-    _post_body = request.form['Post Body']
+    _post_title = request.form['title']
+    _post_community = request.form['community']
+    _post_body = request.form['text']
 
     if(_username == "" and _password == ""):
         # error case 1
@@ -49,7 +49,7 @@ def create_post():
 def delete_post():
     db = get_db()
 
-    _post_title = request.form['Post Title']
+    _post_title = request.form['title']
 
     if _post_title is None:
         return Response(json.dumps({"message": "Post title not found"}), status=404, content_type="application/json")
@@ -69,7 +69,7 @@ def retrieve_existing_post():
     """
     db = get_db()
 
-    _post_title = request.form['Post Title']
+    _post_title = request.form['title']
 
     if _post_title is None:
         return Response(json.dumps({"message": "Please enter post title in search"}), status=404, content_type="application/json")
