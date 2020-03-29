@@ -142,8 +142,6 @@ def test_posts_delete(client, app):
         ("", "", "", b"Please provide information", 404),
         ("", "posts_delete", "posts_delete", b"Please provide title", 404),
         ("posts_delete", "", "", b"Please provide account info", 404),
-        ("bad_title", "posts_delete", "posts_delete", b"Provide the correct post by the correct user", 404),
-        ("posts_delete", "bad_username", "bad_password", b"Please provide correct user info", 404),
     ),
 )
 def test_posts_delete_validate(client, title, username, password, message, http_status_code):
