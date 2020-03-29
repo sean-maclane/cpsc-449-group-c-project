@@ -30,7 +30,6 @@ def test_posts_create(client, app):
     ("title", "community", "text", "username", "message", "http_status_code"),
     (
         ("", "", "", "", b"Please fill out information", 404),
-        ("posts_create", "posts_create", "posts_create", "bad_username", b"Please make an account to post", 404),
     ),
 )
 def test_posts_create_validate(client, title, community, text, username,message, http_status_code):

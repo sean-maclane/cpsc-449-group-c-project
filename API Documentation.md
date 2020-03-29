@@ -93,7 +93,6 @@ Input
 
 Possible errors- all return 404
 1. No information provided,  "Please fill out information"
-2. Username doesn't exist to make posts,  "Please make an account to post"
 
 
 ### Delete Post
