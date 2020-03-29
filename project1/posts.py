@@ -39,7 +39,7 @@ def create_post():
         return Response(json.dumps({"message": "Please input some text body for the post"}), status=404, content_type="application/json")
 
     if _post_title is not None and _post_community is not None and _post_body is not None:
-        db.execute("INSERT INTO posts (community, author_id, title, body) VALUES (?, ?, ?, ?)", (_post_community, login_id, _post_title, _post_body))
+        db.execute("INSERT INTO posts (community, title, text, Username, dt) VALUES (?, ?, ?, ?, ?)", (_post_community, _post_title, _post_body, _username, datetime.now()))
         db.commit()
         return Response(json.dumps({"message": "Post created successfully"}), status=201, content_type="application/json")
 
