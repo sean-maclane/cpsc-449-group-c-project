@@ -90,7 +90,6 @@ Input
 2. community
 3. text
 4. username
-5. url
 
 Possible errors- all return 404
 1. No information provided,  "Please fill out information"
