@@ -71,14 +71,14 @@ def retrieve_existing_post():
     _post_title = request.form['title']
     _post_community = request.form['community']
 
-    if _post_title is None:
-        return Response(json.dumps({"message": "No post with this title"}), status=404, content_type="application/json")
+    if _post_title == "":
+        return Response(json.dumps({"message": "Provide a title"}), status=404, content_type="application/json")
 
-    if _post_community is None:
-        return Response(json.dumps({"message": "No community with this name"}), status=404, content_type="application/json")
+    if _post_community == "":
+        return Response(json.dumps({"message": "Provide a community"}), status=404, content_type="application/json")
 
-    if _post_title is None and _post_community is None:
-        return Response(json.dumps({"message": "Title and community not found"}), status=404, content_type="application/json")
+    if _post_title == "" and _post_community == "":
+        return Response(json.dumps({"message": "Provide a title and community"}), status=404, content_type="application/json")
 
     if _post_title is not None and _post_community is not None:
         db.execute("SELECT community, title, text, dt FROM posts WHERE title = ?", (_post_title,))
