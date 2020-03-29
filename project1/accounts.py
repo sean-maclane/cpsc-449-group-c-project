@@ -55,7 +55,7 @@ def updateEmail():
         # error case 2
         return Response(json.dumps({"message": "No account to update email"}), status=404, content_type="application/json")
 
-    db.execute('UPDATE users SET email = ? WHERE id = ?', (_new_email, login_id))
+    db.execute('UPDATE users SET email = ? WHERE username = ?', (_new_email, _username))
     db.commit()
     return Response(status=201)
 

@@ -61,7 +61,7 @@ def test_accounts_updateEmail(client, app):
     # test that the new email was inserted into the database
     with app.app_context():
         assert (
-            get_db().execute("select * from users where username = 'test_accounts_create' and email = 'new_accounts@updateEmail.com'").fetchone()
+            get_db().execute("SELECT * FROM users WHERE username = 'accounts_updateEmail' and email = 'new_accounts@updateEmail.com'").fetchone()
             is not None
         )
 
