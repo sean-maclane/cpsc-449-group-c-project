@@ -120,16 +120,6 @@ Method=POST, checks form input upon completion returns status 201
 1. title
 2. community
 
-Unique cases for post retrieval
-* CASE 1: No information is provided
-	- Retrieves all posts from database
-* CASE 2: Title is provided
-	- Retrieves all posts from inputted title
-* CASE 3: Community is provided
-	- Retrieves all posts from the inputted community
-* CASE 4: Both title and community are provided
-	- Retrieves all posts from inputted title and community 
-
 Possible Errors - return 404 status code
 1. Title not provided "Provide a title"
 2. Community not provided "Provide a community"
