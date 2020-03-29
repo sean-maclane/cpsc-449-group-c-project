@@ -56,7 +56,7 @@ $ flask run
 
 Open the web browser and go to URL:
 ```
-http://localhost:2015/
+http://localhost:2015/hello
 ```
 
 ----------------------

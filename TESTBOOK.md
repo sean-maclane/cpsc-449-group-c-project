@@ -30,6 +30,8 @@ Load Testing
 ------------
 Before load testing, open a separate terminal and follow the instructions in the runbook for starting a server. The load test will run until you press ctr+c.
 
+Please note that this generate so much data that it overwhelms the SQLite database, and eventualy the db locks up. This would not happen if we were running a database such as MySQL, but that is out of the scope of this project.
+
 ```
 $ locust -f locustfile.py --host=http://localhost:2015 --no-web -c 100 -r 10
 ```
