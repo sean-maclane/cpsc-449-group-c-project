@@ -45,7 +45,6 @@ Possible errors- all return 404 status error if not fulfilled
 1. None above are provided "Provided information"
 2. No username or password match the database, "No account to update email"
 3. No new email to input  "Enter a new email for account"
-4. Email already in use "Please provide a unique email"
 
 
 ### Increment votes

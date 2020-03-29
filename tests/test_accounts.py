@@ -71,7 +71,6 @@ def test_accounts_updateEmail(client, app):
         ("", "", "", b"Provided information", 404),
         ("nonexistant_username", "new@new.com", "nonexistant_password", b"No account to update email", 404),
         ("accounts_updateEmail", "", "accounts_updateEmail", b"Enter a new email for account", 404),
-        ("accounts_updateEmail", "accounts_2@updateEmail_2.com", "accounts_updateEmail", b"Please provide a unique email", 404),
     ),
 )
 def test_accounts_updateEmail_validate(client, username, email, password, message, http_status_code):
