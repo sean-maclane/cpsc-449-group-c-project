@@ -139,9 +139,9 @@ def test_posts_delete(client, app):
 @pytest.mark.parametrize(
     ("title", "username", "password", "message", "http_status_code"),
     (
-        ("", "", "", b"Please provide information", 404),
+        ("posts_delete", "", "posts_delete", b"Please provide username", 404),
         ("", "posts_delete", "posts_delete", b"Please provide title", 404),
-        ("posts_delete", "", "", b"Please provide account info", 404),
+        ("posts_delete", "posts_delete", "", b"Please provide password", 404),
     ),
 )
 def test_posts_delete_validate(client, title, username, password, message, http_status_code):
