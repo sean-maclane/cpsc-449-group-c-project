@@ -13,16 +13,15 @@ def create_post():
     db = get_db()
 
     _username = request.form['username']
-    _password = request.form['password']
     _post_title = request.form['title']
     _post_community = request.form['community']
     _post_body = request.form['text']
 
-    if(_username == "" and _password == ""):
+    if(_username == ""):
         # error case 1
         return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
 
-    login_id = db.execute('SELECT id FROM user WHERE username = ? and password = ?', (_username, _password))
+    login_id = db.execute('SELECT id FROM users WHERE username = ?', (_username,))
     if login_id is None:
         # error case 2
         return Response(json.dumps({"message": "Create an account"}), status=404, content_type="application/json")
