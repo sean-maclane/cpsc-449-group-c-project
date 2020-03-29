@@ -106,9 +106,9 @@ Input
 3. password
 
 Possible errors- all return 404 status error if not fulfilled
-1. No information provided "Please provide information"
+1. No username provided "Please provide username"
 2. No title provided "Please provide title"
-3. No account info provided "Please provide account info"
+3. No password provided "Please provide password"
 
 
 ### Retrieve Post
