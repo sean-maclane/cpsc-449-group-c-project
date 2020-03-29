@@ -17,9 +17,9 @@ def create_post():
     _post_community = request.form['community']
     _post_body = request.form['text']
 
-    if(_username == ""):
+    if (_username == "" and _post_title == "" and _post_community == "" and _post_body == ""):
         # error case 1
-        return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
+        return Response(json.dumps({"message": "Please fill out information"}), status=404, content_type="application/json")
 
     login_id = db.execute('SELECT id FROM users WHERE username = ?', (_username,))
     if login_id is None:
