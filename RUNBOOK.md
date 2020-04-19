@@ -71,40 +71,37 @@ http://:2015
 
 ```
 
-If you get the above output, press `Ctrl-c`, and if not follow the below process to modify ulimit:
+If you get the above output, press `Ctrl-c` and go to the next section; If not follow the below process to modify ulimit:
 
-Step 1:
-    Check current soft limit
-    $ ulimit -n
+Step 1: Check current soft limit:
+```
+$ ulimit -n
+```
 
-Step 2:
-    Check current hard limit
-    $ ulimit -Hn
+Step 2: Check current hard limit
+```
+$ ulimit -Hn
+```
 
-Step 3:
-    Add the below lines in /etc/security/limits.conf at the end:
-    your_username hard nofile 16384
-    your_username soft nofile 16384
+Step 3: Add the below lines in `/etc/security/limits.conf` at the end:
+```
+your_username hard nofile 16384
+your_username soft nofile 16384
+```
 
-Step 4:
-    Set (or uncomment and set) DefaultLimitNOFILE=16384 in files:
-    /etc/systemd/user.conf
-    /etc/systemd/system.conf
+Step 4: Set (or uncomment and set) `DefaultLimitNOFILE=16384` in files:
+```
+/etc/systemd/user.conf
+/etc/systemd/system.conf
+```
 
-Step 5:
-    Add the line:
-    ```
-    session required pam_limits.so
-    ```
-    to files:
-    ```
-    /etc/pam.d/common-session
-    /etc/pam.d/common-session-noninteractive
-    ```
+Step 5: Add line `session required pam_limits.so` to files:
+```
+/etc/pam.d/common-session
+/etc/pam.d/common-session-noninteractive
+```
 
-Step 6:
-    Restart PC
-
+Step 6: Restart PC
 
 -------------
 Orchestration
