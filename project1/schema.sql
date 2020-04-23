@@ -3,6 +3,7 @@
 
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS posts;
+DROP TABLE IF EXISTS messages;
 
 CREATE TABLE users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -20,4 +21,14 @@ CREATE TABLE posts (
   Username TEXT NOT NULL,
   url TEXT,
   dt DATETIME NOT NULL
+);
+
+CREATE TABLE messages (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  userfrom TEXT NOT NULL,
+  userto TEXT NOT NULL,
+  ts DATETIME NOT NULL,
+  messagecontent TEXT NOT NULL,
+  flag BOOLEAN NOT NULL default 0
+ 
 );
