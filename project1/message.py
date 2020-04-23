@@ -13,8 +13,10 @@ bp = Blueprint("message", __name__, url_prefix='/message')
 def sendMessage():
     db = get_db()
 
-    _id = request.form['']
-    _password = request.form['password']
+    _id = request.form['id']
+    _userfrom = request.form['userfrom']
+    _userto = request.form['userto']
+    _message = request.form['messagecontent']
 
     if(_username == "" and _password == ""):
         # error case 1
