@@ -50,6 +50,9 @@ def deleteMessage():
     if _message == "":
         return Response(json.dumps({"message": "no message provided"}), status=404, content_type="application/json")
     else:
+        db.execute("DELETE from messages WHERE userfrom=? AND messagecontent=?",
+                   (_userfrom, _message))
+        db.commit()
         return Response(status=201)
 
 
