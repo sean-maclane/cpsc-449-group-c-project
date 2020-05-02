@@ -12,14 +12,14 @@ def test_message_send(client, app):
     # Add existing message for error testing
     with app.app_context():
         get_db().execute('INSERT INTO messages (userfrom, userto, messagecontent,flag) VALUES (?, ?, ?, ?);',
-                         ("bob", "mary", "hello", 0))
+                         ("mary", "jane", "hello", 0))
         get_db().commit()
 
     url = "/message/send"
 
     # test a valid POST request
     valid_data = {"userfrom": "bob",
-                  "userto": "mary", "messagecontent": "hello", "flag": 0}
+                  "userto": "ross", "messagecontent": "hola", "flag": 0}
     assert client.post(url, data=valid_data).status_code == 201
 
     # test that the user was inserted into the database
@@ -34,9 +34,9 @@ def test_message_send(client, app):
     ("userfrom", "userto", "messagecontent",
      "flag", "message", "http_status_code"),
     (
-        ("", "mary", "hello", 0, b"No user from", 404),
+        ("", "ross", "hello", 0, b"No user from", 404),
         ("bob", "", "hello", 0, b"No user to", 404),
-        ("bob", "mary", "", 0, b"No message", 404),
+        ("bob", "ross", "", 0, b"No message", 404),
 
     ),
 )
@@ -56,22 +56,20 @@ def test_message_delete(client, app):
     # Add user for delete testing
     with app.app_context():
         get_db().execute('INSERT INTO messages (userfrom, userto, messagecontent, flag) VALUES (?, ?, ?, ?);',
-                         ("accounts_updateEmail", "accounts@updateEmail.com", "accounts_updateEmail", 0))
-        get_db().execute('INSERT INTO messages (userfrom, userto, messagecontent, flag) VALUES (?, ?, ?, ?);',
-                         ("accounts_updateEmail_2", "accounts_2@updateEmail_2.com", "accounts_updateEmail_2", 0))
+                         ("delete", "message", "please", 0))
         get_db().commit()
 
     url = "/message/delete"
 
     # test a valid POST request
-    valid_data = {"userfrom": "accounts_updateEmail",
-                  "messagecontent": "new_accounts@updateEmail.com"}
+    valid_data = {"userfrom": "delete",
+                  "messagecontent": "please"}
     assert client.post(url, data=valid_data).status_code == 201
 
     # test that the new email was inserted into the database
     with app.app_context():
         assert (
-            get_db().execute("SELECT * FROM messages WHERE userfrom = 'accounts_updateEmail' and email = 'new_accounts@updateEmail.com'").fetchone()
+            get_db().execute("SELECT * FROM messages WHERE userfrom = 'delete'").fetchone()
             is not None
         )
 
@@ -79,11 +77,8 @@ def test_message_delete(client, app):
 @pytest.mark.parametrize(
     ("userfrom", "messagecontent", "message", "http_status_code"),
     (
-        ("", "", "", b"Provided information", 404),
-        ("nonexistant_username", "new@new.com",
-         "nonexistant_password", b"No account to update email", 404),
-        ("accounts_updateEmail", "", "accounts_updateEmail",
-         b"Enter a new email for account", 404),
+        ("", "hello", b"user doesn't exist", 404),
+        ("bob", "", b"no message provided", 404),
     ),
 )
 def test_message_delete_validate(client, userfrom, messagecontent, message, http_status_code):
@@ -96,38 +91,37 @@ def test_message_delete_validate(client, userfrom, messagecontent, message, http
     assert message in response.data
 
 
-# Test message/favorite
-def test_message_favorite(client, app):
+# Test message/flag
+def test_message_flag(client, app):
     # Add user for delete testing
     with app.app_context():
         get_db().execute('INSERT INTO users (username, email, password, karma) VALUES (?, ?, ?, ?);',
                          ("accounts_delete", "accounts@delete.com", "accounts_delete", 0))
         get_db().commit()
 
-    url = "/accounts/delete"
+    url = "/accounts/flag"
 
     # test a valid POST request
-    valid_data = {"username": "accounts_delete", "password": "accounts_delete"}
+    valid_data = {"messagecontent": "hello"}
     assert client.post(url, data=valid_data).status_code == 201
 
     # test that the user was deleted from the database
     with app.app_context():
         assert (
-            get_db().execute("select * from users where username = 'accounts_delete'").fetchone()
+            get_db().execute("select * from messages where flag = 1").fetchone()
             is None
         )
 
 
 @pytest.mark.parametrize(
-    ("username", "message", "message", "http_status_code"),
+    ("messagecontent", "message", "http_status_code"),
     (
-        ("", "", b"Provide Information", 404),
-        ("nonexistant_username", "wrong", b"No account to delete", 404),
+        ("", b"message can't be found", 404),
     ),
 )
-def test_message_favorite_validate(client, username, messagecontent, message, http_status_code):
-    url = "/message/favorite"
-    bad_data = {"username": username, "password": password}
+def test_message_flag_validate(client, messagecontent, message, http_status_code):
+    url = "/message/flag"
+    bad_data = {"messagecontent": messagecontent}
 
     response = client.post(url, data=bad_data)
 
