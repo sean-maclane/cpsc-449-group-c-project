@@ -18,14 +18,14 @@ def test_message_send(client, app):
     url = "/message/send"
 
     # test a valid POST request
-    valid_data = {"userfrom": "bob",
-                  "userto": "ross", "messagecontent": "hola", "flag": 0}
+    valid_data = {"userfrom": "mary",
+                  "userto": "jane", "messagecontent": "hello", "flag": 0}
     assert client.post(url, data=valid_data).status_code == 201
 
     # test that the user was inserted into the database
     with app.app_context():
         assert (
-            get_db().execute("SELECT * FROM messages WHERE userfrom = 'bob'").fetchone()
+            get_db().execute("SELECT * FROM messages WHERE userfrom = 'mary'").fetchone()
             is not None
         )
 
