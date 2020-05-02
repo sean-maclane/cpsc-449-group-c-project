@@ -95,20 +95,20 @@ def test_message_delete_validate(client, userfrom, messagecontent, message, http
 def test_message_flag(client, app):
     # Add user for delete testing
     with app.app_context():
-        get_db().execute('INSERT INTO users (username, email, password, karma) VALUES (?, ?, ?, ?);',
-                         ("accounts_delete", "accounts@delete.com", "accounts_delete", 0))
+        get_db().execute('INSERT INTO messages (userfrom, userto, messagecontent, flag) VALUES (?, ?, ?, ?);',
+                         ("flag", "this", "messagetest", 0))
         get_db().commit()
 
-    url = "/accounts/flag"
+    url = "/message/flag"
 
     # test a valid POST request
-    valid_data = {"messagecontent": "hello"}
+    valid_data = {"messagecontent": "messagetest"}
     assert client.post(url, data=valid_data).status_code == 201
 
     # test that the user was deleted from the database
     with app.app_context():
         assert (
-            get_db().execute("select * from messages where flag = 1").fetchone()
+            get_db().execute("select * from messages where messagecontent = 'messagetest'").fetchone()
             is None
         )
 
