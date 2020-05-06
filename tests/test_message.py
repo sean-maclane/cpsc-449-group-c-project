@@ -108,7 +108,7 @@ def test_message_flag(client, app):
     # test that the user was deleted from the database
     with app.app_context():
         assert (
-            get_db().execute("select * from messages where messagecontent = 'messagetest'").fetchone()
+            get_db().execute("SELECT * from messages where messagecontent = 'messagetest'").fetchone()
             is None
         )
 
