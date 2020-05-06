@@ -123,3 +123,52 @@ Possible Errors - return 404 status code
 1. Title not provided "Provide a title"
 2. Community not provided "Provide a community"
 3. Title and community not provided "Provide a title and community"
+
+
+
+------------------
+Message Microservice
+------------------
+
+###Send Message
+/message/send
+
+method=GET, POST takes in form input, upon completion. Return 201
+
+Input needed:
+
+User from
+User to
+Message
+flag
+
+Possible Errors for above- all return 404 status error if not fulfilled
+
+No user from provided
+No user to provided
+No message provided
+
+###Delete message
+/message/delete
+method=GET, POST,DELETE takes in form input, upon completion. Return 201
+
+Input needed:
+
+User from
+message
+
+Possible Errors for above- all return 404 status error if not fulfilled
+User not provided
+Message not provided
+
+###Favorite message
+/message/flag
+
+method=GET, POST takes in form input, upon completion. Return 201
+
+
+Input needed:
+Message
+Possible Errors for above- all return 404 status error if not fulfilled
+
+Message can’t be found
