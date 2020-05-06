@@ -130,7 +130,7 @@ Possible Errors - return 404 status code
 Message Microservice
 ------------------
 
-###Send Message
+### Send Message
 /message/send
 
 method=GET, POST takes in form input, upon completion. Return 201
@@ -148,7 +148,7 @@ No user from provided
 No user to provided
 No message provided
 
-###Delete message
+### Delete Message
 /message/delete
 method=GET, POST,DELETE takes in form input, upon completion. Return 201
 
@@ -161,7 +161,7 @@ Possible Errors for above- all return 404 status error if not fulfilled
 User not provided
 Message not provided
 
-###Favorite message
+### Flag Message
 /message/flag
 
 method=GET, POST takes in form input, upon completion. Return 201
