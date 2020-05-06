@@ -135,31 +135,31 @@ Message Microservice
 
 method=GET, POST takes in form input, upon completion. Return 201
 
-Input needed:
+-Input needed:
 
-User from
-User to
-Message
-flag
+  1) User from
+  2) User to
+  3) Message
+  4) Flag
 
 Possible Errors for above- all return 404 status error if not fulfilled
 
-No user from provided
-No user to provided
-No message provided
+  1) No user from provided
+  2) No user to provided
+  3) No message provided
 
 ### Delete Message
 /message/delete
 method=GET, POST,DELETE takes in form input, upon completion. Return 201
 
-Input needed:
+-Input needed:
 
-User from
-message
+  1) User from
+  2) message
 
-Possible Errors for above- all return 404 status error if not fulfilled
-User not provided
-Message not provided
+=Possible Errors for above- all return 404 status error if not fulfilled
+  1) User not provided
+  2) Message not provided
 
 ### Flag Message
 /message/flag
@@ -167,8 +167,8 @@ Message not provided
 method=GET, POST takes in form input, upon completion. Return 201
 
 
-Input needed:
-Message
-Possible Errors for above- all return 404 status error if not fulfilled
+-Input needed:
+  1) Message
+  2) Possible Errors for above- all return 404 status error if not fulfilled
 
-Message can’t be found
+  1) Message can’t be found
