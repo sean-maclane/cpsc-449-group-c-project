@@ -4,9 +4,12 @@ from generators import *
 username_generator = get_unique_username()
 email_generator = get_unique_email()
 password_generator = get_unique_password()
+
 post_title_generator = get_unique_post_title()
 post_text_generator = get_unique_post_text()
 community_generator = get_unique_community()
+
+message_text_generator = get_unique_message_text()
 
 
 class UserBehavior(TaskSet):
@@ -18,9 +21,13 @@ class UserBehavior(TaskSet):
         self.username = next(username_generator)
         self.email = next(email_generator)
         self.password = next(password_generator)
+
         self.post_title = next(post_title_generator)
         self.post_body = next(post_text_generator)
         self.community = next(community_generator)
+
+        self.user_to = next(username_generator)
+        self.messaage_content = next(message_text_generator)
 
         self.hello_world()
         self.create_account()
@@ -89,6 +96,36 @@ class UserBehavior(TaskSet):
             'password': self.password
         }
         self.client.post(deletepost_url, deletepost_data)
+
+    @task
+    def send_message(self):
+        send_message_url = '/message/send'
+        send_message_data = {
+            'userfrom': self.username,
+            'userto': self.user_to,
+            'messagecontent': self.messaage_content,
+            'flag': 0
+        }
+        self.client.post(send_message_url, send_message_data)
+
+    @task
+    def delete_message(self):
+        send_message_url = '/message/delete'
+        send_message_data = {
+            'userfrom': self.username,
+            'messagecontent': self.messaage_content
+        }
+        self.client.post(send_message_url, send_message_data)
+
+    @task
+    def flag_message(self):
+        send_message_url = '/message/flag'
+        send_message_data = {
+            'messagecontent': self.messaage_content,
+            'flag': 1
+        }
+        self.client.post(send_message_url, send_message_data)
+
     
 
 class WebsiteUser(HttpLocust):
