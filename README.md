@@ -5,6 +5,6 @@ Due to the very small ammount of remaining work, we did not split up the work vi
 
 + Preston Phan : Message service
 
-+ Sean Mac Lane : Remaining work not related to Message or Voting services
++ Sean Mac Lane : The remaining work outside of Message and Voting services
 
 + Saurabh Mishra : Voting service
