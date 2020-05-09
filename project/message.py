@@ -8,7 +8,7 @@ from project.db import get_db
 bp = Blueprint("message", __name__, url_prefix='/message')
 
 
-@bp.route('/send', methods=['GET,POST'])
+@bp.route('/send', methods=['GET', 'POST'])
 def sendMessage():
     db = get_db()
 
@@ -35,7 +35,7 @@ def sendMessage():
     return Response(status=201)
 
 
-@bp.route('/delete', methods=['GET,POST,DELETE'])
+@bp.route('/delete', methods=['GET', 'POST', 'DELETE'])
 def deleteMessage():
     db = get_db()
 
@@ -55,7 +55,7 @@ def deleteMessage():
         return Response(status=201)
 
 
-@bp.route('/flag', methods=['GET,POST'])
+@bp.route('/flag', methods=['GET', 'POST'])
 def favoriteMessage():
 
     _message = request.form['messagecontent']
