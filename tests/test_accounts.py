@@ -118,3 +118,77 @@ def test_accounts_delete_validate(client, username, password, message, http_stat
 
     assert http_status_code == response.status_code
     assert message in response.data
+
+# Test accounts/upvote
+def test_accounts_upvote(client, app):
+    # Add user for upvote testing
+    with app.app_context():
+        get_db().execute('INSERT INTO users (username, email, password, karma) VALUES (?, ?, ?, ?);', ("accounts_upvote", "accounts@upvote.com", "accounts_upvote", 0))
+        get_db().commit()
+
+    url = "/accounts/upvote"
+
+    # test a valid POST request
+    valid_data = {"username": "accounts_upvote", "password": "accounts_upvote"}
+    assert client.post(url, data=valid_data).status_code == 201
+
+    # test that the karma was incremented in the database
+    with app.app_context():
+        assert (
+            get_db().execute("SELECT * FROM users WHERE username = 'accounts_upvote' and karma = '1'").fetchone()
+            is not None
+        )
+
+@pytest.mark.parametrize(
+    ("username", "password", "message", "http_status_code"),
+    (
+        ("", "", b"Provide information", 404),
+        ("nonexistant_username", "nonexistant_password", b"Create an account", 404),
+    ),
+)
+def test_accounts_upvote_validate(client, username, password, message, http_status_code):
+    url = "/accounts/upvote"
+    bad_data = {"username": username, "password": password}
+
+    response = client.post(url, data=bad_data)
+
+    assert http_status_code == response.status_code
+    assert message in response.data
+
+
+# Test accounts/downvote
+def test_accounts_downvote(client, app):
+    # Add user for downvote testing
+    with app.app_context():
+        get_db().execute('INSERT INTO users (username, email, password, karma) VALUES (?, ?, ?, ?);', ("accounts_downvote", "accounts@downvote.com", "accounts_downvote", 0))
+        get_db().commit()
+    
+    url = "/accounts/downvote"
+
+    # test a valid POST request
+    valid_data = {"username": "accounts_downvote", "password": "accounts_downvote"}
+    assert client.post(url, data=valid_data).status_code == 201
+
+    # test that the karma was decremented in the database
+    with app.app_context():
+        assert (
+            get_db().execute("SELECT * FROM users WHERE username = 'accounts_downvote' and karma = '-1'").fetchone()
+            is not None
+        )
+
+@pytest.mark.parametrize(
+    ("username", "password", "message", "http_status_code"),
+    (
+        ("", "", b"Provide information", 404),
+        ("nonexistant_username", "nonexistant_password", b"Create an account", 404),
+    ),
+)
+def test_accounts_downvote_validate(client, username, password, message, http_status_code):
+    url = "/accounts/downvote"
+    bad_data = {"username": username, "password": password}
+    
+    response = client.post(url, data=bad_data)
+    
+    assert http_status_code == response.status_code
+    assert message in response.data
+    
