@@ -48,7 +48,7 @@ Possible errors- all return 404 status error if not fulfilled
 
 
 ### Increment votes
-/votes/upvote
+/accounts/upvote
 
 method=POST takes in username and password, upon completion returns 201, Increments vote counter
 
@@ -62,7 +62,7 @@ Possible errors- all return 404 status if not fulfilled
 
 
 ### Decrement votes
-/votes/downvote
+/accounts/downvote
 
 method=POST takes in username and password, upon completion returns 201, decrements vote counter
 
