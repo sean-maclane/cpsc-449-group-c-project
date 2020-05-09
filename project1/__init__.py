@@ -40,9 +40,10 @@ def create_app(test_config=None):
     db.init_app(app)
 
     # apply the blueprints to the app
-    from project1 import accounts, posts, votes
+    from project1 import accounts, message, posts, votes
 
     app.register_blueprint(accounts.bp)
+    app.register_blueprint(message.bp)
     app.register_blueprint(posts.bp)
     app.register_blueprint(votes.bp)
 
