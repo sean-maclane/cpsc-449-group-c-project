@@ -1,4 +1,4 @@
 include LICENSE
-include project1/schema.sql
+include project/schema.sql
 graft tests
 global-exclude *.pyc
