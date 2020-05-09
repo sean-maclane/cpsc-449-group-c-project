@@ -7,9 +7,9 @@ import tempfile
 
 import pytest
 
-from project1 import create_app
-from project1.db import get_db
-from project1.db import init_db
+from project import create_app
+from project.db import get_db
+from project.db import init_db
 
 # read in SQL for populating test data
 with open(os.path.join(os.path.dirname(__file__), "data.sql"), "rb") as f:

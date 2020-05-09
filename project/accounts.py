@@ -3,7 +3,7 @@ from datetime import datetime
 import sqlite3
 import os
 
-from project1.db import get_db
+from project.db import get_db
 
 bp = Blueprint("accounts", __name__, url_prefix='/accounts')
 
@@ -129,7 +129,7 @@ def decrementKarma():
             
             
 # WSGI entrypoint for ACCOUNTS
-from project1 import create_app
+from project import create_app
 app = create_app()
 
 if __name__ == '__main__':

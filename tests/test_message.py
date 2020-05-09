@@ -4,7 +4,7 @@ from flask import session
 from flask import *
 import json
 
-from project1.db import get_db
+from project.db import get_db
 
 
 # Test /message/send

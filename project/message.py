@@ -1,10 +1,10 @@
-from project1 import create_app
+from project import create_app
 from flask import *
 from datetime import datetime
 import sqlite3
 import os
 
-from project1.db import get_db
+from project.db import get_db
 
 bp = Blueprint("message", __name__, url_prefix='/message')
 

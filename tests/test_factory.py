@@ -2,7 +2,7 @@
 This file was adapted from the flask documentation for our project
 '''
 
-from project1 import create_app
+from project import create_app
 
 
 def test_config():
