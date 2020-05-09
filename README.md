@@ -1,10 +1,11 @@
-# Group C - Project 1 | Spring 2020
+# Group C - Project | Spring 2020
 
 _**Members and Roles**_
 
-+ Preston Phan   : Developer
+Due to the very small ammount of remaining work, we did not split up the work via dev test and ops.
 
-+ Sean Mac Lane  : SDET
++ Preston Phan : Message service
 
-+ Saurabh Mishra : Operations
++ Sean Mac Lane : The remaining work outside of Message and Voting services
 
++ Saurabh Mishra : Voting service

@@ -26,7 +26,7 @@ $ sudo apt install python3-pip
 $ sudo apt install python3-venv
 $ python3 -m venv venv
 $ . venv/bin/activate
-$ pip3 install -e .
+$ pip install -e .
 ```
 
 ------------------------
@@ -108,5 +108,49 @@ Orchestration
 -------------
 
 ```
-$ foreman start -m posts_test=3,votes_test=3,caddy_lbt=1 --port 3000
+$ foreman start -m posts_test=3,votes_test=3,accounts_test=1,message_test=1,caddy_lbt=1 --port 3000
 ```
+
+
+### NOTE: Follow the setup instructions above before testing. You will need to be in the virtual env and have run the given pip command.
+
+-------------------------
+API Specification Testing
+-------------------------
+These tests automatically create their own server instance and database, and remove them when complete. You do not need to be running an existing server for them to work.
+
+Standard `pytest` run:
+
+```
+$ pytest
+```
+
+Redirect the output of `pytest` to `error.log` file:
+
+```
+$ pytest >error.log
+```
+
+Enable traceback for one line per failure:
+
+```
+$ pytest --tb=line
+```
+In these tests, the dots indicate sucess, F's indicade the API was not followed, and E's indicate a critical error.
+
+------------
+Load Testing
+------------
+Before load testing, open a separate terminal and follow the instructions in the runbook for starting a server. The load test will run until you press ctr+c.
+
+Please note that this generate so much data that it overwhelms the SQLite database, and eventualy the db locks up. This would not happen if we were running a database such as MySQL, but that is out of the scope of this project.
+
+```
+$ locust -f locustfile.py --host=http://localhost:2015 --no-web -c 100 -r 10
+```
+where:
+
++ `f` — Path to the file
++ `no-web` — Run the simulation without web interface
++ `c` — Number of users to simulate
++ `r` — Hatch rate (users spawned per second)

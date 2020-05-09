@@ -3,7 +3,7 @@ from flask import g
 from flask import session
 from datetime import datetime
 
-from project1.db import get_db
+from project.db import get_db
 
 
 # Test /posts/create

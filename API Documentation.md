@@ -48,7 +48,7 @@ Possible errors- all return 404 status error if not fulfilled
 
 
 ### Increment votes
-/votes/upvote
+/accounts/upvote
 
 method=POST takes in username and password, upon completion returns 201, Increments vote counter
 
@@ -62,7 +62,7 @@ Possible errors- all return 404 status if not fulfilled
 
 
 ### Decrement votes
-/votes/downvote
+/accounts/downvote
 
 method=POST takes in username and password, upon completion returns 201, decrements vote counter
 
@@ -123,3 +123,58 @@ Possible Errors - return 404 status code
 1. Title not provided "Provide a title"
 2. Community not provided "Provide a community"
 3. Title and community not provided "Provide a title and community"
+
+
+
+------------------
+Message Microservice
+------------------
+
+### Send Message
+/message/send
+
+method=GET, POST takes in form input, upon completion. Return 201
+
+-Input needed:
+
+  1) User from
+  2) User to
+  3) Message
+  4) Flag
+
+Possible Errors for above- all return 404 status error if not fulfilled
+
+  1) No user from provided
+  2) No user to provided
+  3) No message provided
+
+### Delete Message
+/message/delete
+method=GET, POST,DELETE takes in form input, upon completion. Return 201
+
+-Input needed:
+
+  1) User from
+  2) message
+
+=Possible Errors for above- all return 404 status error if not fulfilled
+  1) User not provided
+  2) Message not provided
+
+### Flag Message
+/message/flag
+
+method=GET, POST takes in form input, upon completion. Return 201
+
+
+-Input needed:
+  1) Message
+  2) Possible Errors for above- all return 404 status error if not fulfilled
+
+  1) Message can’t be found
+
+
+------------------
+Voting Microservice
+------------------
+TODO

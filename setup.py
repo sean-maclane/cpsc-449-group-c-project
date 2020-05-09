@@ -11,8 +11,8 @@ with io.open("README.md", "rt", encoding="utf8") as f:
     readme = f.read()
 
 setup(
-    name="project1",
-    version="1.0.0",
+    name="project",
+    version="2.0.0",
     license="MIT",
     maintainer="CPSC 440 Group C",
     description="A simple reddit clone backend",

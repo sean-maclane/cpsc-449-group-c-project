@@ -52,13 +52,13 @@ class UserBehavior(TaskSet):
 
     @task
     def upvote(self):
-        upvote_url = '/votes/upvote'
+        upvote_url = '/accounts/upvote'
         upvote_data = {'username': self.username, 'password': self.password}
         self.client.post(upvote_url, upvote_data)
         
     @task
     def downvote(self):
-        downvote_url = '/votes/downvote'
+        downvote_url = '/accounts/downvote'
         downvote_data = {'username': self.username, 'password': self.password}
         self.client.post(downvote_url, downvote_data)
 
