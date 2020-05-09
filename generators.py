@@ -39,3 +39,10 @@ def get_unique_community():
     while True:
         id = id + 1
         yield base_string + str(id)
+
+def get_unique_message_text():
+    id = 0
+    base_string = "locust_message_text_"
+    while True:
+        id = id + 1
+        yield base_string + str(id)
