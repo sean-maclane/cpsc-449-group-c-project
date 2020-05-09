@@ -137,10 +137,10 @@ method=GET, POST takes in form input, upon completion. Return 201
 
 -Input needed:
 
-  1) User from
-  2) User to
-  3) Message
-  4) Flag
+  1) userfrom
+  2) userto
+  3) messagecontent
+  4) flag
 
 Possible Errors for above- all return 404 status error if not fulfilled
 
@@ -154,8 +154,8 @@ method=GET, POST,DELETE takes in form input, upon completion. Return 201
 
 -Input needed:
 
-  1) User from
-  2) message
+  1) userfrom
+  2) messagecontent
 
 =Possible Errors for above- all return 404 status error if not fulfilled
   1) User not provided
@@ -168,8 +168,10 @@ method=GET, POST takes in form input, upon completion. Return 201
 
 
 -Input needed:
-  1) Message
-  2) Possible Errors for above- all return 404 status error if not fulfilled
+  1) messagecontent
+  2) flag
+  
+  Possible Errors for above- all return 404 status error if not fulfilled
 
   1) Message can’t be found
 
