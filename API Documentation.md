@@ -172,3 +172,9 @@ method=GET, POST takes in form input, upon completion. Return 201
   2) Possible Errors for above- all return 404 status error if not fulfilled
 
   1) Message can’t be found
+
+
+------------------
+Voting Microservice
+------------------
+TODO

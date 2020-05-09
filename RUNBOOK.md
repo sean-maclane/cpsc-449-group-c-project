@@ -108,7 +108,7 @@ Orchestration
 -------------
 
 ```
-$ foreman start -m posts_test=3,votes_test=3,caddy_lbt=1 --port 3000
+$ foreman start -m posts_test=3,votes_test=3,accounts_test=1,message_test=1,caddy_lbt=1 --port 3000
 ```
 
 

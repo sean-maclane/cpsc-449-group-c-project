@@ -40,16 +40,11 @@ def create_app(test_config=None):
     db.init_app(app)
 
     # apply the blueprints to the app
-    from project import accounts, message, posts
+    from project import accounts, message, posts, voting
 
     app.register_blueprint(accounts.bp)
     app.register_blueprint(message.bp)
     app.register_blueprint(posts.bp)
-
-    # make url_for('index') == url_for('posts.index')
-    # in another app, you might define a separate main index here with
-    # app.route, while giving the posts blueprint a url_prefix, but for
-    # the tutorial the posts will be the main index
-    #app.add_url_rule("/", endpoint="index")
+    app.register_blueprint(voting.bp)
 
     return app
