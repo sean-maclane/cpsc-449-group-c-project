@@ -1,4 +1,3 @@
-from project import create_app
 from flask import *
 from datetime import datetime
 import sqlite3
@@ -56,7 +55,7 @@ def deleteMessage():
         return Response(status=201)
 
 
-@bp.route('/flag', methods['GET,POST'])
+@bp.route('/flag', methods=['GET,POST'])
 def favoriteMessage():
 
     _message = request.form['messagecontent']
@@ -71,6 +70,7 @@ def favoriteMessage():
 
 
 # WSGI entrypoint for MESSAGE
+from project import create_app
 app = create_app()
 
 if __name__ == '__main__':
