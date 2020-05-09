@@ -1,10 +1,10 @@
-# Group C - Project 1 | Spring 2020
+# Group C - Project | Spring 2020
 
 _**Members and Roles**_
 
-+ Preston Phan   : Developer
++ Preston Phan   : 
 
-+ Sean Mac Lane  : SDET
++ Sean Mac Lane  : 
 
-+ Saurabh Mishra : Operations
++ Saurabh Mishra : 
 
