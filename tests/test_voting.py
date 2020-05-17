@@ -63,7 +63,7 @@ def test_voting_downvote(client, app):
     # test that the upvote was incremented in the database
     with app.app_context():
         assert (
-            get_db().execute("SELECT * FROM voting WHERE title = 'voting_downvote'").fetchone()
+            get_db().execute("SELECT * FROM posts WHERE title = 'voting_downvote'").fetchone()
             is not None
         )
 
