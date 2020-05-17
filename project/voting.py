@@ -17,18 +17,18 @@ def upvote():
     _post_title = request.form['title']
 
     if(_username == "" and _password == ""):
-        # error case 1
-        return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
+        return Response(json.dumps({"message": "Provide login information"}), status=404, content_type="application/json")
 
     login_id = db.execute(
         'SELECT id FROM users WHERE username = ? and password = ?', (_username, _password,)).fetchone()
     if login_id is None:
-        # error case 2
         return Response(json.dumps({"message": "Create an account to upvote and downvote"}), status=404, content_type="application/json")
 
     post_id = db.execute(
-        'SELECT id FROM posts WHERE title = ?',  (_post_title,)
-    )
+        'SELECT id FROM posts WHERE title = ?',  (_post_title,)).fetchone()
+    if post_id is None:
+        return Response(json.dumps({"message": "Post not fund"}), status=404, content_type="application/json")
+
 
     db.execute('UPDATE posts SET upvotes=upvotes+1 WHERE id = ?', (post_id,))
     db.commit()
@@ -44,18 +44,17 @@ def downvote():
     _post_title = request.form['title']
 
     if(_username == "" and _password == ""):
-        # error case 1
-        return Response(json.dumps({"message": "Provide information"}), status=404, content_type="application/json")
+        return Response(json.dumps({"message": "Provide login information"}), status=404, content_type="application/json")
 
     login_id = db.execute(
         'SELECT id FROM users WHERE username = ? and password = ?', (_username, _password)).fetchone()
     if login_id is None:
-        # error case 2
         return Response(json.dumps({"message": "Create an account to upvote and downvote"}), status=404, content_type="application/json")
 
     post_id = db.execute(
-        'SELECT id FROM posts WHERE title = ?',  (_post_title,)
-    )
+        'SELECT id FROM posts WHERE title = ?',  (_post_title,)).fetchone()
+    if post_id is None:
+        return Response(json.dumps({"message": "Post not fund"}), status=404, content_type="application/json")
 
     db.execute('UPDATE posts SET downvotes=downvotes+1 WHERE id = ?', (post_id,))
     db.commit()
@@ -79,7 +78,7 @@ def voteSegregation():
         return Response(json.dumps({"message": "Provide a community"}), status=404, content_type="application/json")
     
     db.execute("SELECT upvotes, downvotes FROM posts WHERE title = ?", (_post_title,))
-    return Response(json.dumps({"message": "Votes of the post retrieved successfully"}), status=201, content_type="application/json")
+    return Response(json.dumps({"message": "Upvotes and downvotes of the post retrieved successfully"}), status=201, content_type="application/json")
 
 
 @bp.route('/topScoring', methods=['GET'])

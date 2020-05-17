@@ -27,7 +27,7 @@ class UserBehavior(TaskSet):
         self.community = next(community_generator)
 
         self.user_to = next(username_generator)
-        self.messaage_content = next(message_text_generator)
+        self.message_content = next(message_text_generator)
 
         self.hello_world()
         self.create_account()
@@ -58,13 +58,13 @@ class UserBehavior(TaskSet):
         self.client.post(url, data)
 
     @task
-    def upvote(self):
+    def accounts_upvote(self):
         upvote_url = '/accounts/upvote'
         upvote_data = {'username': self.username, 'password': self.password}
         self.client.post(upvote_url, upvote_data)
         
     @task
-    def downvote(self):
+    def accounts_downvote(self):
         downvote_url = '/accounts/downvote'
         downvote_data = {'username': self.username, 'password': self.password}
         self.client.post(downvote_url, downvote_data)
@@ -88,6 +88,45 @@ class UserBehavior(TaskSet):
         self.client.post(createpost_url, createpost_data)
         
     @task
+    def posts_upvote(self):
+        upvote_url = '/voting/upvote'
+        upvote_data = {
+            'username': self.username, 
+            'password': self.password,
+            'title': self.post_title
+        }
+        self.client.post(upvote_url, upvote_data)
+
+    @task
+    def posts_downvote(self):
+        downvote_url = '/voting/downvote'
+        downvote_data = {
+            'username': self.username, 
+            'password': self.password,
+            'title': self.post_title
+        }
+        self.client.post(downvote_url, downvote_data)
+
+    @task
+    def posts_voteSegregation(self):
+        voteSegregation_url = '/voting/voteSegregation'
+        voteSegregation_data = {
+            'username': self.username, 
+            'password': self.password,
+            'title': self.post_title,
+            'community': self.community
+        }
+        self.client.post(voteSegregation_url, voteSegregation_data)
+
+    @task(1)
+    def posts_topScoring(self):
+        topscoring_url = '/voting/topScoring'
+        topscoring_data = {
+            'community': self.community,
+        }
+        self.client.post(topscoring_url, topscoring_data)
+
+    @task
     def delete_post(self):
         deletepost_url = '/posts/delete'
         deletepost_data = {
@@ -103,7 +142,7 @@ class UserBehavior(TaskSet):
         send_message_data = {
             'userfrom': self.username,
             'userto': self.user_to,
-            'messagecontent': self.messaage_content,
+            'messagecontent': self.message_content,
             'flag': 0
         }
         self.client.post(send_message_url, send_message_data)
@@ -113,7 +152,7 @@ class UserBehavior(TaskSet):
         send_message_url = '/message/delete'
         send_message_data = {
             'userfrom': self.username,
-            'messagecontent': self.messaage_content
+            'messagecontent': self.message_content
         }
         self.client.post(send_message_url, send_message_data)
 
@@ -121,7 +160,7 @@ class UserBehavior(TaskSet):
     def flag_message(self):
         send_message_url = '/message/flag'
         send_message_data = {
-            'messagecontent': self.messaage_content,
+            'messagecontent': self.message_content,
             'flag': 1
         }
         self.client.post(send_message_url, send_message_data)

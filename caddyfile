@@ -18,3 +18,10 @@
         transparent
     }
 }
+
+127.0.0.1:2015/accounts {
+    proxy / 127.0.0.1:3300 127.0.0.1:3301 127.0.0.1:3302 {
+        policy least_conn
+        transparent
+    }
+}
