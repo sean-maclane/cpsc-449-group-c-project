@@ -90,7 +90,7 @@ def topScoring():
     if _post_community == "":
         return Response(json.dumps({"message": "Provide a community"}), status=404, content_type="application/json")    
 
-    db.execute('SELECT TOP 10 title FROM posts WHERE community = ? ORDER BY upvotes DESC', (_post_community,))
+    db.execute('SELECT title FROM posts WHERE community = ? ORDER BY upvotes DESC LIMIT 10', (_post_community,))
     return Response(status=201)
 
 
