@@ -69,8 +69,8 @@ def test_message_delete(client, app):
     # test that the new email was inserted into the database
     with app.app_context():
         assert (
-            get_db().execute("SELECT * FROM messages WHERE userfrom = 'delete'").fetchone()
-            is not None
+            get_db().execute("SELECT * FROM messages where userfrom = 'delete' ").fetchone()
+            is None
         )
 
 
@@ -96,32 +96,33 @@ def test_message_flag(client, app):
     # Add user for delete testing
     with app.app_context():
         get_db().execute('INSERT INTO messages (userfrom, userto, messagecontent, flag) VALUES (?, ?, ?, ?);',
-                         ("flag", "this", "messagetest", 0))
+                         ("flag", "this", "messagetest", 1))
         get_db().commit()
 
     url = "/message/flag"
 
     # test a valid POST request
-    valid_data = {"messagecontent": "messagetest"}
+    valid_data = {"messagecontent": "messagetest","flag": 1}
     assert client.post(url, data=valid_data).status_code == 201
 
     # test that the user was deleted from the database
     with app.app_context():
         assert (
             get_db().execute("SELECT * from messages where messagecontent = 'messagetest'").fetchone()
-            is None
+            is not None
         )
 
 
 @pytest.mark.parametrize(
-    ("messagecontent", "message", "http_status_code"),
+    ("messagecontent","flag", "message", "http_status_code"),
     (
-        ("", b"message can't be found", 404),
+        ("",1, b"message can't be found", 404),
+       
     ),
 )
-def test_message_flag_validate(client, messagecontent, message, http_status_code):
+def test_message_flag_validate(client, messagecontent,flag, message, http_status_code):
     url = "/message/flag"
-    bad_data = {"messagecontent": messagecontent}
+    bad_data = {"messagecontent": messagecontent,"flag":flag}
 
     response = client.post(url, data=bad_data)
 

@@ -1,4 +1,4 @@
-from locust import HttpLocust, TaskSet, task, between
+from locust import HttpUser, TaskSet, task, between
 from generators import *
 
 username_generator = get_unique_username()
@@ -167,6 +167,6 @@ class UserBehavior(TaskSet):
 
     
 
-class WebsiteUser(HttpLocust):
-    task_set = UserBehavior
+class WebsiteUser(HttpUser):
+    tasks = [UserBehavior]
     wait_time = between(5, 15)
