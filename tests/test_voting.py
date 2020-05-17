@@ -25,7 +25,7 @@ def test_voting_upvote(client, app):
     # test that the upvote was incremented in the database
     with app.app_context():
         assert (
-            get_db().execute("UPDATE posts SET upvotes=upvotes+1 WHERE id = 'voting_upvote'").fetchone()
+            get_db().execute("SELECT * FROM posts WHERE username = 'voting_upvote' and upvotes = '1'").fetchone()
             is not None
         )
 
