@@ -5,8 +5,15 @@
     }
 }
 
-127.0.0.1:2015/votes {
+127.0.0.1:2015/voting {
     proxy / 127.0.0.1:3100 127.0.0.1:3101 127.0.0.1:3102 {
+        policy least_conn
+        transparent
+    }
+}
+
+127.0.0.1:2015/message {
+    proxy / 127.0.0.1:3200 127.0.0.1:3201 127.0.0.1:3202 {
         policy least_conn
         transparent
     }
