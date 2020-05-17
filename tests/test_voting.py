@@ -32,8 +32,7 @@ def test_voting_upvote(client, app):
 @pytest.mark.parametrize(
     ("username", "password", "message", "http_status_code"),
     (
-        ("", "", b"Provide information", 404),
-        ("nonexistant_username", "nonexistant_password", b"Create an account", 404),
+        ("", "", b"Provide login information", 404),
     ),
 )
 def test_voting_upvote_validate(client, username, password, message, http_status_code):
@@ -71,8 +70,7 @@ def test_voting_downvote(client, app):
 @pytest.mark.parametrize(
     ("username", "password", "message", "http_status_code"),
     (
-        ("", "", b"Provide information", 404),
-        ("nonexistant_username", "nonexistant_password", b"Create an account", 404),
+        ("", "", b"Provide login information", 404),
     ),
 )
 def test_voting_downvote_validate(client, username, password, message, http_status_code):
@@ -97,21 +95,14 @@ def test_voting_voteSegregation(client, app):
     valid_data = {"title": "voteSegregation", "community": "voteSegregation"}
     vote_segregation = client.post(url, data=valid_data)
     assert vote_segregation.status_code == 201
-    #assert client.post(url, data=valid_data).status_code == 201
-
-    # test vote segregation in the database
-    # with app.app_context():
-    #     assert (
-    #         get_db().execute("SELECT upvotes, downvotes FROM posts WHERE title = 'voteSegregation' and community = 'voteSegregation'").fetchone()
-    #         is not None
-    #     )
 
 
 @pytest.mark.parametrize(
     ("title", "community", "message", "http_status_code"),
     (
         ("", "", b"Provide a title and community", 404),
-        ("nonexistant_title", "nonexistant_community", b"Create an account", 404),
+        ("", "voteSegregation", b"Provide a title", 404),
+        ("voteSegregation", "", b"Provide a community", 404),
     ),
 )
 def test_voting_voteSegregation_validate(client, title, community, message, http_status_code):
@@ -123,3 +114,32 @@ def test_voting_voteSegregation_validate(client, title, community, message, http
     assert http_status_code == response.status_code
     assert message in response.data
 
+
+# Test voting/topScoring
+def test_voting_topScoring(client, app):
+    with app.app_context():
+        get_db().execute('INSERT INTO users (username, email, password, karma) VALUES (?, ?, ?, ?);', ("topScoring", "topScoring@topScoring.com", "topScoring", 0))
+        get_db().execute('INSERT INTO posts (title, community, text, username, url, dt, upvotes, downvotes) VALUES (?, ?, ?, ?, ?, ?, ?, ?);', ("topScoring", "topScoring", "topScoring", "topScoring", "topScoring.com", datetime.now(), 0, 0))
+        get_db().commit()
+
+    url = '/voting/topScoring'
+
+    valid_data = {"community": "topScoring"}
+    top_scoring = client.post(url, data=valid_data)
+    assert top_scoring.status_code == 201
+
+
+@pytest.mark.parametrize(
+    ("community", "message", "http_status_code"),
+    (
+        ("", b"Provide a community", 404),
+    ),
+)
+def test_voting_topScoring_validate(client, community, message, http_status_code):
+    url = "/voting/topScoring"
+    bad_data = {"community": community}
+    
+    response = client.post(url, data=bad_data)
+    
+    assert http_status_code == response.status_code
+    assert message in response.data
