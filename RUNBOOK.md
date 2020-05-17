@@ -12,7 +12,7 @@ $ git config --list                     # Verify all configurations
 
 $ cd project_directory
 $ git init
-$ git remote add origin https://github.com/sean-maclane/cpsc-449-group-c-project-1
+$ git remote add origin https://github.com/sean-maclane/cpsc-449-group-c-project
 $ git pull origin master
 <<Enter github username and password>>
 ```
@@ -45,7 +45,7 @@ Setting up project variables
 
 ```
 $ cd project_root/
-$ export FLASK_APP=project1
+$ export FLASK_APP=project
 $ export FLASK_ENV=development
 $ export FLASK_RUN_HOST=127.0.0.1
 $ export FLASK_RUN_PORT=2015
