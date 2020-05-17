@@ -37,7 +37,7 @@ Operational Dependencies
 ------------------------
 
 ```
-$ sudo apt install gunicorn3
+$ sudo apt install gunicorn
 $ curl https://getcaddy.com | bash -s personal
 $ sudo apt install ruby-foreman
 ```
@@ -148,11 +148,11 @@ Before load testing, open a separate terminal and follow the instructions in the
 Please note that this generates so much data that it overwhelms the SQLite database, and eventualy the db locks up. This would not happen if we were running a database such as MySQL, but that is out of the scope of this project.
 
 ```
-$ locust -f locustfile.py --host=http://localhost:2015 --no-web -c 100 -r 10
+$ locust -f locustfile.py --host=http://localhost:2015 --headless -u 100 -r 10
 ```
 where:
 
 + `f` — Path to the file
-+ `no-web` — Run the simulation without web interface
-+ `c` — Number of users to simulate
++ `headless` — Run the simulation without web interface
++ `u` — Number of users to simulate
 + `r` — Hatch rate (users spawned per second)
