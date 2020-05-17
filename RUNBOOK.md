@@ -1,3 +1,16 @@
+----------------
+Operating System
+----------------
+The preferred OS for this project is Tuffix 2020, details can be found on it at https://github.com/kevinwortman/tuffix .
+
+
+As the current release (2020) seems to still be under development, we will include here the setup steps we followed:
+1. Make a clean install of Ubunu 20.04 (we used a virtual machine)
+2. run the following command in a terminal `wget https://csufcs.com/tuffixize -O - | bash`
+
+
+While using Tuffix would ensure the best combatibility, we have comfirmed that the project runs just the same on a
+plain Ubuntu 20.04 release as well.
 
 -----------------
 GitHub Operations
@@ -37,6 +50,10 @@ Operational Dependencies
 ------------------------
 
 ```
+$ deactivate            # leave the virtual environment, if it is activated
+$ pip3 install flask
+$ pip3 install locust
+$ . venv/bin/activate   # re-enter the virtual environment, if deactivated
 $ sudo apt install gunicorn
 $ curl https://getcaddy.com | bash -s personal
 $ sudo apt install ruby-foreman
@@ -55,9 +72,9 @@ $ export FLASK_RUN_PORT=2015
 $ flask init-db
 ```
 
---------------
-Project Sanity
---------------
+-------------------------
+Project Sanity (optional)
+-------------------------
 
 Check whether the below command works:
 

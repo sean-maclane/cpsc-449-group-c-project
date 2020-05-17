@@ -4,11 +4,11 @@
 
 _**Members and Roles**_
 
-Preston Phan : Developer
++ Preston Phan : Developer
 
-Sean Mac Lane : SDET
++ Sean Mac Lane : SDET
 
-Saurabh Mishra : Operations
++ Saurabh Mishra : Operations
 
 ## Part 2
 
@@ -18,6 +18,6 @@ Due to the very small ammount of remaining work, we did not split up the work vi
 
 + Preston Phan : Message service
 
-+ Sean Mac Lane : Remaining work surrounding Message and Voting
++ Sean Mac Lane : Work supporting Message and Voting
 
 + Saurabh Mishra : Voting service
