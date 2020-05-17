@@ -11,6 +11,7 @@ from project.db import get_db
 def test_voting_upvote(client, app):
     # Test increment
     with app.app_context():
+        get_db().execute(get_db().execute('INSERT INTO posts (title, community, text, username, url, dt, upvotes, downvotes) VALUES (?, ?, ?, ?, ?, ?, ?, ?);', ("voting_upvote", "voting_upvote", "voting_upvote", "voting_upvote", "voting_upvote.com", datetime.now(), 0, 0)))
         get_db().execute("UPDATE posts SET upvotes=upvotes+1 WHERE title = ?;", ("voting_upvote"))
         get_db().commit()
 
