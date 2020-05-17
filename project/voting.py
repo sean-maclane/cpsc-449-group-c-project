@@ -78,7 +78,6 @@ def voteSegregation():
         return Response(json.dumps({"message": "Provide a community"}), status=404, content_type="application/json")
     
     db.execute("SELECT upvotes, downvotes FROM posts WHERE title = ? AND community = ?", (_post_title, _post_community))
-    #db.execute("SELECT upvotes, downvotes FROM posts WHERE title = ?", (_post_title), "AND community = ?", (_post_community))
     return Response(json.dumps({"message": "Upvotes and downvotes of the post retrieved successfully"}), status=201, content_type="application/json")
 
 
