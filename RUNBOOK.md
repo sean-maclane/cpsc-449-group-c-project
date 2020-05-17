@@ -50,6 +50,10 @@ Operational Dependencies
 ------------------------
 
 ```
+$ deactivate            # leave the virtual environment, if it is activated
+$ pip3 install flask
+$ pip3 install locust
+$ . venv/bin/activate   # re-enter the virtual environment, if deactivated
 $ sudo apt install gunicorn
 $ curl https://getcaddy.com | bash -s personal
 $ sudo apt install ruby-foreman
