@@ -109,7 +109,7 @@ def test_voting_voteSegregation(client, app):
     ),
 )
 def test_voting_voteSegregation_validate(client, title, community, message, http_status_code):
-    url = "/voting/downvote"
+    url = "/voting/voteSegregation"
     bad_data = {"title": title, "community": community}
     
     response = client.post(url, data=bad_data)
