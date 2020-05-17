@@ -30,7 +30,7 @@ def upvote():
         return Response(json.dumps({"message": "Post not fund"}), status=404, content_type="application/json")
 
 
-    db.execute('UPDATE posts SET upvotes=upvotes+1 WHERE id = ?', (post_id,))
+    db.execute('UPDATE posts SET upvotes=upvotes+1 WHERE id = ?', (post_id))
     db.commit()
     return Response(status=201)
 
@@ -56,7 +56,7 @@ def downvote():
     if post_id is None:
         return Response(json.dumps({"message": "Post not fund"}), status=404, content_type="application/json")
 
-    db.execute('UPDATE posts SET downvotes=downvotes+1 WHERE id = ?', (post_id,))
+    db.execute('UPDATE posts SET downvotes=downvotes+1 WHERE id = ?', (post_id))
     db.commit()
     return Response(status=201)
 
