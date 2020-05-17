@@ -17,7 +17,7 @@ def test_voting_upvote(client, app):
     url = "/voting/upvote"
 
     # test a valid POST request
-    valid_data = {"username": "voting_upvote", "password": "voting_upvote"}
+    valid_data = {"username": "voting_upvote", "password": "voting_upvote", "title": "voting_upvote"}
     assert client.post(url, data=valid_data).status_code == 201
 
     # test that the upvote was incremented in the database
@@ -48,13 +48,13 @@ def test_voting_upvote_validate(client, username, password, message, http_status
 def test_voting_downvote(client, app):
     # test decrement
     with app.app_context():
-        get_db().execute("UPDATE posts SET upvotes=upvotes+1 WHERE title = ?;", ("voting_upvote"))
+        get_db().execute("UPDATE posts SET downvotes=downvotes+1 WHERE title = ?;", ("voting_downvote"))
         get_db().commit()
 
     url = "/voting/downvote"
 
     # test a valid POST request
-    valid_data = {"username": "voting_downvote", "password": "voting_downvote"}
+    valid_data = {"username": "voting_downvote", "password": "voting_downvote", "title": "voting_downvote"}
     assert client.post(url, data=valid_data).status_code == 201
 
     # test that the upvote was incremented in the database
@@ -80,4 +80,22 @@ def test_voting_downvote_validate(client, username, password, message, http_stat
     
     assert http_status_code == response.status_code
     assert message in response.data
-    
+
+
+# Test voting/voteSegregation
+def test_voting_voteSegregation(client, app):
+    with app.app_context():
+        get_db().execute("SELECT upvotes, downvotes FROM posts WHERE title = ? AND community = ?;", ("voteSegregation", "voteSegregation"))
+        get_db().commit()
+
+    url = '/voting/voteSegregation'
+
+    valid_data = {"title": "voting_downvote", "community": "voteSegregation"}
+    assert client.post(url, data=valid_data).status_code == 201
+
+    # test vote segregation in the database
+    with app.app_context():
+        assert (
+            get_db().execute("SELECT * FROM voting WHERE title = 'voteSegregation' and community = 'voteSegregation'").fetchone()
+            is not None
+        )
