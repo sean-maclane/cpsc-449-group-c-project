@@ -90,7 +90,7 @@ def test_voting_voteSegregation(client, app):
 
     url = '/voting/voteSegregation'
 
-    valid_data = {"title": "voting_downvote", "community": "voteSegregation"}
+    valid_data = {"title": "voteSegregation", "community": "voteSegregation"}
     assert client.post(url, data=valid_data).status_code == 201
 
     # test vote segregation in the database
@@ -99,3 +99,20 @@ def test_voting_voteSegregation(client, app):
             get_db().execute("SELECT * FROM voting WHERE title = 'voteSegregation' and community = 'voteSegregation'").fetchone()
             is not None
         )
+
+
+@pytest.mark.parametrize(
+    ("title", "community", "message", "http_status_code"),
+    (
+        ("", "", b"Provide information", 404),
+        ("nonexistant_title", "nonexistant_community", b"Create an account", 404),
+    ),
+)
+def test_voting_voteSegregation_validate(client, title, community, message, http_status_code):
+    url = "/voting/downvote"
+    bad_data = {"title": title, "community": community}
+    
+    response = client.post(url, data=bad_data)
+    
+    assert http_status_code == response.status_code
+    assert message in response.data
