@@ -47,7 +47,7 @@ def test_posts_retrieve(client, app):
     # Add user and post for posts/retrieve testing
     with app.app_context():
         get_db().execute('INSERT INTO users (username, email, password, karma) VALUES (?, ?, ?, ?);', ("posts_retrieve", "posts@retrieve.com", "posts_retrieve", 0))
-        get_db().execute('INSERT INTO posts (title, community, text, username, url, dt) VALUES (?, ?, ?, ?, ?, ?);', ("posts_retrieve", "posts_retrieve", "posts_retrieve", "posts_retrieve", "posts_retrieve.com", datetime.now()))
+        get_db().execute('INSERT INTO posts (title, community, text, username, url, dt, upvotes, downvotes) VALUES (?, ?, ?, ?, ?, ?, ?, ?);', ("posts_retrieve", "posts_retrieve", "posts_retrieve", "posts_retrieve", "posts_retrieve.com", datetime.now(), 0, 0))
         get_db().commit()
 
     url = "/posts/retrieve"
@@ -80,7 +80,7 @@ def test_posts_delete(client, app):
     # Add user and post for posts/delete testing
     with app.app_context():
         get_db().execute('INSERT INTO users (username, email, password, karma) VALUES (?, ?, ?, ?);', ("posts_delete", "posts@delete.com", "posts_delete", 0))
-        get_db().execute('INSERT INTO posts (title, community, text, username, url, dt) VALUES (?, ?, ?, ?, ?, ?);', ("posts_delete", "posts_delete", "posts_delete", "posts_delete", "posts_delete.com", datetime.now()))
+        get_db().execute('INSERT INTO posts (title, community, text, username, url, dt, upvotes, downvotes) VALUES (?, ?, ?, ?, ?, ?, ?, ?);', ("posts_delete", "posts_delete", "posts_delete", "posts_delete", "posts_delete.com", datetime.now(), 0, 0))
         get_db().commit()
 
     url = "/posts/delete"
