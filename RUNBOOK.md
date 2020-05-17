@@ -68,9 +68,9 @@ $ export FLASK_RUN_PORT=2015
 $ flask init-db
 ```
 
---------------
-Project Sanity
---------------
+-------------------------
+Project Sanity (optional)
+-------------------------
 
 Check whether the below command works:
 
