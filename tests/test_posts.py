@@ -10,7 +10,7 @@ from project.db import get_db
 def test_posts_create(client, app):
     # Add user for posts/create testing
     with app.app_context():
-        get_db().execute('INSERT INTO users (username, email, password, karma, upvotes, downvotes) VALUES (?, ?, ?, ?, ?, ?);', ("posts_create", "posts@create.com", "posts_create", 0, 0, 0))
+        get_db().execute('INSERT INTO users (username, email, password, upvotes, downvotes) VALUES (?, ?, ?, ?, ?);', ("posts_create", "posts@create.com", "posts_create", 0, 0))
         get_db().commit()
 
     url = "/posts/create"
@@ -46,7 +46,7 @@ def test_posts_create_validate(client, title, community, text, username,message,
 def test_posts_retrieve(client, app):
     # Add user and post for posts/retrieve testing
     with app.app_context():
-        get_db().execute('INSERT INTO users (username, email, password, karma) VALUES (?, ?, ?, ?);', ("posts_retrieve", "posts@retrieve.com", "posts_retrieve", 0))
+        get_db().execute('INSERT INTO users (username, email, password) VALUES (?, ?, ?);', ("posts_retrieve", "posts@retrieve.com", "posts_retrieve"))
         get_db().execute('INSERT INTO posts (title, community, text, username, url, dt) VALUES (?, ?, ?, ?, ?, ?);', ("posts_retrieve", "posts_retrieve", "posts_retrieve", "posts_retrieve", "posts_retrieve.com", datetime.now()))
         get_db().commit()
 
@@ -79,7 +79,7 @@ def test_posts_retrieve_validate(client, title, community, message, http_status_
 def test_posts_delete(client, app):
     # Add user and post for posts/delete testing
     with app.app_context():
-        get_db().execute('INSERT INTO users (username, email, password, karma) VALUES (?, ?, ?, ?);', ("posts_delete", "posts@delete.com", "posts_delete", 0))
+        #get_db().execute('INSERT INTO users (username, email, password) VALUES (?, ?, ?);', ("posts_delete", "posts@delete.com", "posts_delete"))
         get_db().execute('INSERT INTO posts (title, community, text, username, url, dt) VALUES (?, ?, ?, ?, ?, ?);', ("posts_delete", "posts_delete", "posts_delete", "posts_delete", "posts_delete.com", datetime.now()))
         get_db().commit()
 
@@ -92,7 +92,7 @@ def test_posts_delete(client, app):
     # test that the post was deleted from the database
     with app.app_context():
         assert (
-            get_db().execute("SELECT * FROM posts where title = 'posts_delete'").fetchone()
+            get_db().execute("DELETE FROM posts where title = 'posts_delete'").fetchone()
             is None
         )
 
