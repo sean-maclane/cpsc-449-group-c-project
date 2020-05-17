@@ -110,7 +110,7 @@ def test_voting_voteSegregation(client, app):
 @pytest.mark.parametrize(
     ("title", "community", "message", "http_status_code"),
     (
-        ("", "", b"Provide information", 404),
+        ("", "", b"Provide a title and community", 404),
         ("nonexistant_title", "nonexistant_community", b"Create an account", 404),
     ),
 )
