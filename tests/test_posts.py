@@ -10,7 +10,7 @@ from project.db import get_db
 def test_posts_create(client, app):
     # Add user for posts/create testing
     with app.app_context():
-        get_db().execute('INSERT INTO users (username, email, password, karma, upvotes, downvotes) VALUES (?, ?, ?, ?, ?, ?);', ("posts_create", "posts@create.com", "posts_create", 0, 0, 0))
+        get_db().execute('INSERT INTO users (username, email, password, karma) VALUES (?, ?, ?, ?);', ("posts_create", "posts@create.com", "posts_create", 0))
         get_db().commit()
 
     url = "/posts/create"
