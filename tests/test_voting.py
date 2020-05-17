@@ -19,13 +19,13 @@ def test_voting_upvote(client, app):
     url = "/voting/upvote"
 
     # test a valid POST request
-    valid_data = {"username": "voting_upvote", "password": "voting_upvote", "title": "voting_upvote"}
+    valid_data = {"username": "voting_upvote", "password": "voting_upvote", "title": "voting_upvote", "id": "voting_upvote"}
     assert client.post(url, data=valid_data).status_code == 201
 
     # test that the upvote was incremented in the database
     with app.app_context():
         assert (
-            get_db().execute("UPDATE posts SET upvotes=upvotes+1 WHERE title = 'voting_upvote'").fetchone()
+            get_db().execute("UPDATE posts SET upvotes=upvotes+1 WHERE id = 'voting_upvote'").fetchone()
             is not None
         )
 
