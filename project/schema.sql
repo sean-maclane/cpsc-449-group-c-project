@@ -20,7 +20,9 @@ CREATE TABLE posts (
   text TEXT NOT NULL,
   Username TEXT NOT NULL,
   url TEXT,
-  dt DATETIME NOT NULL
+  dt DATETIME NOT NULL,
+  upvotes INTEGER NOT NULL,
+  downvotes INTEGER NOT NULL
 );
 
 CREATE TABLE messages (
