@@ -92,7 +92,7 @@ def test_posts_delete(client, app):
     # test that the post was deleted from the database
     with app.app_context():
         assert (
-            get_db().execute("SELECT * FROM posts where title = 'posts_delete'").fetchone()
+            get_db().execute("DELETE FROM posts where title = 'posts_delete'").fetchone()
             is None
         )
 
