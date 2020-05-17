@@ -2,6 +2,7 @@ import pytest
 from flask import g
 from flask import session
 from flask import *
+from datetime import datetime
 import json
 
 from project.db import get_db
@@ -9,10 +10,10 @@ from project.db import get_db
 
 # Test voting/upvote
 def test_voting_upvote(client, app):
-    # Test increment
+    # Add users and posts before testing upvote
     with app.app_context():
-        get_db().execute(get_db().execute('INSERT INTO posts (title, community, text, username, url, dt, upvotes, downvotes) VALUES (?, ?, ?, ?, ?, ?, ?, ?);', ("voting_upvote", "voting_upvote", "voting_upvote", "voting_upvote", "voting_upvote.com", datetime.now(), 0, 0)))
-        get_db().execute("UPDATE posts SET upvotes=upvotes+1 WHERE title = ?;", ("voting_upvote"))
+        get_db().execute('INSERT INTO users (username, email, password, karma) VALUES (?, ?, ?, ?);', ("voting_upvote", "voting@upvote.com", "voting_upvote", 0))
+        get_db().execute('INSERT INTO posts (title, community, text, username, url, dt, upvotes, downvotes) VALUES (?, ?, ?, ?, ?, ?, ?, ?);', ("voting_upvote", "voting_upvote", "voting_upvote", "voting_upvote", "voting_upvote.com", datetime.now(), 0, 0))
         get_db().commit()
 
     url = "/voting/upvote"
@@ -24,7 +25,7 @@ def test_voting_upvote(client, app):
     # test that the upvote was incremented in the database
     with app.app_context():
         assert (
-            get_db().execute("SELECT * FROM voting WHERE title = 'voting_upvote'").fetchone()
+            get_db().execute("UPDATE posts SET upvotes=upvotes+1 WHERE title = 'voting_upvote'").fetchone()
             is not None
         )
 
@@ -47,9 +48,10 @@ def test_voting_upvote_validate(client, username, password, message, http_status
 
 # Test voting/downvote
 def test_voting_downvote(client, app):
-    # test decrement
+    # Add users and posts before testing downvote
     with app.app_context():
-        get_db().execute("UPDATE posts SET downvotes=downvotes+1 WHERE title = ?;", ("voting_downvote"))
+        get_db().execute('INSERT INTO users (username, email, password, karma) VALUES (?, ?, ?, ?);', ("voting_downvote", "voting@downvote.com", "voting_downvote", 0))
+        get_db().execute('INSERT INTO posts (title, community, text, username, url, dt, upvotes, downvotes) VALUES (?, ?, ?, ?, ?, ?, ?, ?);', ("voting_downvote", "voting_downvote", "voting_downvote", "voting_downvote", "voting_downvote.com", datetime.now(), 0, 0))
         get_db().commit()
 
     url = "/voting/downvote"
