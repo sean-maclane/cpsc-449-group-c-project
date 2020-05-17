@@ -179,4 +179,59 @@ method=GET, POST takes in form input, upon completion. Return 201
 ------------------
 Voting Microservice
 ------------------
-TODO
+
+### Upvote
+/voting/upvote
+
+method=GET, POST takes in form input; upon completion returns 201
+
+Input needed:
+
+1. username
+2. password
+3. title
+
+Possible Errors for above- all return 404 status error if not fulfilled
+1. No information provided,  "Provide login information"
+2. No title provided
+
+
+### Downvote
+/voting/downvote
+
+method=GET, POST takes in form input; upon completion returns 201
+
+Input needed:
+1. username
+2. password
+3. title
+
+Possible Errors for above- all return 404 status error if not fulfilled
+1. No information provided,  "Provide login information"
+2. No title provided
+
+
+### Vote Segregation
+/voting/voteSegregation
+
+method=GET takes in form input; upon completion returns 201
+
+Input needed:
+1. title
+2. community
+
+Possible Errors for above- all return 404 status error if not fulfilled
+1. Provide a title
+2. Provide a community
+
+
+### Vote Segregation
+/voting/topScoring
+
+method=GET takes in form input; upon completion returns 201
+
+Input needed:
+1. community
+
+Possible Errors for above- all return 404 status error if not fulfilled
+1. Provide a community
