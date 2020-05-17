@@ -30,14 +30,14 @@ def test_voting_upvote(client, app):
         )
 
 @pytest.mark.parametrize(
-    ("username", "password", "message", "http_status_code"),
+    ("username", "password", "title", "message", "http_status_code"),
     (
-        ("", "", b"Provide login information", 404),
+        ("", "", "voting_upvote", b"Provide login information", 404),
     ),
 )
-def test_voting_upvote_validate(client, username, password, message, http_status_code):
+def test_voting_upvote_validate(client, username, password, title, message, http_status_code):
     url = "/voting/upvote"
-    bad_data = {"username": username, "password": password}
+    bad_data = {"username": username, "password": password, "title": title}
 
     response = client.post(url, data=bad_data)
 
