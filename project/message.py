@@ -63,8 +63,10 @@ def favoriteMessage():
 
     if _message == "":
         return Response(json.dumps({"message": "message can't be found"}), status=404, content_type="application/json")
-    if _flag == 0:
+    if _flag==0:
         return Response(json.dumps({"message": "message isn't flagged"}), status=404, content_type="application/json")
+
+    
     else:
         return Response(status=201)
 
