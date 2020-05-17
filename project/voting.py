@@ -81,7 +81,7 @@ def voteSegregation():
     return Response(json.dumps({"message": "Upvotes and downvotes of the post retrieved successfully"}), status=201, content_type="application/json")
 
 
-@bp.route('/topScoring', methods=['GET'])
+@bp.route('/topScoring', methods=['GET', 'POST'])
 def topScoring():
     db = get_db()
 
