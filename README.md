@@ -14,7 +14,7 @@ _**Members and Roles**_
 
 _**Members and Roles**_
 
-Due to the very small ammount of remaining work, we did not split up the work via Developer, SDET, and Operations.
+Instead of splitting the work horizontally into _developer_, _SDET_, and _operations_, we split the work vertically. This time, each member was responsible for developing (and improving), writing test cases for that piece of development, and hadling it operationally. 
 
 + Preston Phan : Message service
 
