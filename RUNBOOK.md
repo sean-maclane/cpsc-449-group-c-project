@@ -130,7 +130,7 @@ Step 6: Restart PC
 -------------------------
 API Specification Testing
 -------------------------
-Follow the setup instructions above before testing. You will need to be in the virtual env and have run the given pip command.
+Follow the setup instructions above before testing. You will need to be in the virtual env and have installed all the dependencies.
 
 These tests automatically create their own server instance and database, and remove them when complete. You do not need to be running an existing server for them to work.
 
@@ -153,6 +153,7 @@ $ pytest --tb=line
 ```
 In these tests, the dots indicate sucess, F's indicade the API was not followed, and E's indicate a critical error.
 
+<<<<<<< HEAD
 ----------------------------
 Orchestration & Load Testing
 ----------------------------
@@ -164,9 +165,17 @@ $ foreman start -m posts_test=3,votes_test=3,accounts_test=3,message_test=3,cadd
 ``` 
 
 (**Note**: The load test will run until you press `Ctrl+c`.)
+=======
+------------
+Load Testing
+------------
+Before load testing, open a separate terminal and follow the instructions in the runbook for starting a server under "Orchestration".
+>>>>>>> ceae2a15fda2423c2ba701a075c3e106be450ef7
 
 
 In another new terminal tab, run the below command for **synthetic load testing**:
+
+The load test will run until you press ctrl+c. When finished, you can end the forman task in its tab by pressing ctrl+c there as well.
 
 ```
 $ locust -f locustfile.py --host=http://localhost:3000 --headless -u 100 -r 10
