@@ -10,7 +10,7 @@ post_text_generator = get_unique_post_text()
 community_generator = get_unique_community()
 
 message_text_generator = get_unique_message_text()
-
+id_generator = get_unique_id()
 
 class UserBehavior(TaskSet):
     def on_start(self):
@@ -28,9 +28,11 @@ class UserBehavior(TaskSet):
 
         self.user_to = next(username_generator)
         self.message_content = next(message_text_generator)
+        self.id = next(id_generator)
 
         self.hello_world()
         self.create_account()
+        self.create_post()
     
     def on_stop(self):
         self.delete_account()
@@ -39,6 +41,7 @@ class UserBehavior(TaskSet):
         url = "/hello"
         self.client.get(url)
 
+    @task
     def create_account(self):
         url = "/accounts/create"
         data = {"username": self.username, "password": self.password, "email": self.email}
@@ -75,7 +78,7 @@ class UserBehavior(TaskSet):
         retrieve_data = {'title': self.post_title, 'community': self.community}
         self.client.post(retrieve_url, retrieve_data)
 
-    @task
+    @task(1)
     def create_post(self):
         createpost_url = '/posts/create'
         createpost_data = {
@@ -93,7 +96,8 @@ class UserBehavior(TaskSet):
         upvote_data = {
             'username': self.username, 
             'password': self.password,
-            'title': self.post_title
+            'title': self.post_title,
+            'id': self.id
         }
         self.client.post(upvote_url, upvote_data)
 
@@ -103,7 +107,8 @@ class UserBehavior(TaskSet):
         downvote_data = {
             'username': self.username, 
             'password': self.password,
-            'title': self.post_title
+            'title': self.post_title,
+            'id': self.id
         }
         self.client.post(downvote_url, downvote_data)
 
@@ -170,3 +175,4 @@ class UserBehavior(TaskSet):
 class WebsiteUser(HttpUser):
     tasks = [UserBehavior]
     wait_time = between(5, 15)
+
