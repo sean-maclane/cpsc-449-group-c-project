@@ -31,6 +31,7 @@ class UserBehavior(TaskSet):
 
         self.hello_world()
         self.create_account()
+        self.create_post()
     
     def on_stop(self):
         self.delete_account()
