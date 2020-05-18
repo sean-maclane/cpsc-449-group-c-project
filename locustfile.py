@@ -41,7 +41,6 @@ class UserBehavior(TaskSet):
         url = "/hello"
         self.client.get(url)
 
-    @task
     def create_account(self):
         url = "/accounts/create"
         data = {"username": self.username, "password": self.password, "email": self.email}
