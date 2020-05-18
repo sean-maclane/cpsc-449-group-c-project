@@ -59,6 +59,9 @@ $ curl https://getcaddy.com | bash -s personal
 $ sudo apt install ruby-foreman
 ```
 
+**Note**: When running the `foreman` command, packages _flask_ and _locust_ are picked up from the system's python3 site-packages directory.
+
+
 ----------------------------
 Setting up project variables
 ----------------------------
@@ -123,13 +126,6 @@ Step 5: Add line `session required pam_limits.so` to files:
 
 Step 6: Restart PC
 
--------------
-Orchestration
--------------
-
-```
-$ foreman start -m posts_test=3,votes_test=3,accounts_test=3,message_test=3,caddy_lbt=1 --port 3000
-``` 
 
 -------------------------
 API Specification Testing
@@ -157,16 +153,25 @@ $ pytest --tb=line
 ```
 In these tests, the dots indicate sucess, F's indicade the API was not followed, and E's indicate a critical error.
 
-------------
-Load Testing
-------------
-Before load testing, open a separate terminal and follow the instructions in the runbook for starting a server under orchestration. The load test will run until you press ctr+c.
+----------------------------
+Orchestration & Load Testing
+----------------------------
 
-Please note that this generates so much data that it overwhelms the SQLite database, and eventualy the db locks up. This would not happen if we were running a database such as MySQL, but that is out of the scope of this project.
+In a terminal tab, run the below **orchestration** command:
+
+```
+$ foreman start -m posts_test=3,votes_test=3,accounts_test=3,message_test=3,caddy_lbt=1 --port 3000
+``` 
+
+(**Note**: The load test will run until you press `Ctrl+c`.)
+
+
+In another new terminal tab, run the below command for **synthetic load testing**:
 
 ```
 $ locust -f locustfile.py --host=http://localhost:3000 --headless -u 100 -r 10
 ```
+
 where:
 
 + `f` — Path to the file
