@@ -132,22 +132,21 @@ API Specification Testing
 -------------------------
 Follow the setup instructions above before testing. You will need to be in the virtual env and have run the given pip command.
 
-These tests automatically create their own server instance and database, and remove them when complete. You do not need to be running an existing server for them to work.
+Our API tests automatically create their own server instance and database, and remove them when complete. You do not need to be running an existing server for them to work.
+
+Several command variants are provided below, each of them run the same tests but give output in different formats. Any or all of them can be used.
 
 Standard `pytest` run:
-
 ```
 $ pytest
 ```
 
 Redirect the output of `pytest` to `error.log` file:
-
 ```
 $ pytest >error.log
 ```
 
 Enable traceback for one line per failure:
-
 ```
 $ pytest --tb=line
 ```
@@ -171,6 +170,8 @@ In another new terminal tab, run the below command for **synthetic load testing*
 ```
 $ locust -f locustfile.py --host=http://localhost:3000 --headless -u 100 -r 10
 ```
+
+(**Note**: The locust test will run until you press `Ctrl+c`.)
 
 where:
 
