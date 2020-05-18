@@ -46,3 +46,9 @@ def get_unique_message_text():
     while True:
         id = id + 1
         yield base_string + str(id)
+
+def get_unique_id():
+    id = 0
+    while True:
+        id += 1
+        yield str(id)
